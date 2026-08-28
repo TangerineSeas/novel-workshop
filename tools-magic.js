@@ -1,87 +1,98 @@
-// ========== 魔法工具模块 ==========
+// ========== 魔法工具模块 v2 ==========
 (function() {
-    // 等主程序加载后初始化
     function initMagicTools() {
-        // 如果工具页存在，动态添加子标签
         const toolsTabs = document.querySelector('.tools-tabs');
         if(!toolsTabs) return;
         
-        // 添加魔法工具标签
         const magicTab = document.createElement('button');
         magicTab.className = 'tools-tab';
         magicTab.textContent = '🔮 魔法工具';
         magicTab.onclick = function() { switchMagicToolsTab(this); };
         toolsTabs.appendChild(magicTab);
 
-        // 创建魔法工具内容容器
         const toolsContainer = document.getElementById('page-tools').querySelector('.page-container');
         const magicContent = document.createElement('div');
         magicContent.id = 'tools-magic';
         magicContent.className = 'tools-content';
         magicContent.innerHTML = `
             <div class="magic-tools-container">
-                <div class="magic-tool-section" id="magic-venn-section">
+                
+                <!-- ===== 工具一：意象Venn图 ===== -->
+                <div class="magic-tool-section">
                     <h3>🔮 意象Venn图（泛灵论魔法）</h3>
-                    <div class="venn-container">
-                        <div class="venn-column">
+                    <p class="magic-tool-desc">基于自然万物推导魔法属性。左侧填入自然性特征，右侧填入社会性含义，两者交叉生成魔法灵感。</p>
+                    <div class="venn-wrapper">
+                        <div class="venn-circle left">
                             <h4>🌿 自然性</h4>
-                            <div class="venn-input-row">
-                                <input class="form-input" id="venn-natural-input" placeholder="添加自然性词汇">
-                                <button class="btn btn-sm btn-primary" onclick="addVennWord('natural')">+</button>
-                            </div>
-                            <ul class="venn-list" id="venn-natural-list"></ul>
+                            <ul id="venn-natural-list"></ul>
                         </div>
-                        <div class="venn-column">
+                        <div class="venn-overlap">✨</div>
+                        <div class="venn-circle right">
                             <h4>🏛️ 社会性</h4>
-                            <div class="venn-input-row">
-                                <input class="form-input" id="venn-social-input" placeholder="添加社会性词汇">
-                                <button class="btn btn-sm btn-primary" onclick="addVennWord('social')">+</button>
-                            </div>
-                            <ul class="venn-list" id="venn-social-list"></ul>
+                            <ul id="venn-social-list"></ul>
                         </div>
                     </div>
-                    <div class="btn-row">
+                    <div class="venn-input-row">
+                        <input id="venn-natural-input" placeholder="自然性词汇">
+                        <button class="btn btn-sm btn-primary" onclick="addVennWord('natural')">+ 添加</button>
+                        <input id="venn-social-input" placeholder="社会性词汇">
+                        <button class="btn btn-sm btn-primary" onclick="addVennWord('social')">+ 添加</button>
+                    </div>
+                    <div class="btn-row" style="justify-content:center">
                         <button class="btn btn-sm btn-primary" onclick="generateVennInspiration()">🎲 随机组合推导</button>
                     </div>
-                    <div class="venn-result" id="venn-result">点击左侧和右侧词汇后，或点击随机组合生成魔法灵感</div>
+                    <div class="venn-result" id="venn-result">点击左右两侧词汇进行组合，或点击随机组合</div>
                 </div>
 
-                <div class="magic-tool-section" id="magic-triangle-section">
+                <!-- ===== 工具二：不可能三角 ===== -->
+                <div class="magic-tool-section">
                     <h3>📐 不可能三角（唯能论魔法）</h3>
-                    <div class="triangle-container">
-                        <div class="triangle-svg" id="triangle-svg"></div>
-                        <div class="triangle-options">
-                            <button class="triangle-btn" onclick="toggleTriangleOption('表现力')">表现力</button>
-                            <button class="triangle-btn" onclick="toggleTriangleOption('便捷性')">便捷性</button>
-                            <button class="triangle-btn" onclick="toggleTriangleOption('性价比')">性价比</button>
-                        </div>
-                        <div id="triangle-result" style="margin-top:10px;font-size:.85em;color:var(--text2)">点击顶点查看放弃该角的效果</div>
+                    <p class="magic-tool-desc">维系叙事张力，约束能量型魔法体系的强度边界。三个顶点只能保留两个，必须放弃一个。</p>
+                    <div class="triangle-visual">
+                        <svg viewBox="0 0 300 260" width="300" height="260">
+                            <polygon points="150,15 20,240 280,240" fill="none" stroke="var(--border)" stroke-width="2"/>
+                            <text x="150" y="40" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="bold">表现力</text>
+                            <text x="30" y="250" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="bold">便捷性</text>
+                            <text x="270" y="250" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="bold">性价比</text>
+                            <circle cx="150" cy="25" r="8" fill="var(--accent)" class="triangle-vertex" onclick="toggleTriangleOption('表现力')"/>
+                            <circle cx="20" cy="240" r="8" fill="var(--gold)" class="triangle-vertex" onclick="toggleTriangleOption('便捷性')"/>
+                            <circle cx="280" cy="240" r="8" fill="var(--text2)" class="triangle-vertex" onclick="toggleTriangleOption('性价比')"/>
+                        </svg>
                     </div>
+                    <div class="triangle-options">
+                        <button class="triangle-btn" onclick="toggleTriangleOption('表现力')">放弃表现力</button>
+                        <button class="triangle-btn" onclick="toggleTriangleOption('便捷性')">放弃便捷性</button>
+                        <button class="triangle-btn" onclick="toggleTriangleOption('性价比')">放弃性价比</button>
+                    </div>
+                    <div class="triangle-result" id="triangle-result">点击三角形顶点或按钮，查看放弃该角的效果</div>
                 </div>
 
-                <div class="magic-tool-section" id="magic-pyramid-section">
+                <!-- ===== 工具三：金字塔 ===== -->
+                <div class="magic-tool-section">
                     <h3>🏛️ 金字塔（世界观力量层次）</h3>
-                    <div class="pyramid-container">
-                        <div class="pyramid-level" onclick="togglePyramidLevel(this)">
-                            <h4>第一层：叙事层</h4>
-                            <p>负责解释世界存在的第一因。不可作为角色出现，不可机械降神。</p>
+                    <p class="magic-tool-desc">构建具有内部张力与戏剧冲突的叙事力量体系。三层自上而下，从抽象到具体。</p>
+                    <div class="pyramid-visual">
+                        <div class="pyramid-level-box top" onclick="togglePyramidLevel(this, 'narrative')">
+                            <h4>叙事层</h4>
+                            <p>世界存在的第一因</p>
                         </div>
-                        <div class="pyramid-level" onclick="togglePyramidLevel(this)">
-                            <h4>第二层：规则层</h4>
-                            <p>维护宏观超自然体系运转，分管特定领域，可被人格化。</p>
+                        <div class="pyramid-level-box mid" onclick="togglePyramidLevel(this, 'rules')">
+                            <h4>规则层</h4>
+                            <p>宏观超自然体系的运转者</p>
                         </div>
-                        <div class="pyramid-level" onclick="togglePyramidLevel(this)">
-                            <h4>第三层：行动层</h4>
-                            <p>构成世界风土人情的基础单元，限定于特定区域。</p>
+                        <div class="pyramid-level-box bottom" onclick="togglePyramidLevel(this, 'action')">
+                            <h4>行动层</h4>
+                            <p>风土人情与民俗传说的基础</p>
                         </div>
                     </div>
+                    <div class="pyramid-detail" id="pyramid-detail">点击金字塔各层查看详细说明</div>
                 </div>
+
             </div>
         `;
         toolsContainer.appendChild(magicContent);
     }
 
-    // 切换魔法工具标签
     window.switchMagicToolsTab = function(btn) {
         document.querySelectorAll('.tools-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -89,7 +100,6 @@
         document.getElementById('tools-magic').classList.add('active');
     };
 
-    // Venn图：添加词汇
     window.addVennWord = function(type) {
         const input = document.getElementById('venn-' + type + '-input');
         const list = document.getElementById('venn-' + type + '-list');
@@ -97,47 +107,73 @@
         if(!word) return;
         const li = document.createElement('li');
         li.textContent = word;
-        li.onclick = function() {
-            this.classList.toggle('selected');
-        };
+        li.onclick = function() { this.classList.toggle('selected'); };
         list.appendChild(li);
         input.value = '';
     };
 
-    // Venn图：随机组合推导
     window.generateVennInspiration = function() {
-        const naturalWords = [...document.querySelectorAll('#venn-natural-list li')].map(li => li.textContent);
-        const socialWords = [...document.querySelectorAll('#venn-social-list li')].map(li => li.textContent);
-        if(naturalWords.length === 0 || socialWords.length === 0) {
-            alert('请先在两侧添加词汇');
-            return;
+        const naturalSelected = [...document.querySelectorAll('#venn-natural-list li.selected')].map(li => li.textContent);
+        const socialSelected = [...document.querySelectorAll('#venn-social-list li.selected')].map(li => li.textContent);
+        const naturalAll = [...document.querySelectorAll('#venn-natural-list li')].map(li => li.textContent);
+        const socialAll = [...document.querySelectorAll('#venn-social-list li')].map(li => li.textContent);
+        
+        let n, s;
+        if(naturalSelected.length > 0 && socialSelected.length > 0) {
+            n = naturalSelected[0];
+            s = socialSelected[0];
+        } else {
+            if(naturalAll.length === 0 || socialAll.length === 0) {
+                alert('请先在两侧添加词汇');
+                return;
+            }
+            n = naturalAll[Math.floor(Math.random() * naturalAll.length)];
+            s = socialAll[Math.floor(Math.random() * socialAll.length)];
         }
-        const n = naturalWords[Math.floor(Math.random() * naturalWords.length)];
-        const s = socialWords[Math.floor(Math.random() * socialWords.length)];
-        document.getElementById('venn-result').textContent = `${n} + ${s} = 灵感：...（待完善）`;
+        
+        document.getElementById('venn-result').innerHTML = 
+            `<strong>${n}</strong> + <strong>${s}</strong> = 魔法灵感：<br>` +
+            `基于「${n}」的自然属性，呼应「${s}」的文化含义，产生...（待对方提供推导示例后完善）`;
     };
 
-    // 不可能三角：点击顶点
     window.toggleTriangleOption = function(option) {
         const btns = document.querySelectorAll('.triangle-btn');
         btns.forEach(btn => {
-            if(btn.textContent === option) btn.classList.add('active');
+            const text = btn.textContent.replace('放弃','');
+            if(text === option) btn.classList.add('active');
             else btn.classList.remove('active');
         });
         const resultMap = {
-            '表现力': '放弃表现力：保留便捷性与性价比，施法效果量级较低，适用于常规战斗或日常用途。',
-            '便捷性': '放弃便捷性：保留表现力与性价比，施法需要较长准备时间、特定环境或复杂仪式。',
-            '性价比': '放弃性价比：保留表现力与便捷性，施法代价极高，但账单最终必须偿付。'
+            '表现力': '🔥 放弃表现力：保留便捷性与性价比。<br>施法效果量级较低，适用于常规战斗或日常用途，不可达到改变战场格局的程度。',
+            '便捷性': '⏳ 放弃便捷性：保留表现力与性价比。<br>施法需要较长的准备时间、特定的环境条件或复杂的仪式流程。',
+            '性价比': '💀 放弃性价比：保留表现力与便捷性。<br>施法代价极高昂，通常超出施法者自身能够承受的范围。账单可以后置，但必须最终偿付且不可逃避。'
         };
-        document.getElementById('triangle-result').textContent = resultMap[option] || '';
+        document.getElementById('triangle-result').innerHTML = resultMap[option] || '';
     };
 
-    // 金字塔：展开/收起
-    window.togglePyramidLevel = function(el) {
-        el.classList.toggle('active');
+    window.togglePyramidLevel = function(el, level) {
+        document.querySelectorAll('.pyramid-level-box').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        const detailMap = {
+            'narrative': `
+                <strong>📜 叙事层</strong><br>
+                <strong>职能：</strong>负责解释世界存在的第一因。涵盖宇宙起源、物理法则的确立、生命与死亡的初始定义。<br>
+                <strong>权限：</strong>不受任何规则约束，但不可在创世后续干预世界运行。<br>
+                <strong>叙事限制：</strong>不可作为角色出现，不可机械降神。其存在仅作为世界观逻辑的最终锚点。`,
+            'rules': `
+                <strong>⚖️ 规则层</strong><br>
+                <strong>职能：</strong>维护宏观超自然体系的日常运转，分管特定领域，领域之间不得重叠，决策需在体系内互相制衡。<br>
+                <strong>权限：</strong>力量极大，但并非无限。干预世界时受限于自身所管辖领域，不可越界。<br>
+                <strong>行为特征：</strong>具备可被人类理解的人格、情感与欲望。可犯错、可受伤、可被欺骗。其干预必须留有可被凡人利用的漏洞。`,
+            'action': `
+                <strong>🌍 行动层</strong><br>
+                <strong>职能：</strong>构成世界风土人情与民俗传说的基础单元。管辖范围限定于特定地理区域或特定社群。<br>
+                <strong>权限：</strong>力量远弱于规则层，权能不超出所在物理区域的边界。<br>
+                <strong>行为特征：</strong>个性鲜明，会与特定区域内的人类建立双向关系。其行为模式不需要遵守叙事层的体系化规则。`
+        };
+        document.getElementById('pyramid-detail').innerHTML = detailMap[level] || '';
     };
 
-    // 页面加载后初始化
     if(document.readyState === 'complete') {
         initMagicTools();
     } else {
