@@ -338,102 +338,43 @@
         });
     }
         // ===== 导出图片功能 =====
-                      window.exportMagicToolImage = function() {
-        const sections = document.querySelectorAll('.magic-tool-section');
-        if(sections.length === 0) { alert('未找到工具内容'); return; }
+       window.exportMagicToolImage = function() {
+        const container = document.querySelector('.magic-tools-container');
+        if(!container) { alert('未找到工具内容'); return; }
         
-        // 计算总高度
-        let totalHeight = 0;
-        const widths = [];
-        sections.forEach(s => {
-            totalHeight += s.offsetHeight + 40;
-            widths.push(s.offsetWidth);
+        html2canvas(container, {
+            backgroundColor: null,
+            scale: 2,
+            useCORS: true
+        }).then(canvas => {
+            // 添加水印
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.save();
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = 'bold 28px Georgia, serif';
+            ctx.textAlign = 'center';
+            ctx.translate(width/2, height/2);
+            ctx.rotate(-0.25);
+            ctx.fillText('小红书5508697487@地月双尸', 0, -20);
+            ctx.fillText('小红书26183246310@连城', 0, 20);
+            ctx.restore();
+            
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.font = '20px Georgia, serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('小红书5508697487@地月双尸', 20, height - 30);
+            ctx.textAlign = 'right';
+            ctx.fillText('小红书26183246310@连城', width - 20, height - 30);
+            
+            const link = document.createElement('a');
+            link.download = '魔法工具合集_' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(err => {
+            alert('导出失败：' + err.message);
         });
-        totalHeight += 60; // 底部水印区域
-        
-        const maxWidth = Math.max(...widths, 600);
-        
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = maxWidth * 2;
-        canvas.height = totalHeight * 2;
-        ctx.scale(2, 2);
-        
-        const styles = getComputedStyle(document.documentElement);
-        const bgColor = styles.getPropertyValue('--bg2').trim() || '#16213e';
-        const textColor = styles.getPropertyValue('--text').trim() || '#e0e0e0';
-        const accentColor = styles.getPropertyValue('--accent').trim() || '#4a90e2';
-        
-        // 绘制背景
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, maxWidth, totalHeight);
-        
-        // 逐个绘制工具区域
-        let yOffset = 20;
-        sections.forEach(section => {
-            const h = section.offsetHeight;
-            
-            // 绘制区域边框
-            ctx.strokeStyle = accentColor;
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(10, yOffset - 5, maxWidth - 20, h + 10);
-            
-            // 绘制标题
-            const title = section.querySelector('h3');
-            if(title) {
-                ctx.fillStyle = accentColor;
-                ctx.font = 'bold 18px Georgia, serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(title.textContent, maxWidth/2, yOffset + 25);
-            }
-            
-            // 绘制描述文字
-            const desc = section.querySelector('.magic-tool-desc');
-            if(desc) {
-                ctx.fillStyle = textColor;
-                ctx.font = '12px Georgia, serif';
-                ctx.textAlign = 'center';
-                // 处理文字换行
-                const words = desc.textContent.split('');
-                let line = '';
-                let lineY = yOffset + 45;
-                for(let i = 0; i < words.length; i++) {
-                    line += words[i];
-                    if(ctx.measureText(line).width > maxWidth - 80 && line.length > 10) {
-                        ctx.fillText(line, maxWidth/2, lineY);
-                        line = '';
-                        lineY += 18;
-                    }
-                }
-                if(line) ctx.fillText(line, maxWidth/2, lineY);
-            }
-            
-            yOffset += h + 40;
-        });
-        
-        // 绘制水印
-        ctx.save();
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.font = '14px Georgia, serif';
-        ctx.textAlign = 'center';
-        ctx.translate(maxWidth/2, totalHeight/2);
-        ctx.rotate(-0.25);
-        ctx.fillText('小红书5508697487@地月双尸', 0, -15);
-        ctx.fillText('小红书26183246310@连城', 0, 10);
-        ctx.restore();
-        
-        // 底部清晰水印
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.font = '11px Georgia, serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('小红书5508697487@地月双尸', 10, totalHeight - 15);
-        ctx.textAlign = 'right';
-        ctx.fillText('小红书26183246310@连城', maxWidth - 10, totalHeight - 15);
-        
-        // 导出
-        const link = document.createElement('a');
-        link.download = '魔法工具合集_' + Date.now() + '.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
     };
 })();
