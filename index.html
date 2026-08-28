@@ -1255,9 +1255,13 @@ function renderNameResults() {
     const container = document.getElementById('nameResults'); container.innerHTML = '';
     const type = document.getElementById('nameTypeSelect').value;
     const q = document.getElementById('meaningSearch').value.toLowerCase().trim();
-    const data = type === 'surname' ? devData.surnames : devData.givenNames;
+    const publicData = type === 'surname' 
+        ? (typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : [])
+        : (typeof GIVEN_NAME_DATA !== 'undefined' ? GIVEN_NAME_DATA : []);
+    const localData = type === 'surname' ? devData.surnames : devData.givenNames;
+    const data = [...publicData, ...localData];
     const filtered = data.filter(n => !q || (n.meaning||'').toLowerCase().includes(q) || (n.cn||'').toLowerCase().includes(q) || (n.en||'').toLowerCase().includes(q));
-    if(filtered.length === 0) { container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无数据，请在开发者模式中导入</p>'; return; }
+    if(filtered.length === 0) { container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无数据</p>'; return; }
     filtered.slice(0, 30).forEach(n => {
         const d = document.createElement('div'); d.className = 'entry-item';
         d.innerHTML = `<div class="entry-name">${n.cn} <span style="font-size:.8em;color:var(--text2)">(${n.en})</span></div><div class="entry-desc">寓意：${n.meaning || '未标注'}</div>`;
@@ -1266,12 +1270,15 @@ function renderNameResults() {
 }
 function generateRandomName() {
     const type = document.getElementById('nameTypeSelect').value;
-    const data = type === 'surname' ? devData.surnames : devData.givenNames;
-    if(data.length === 0) { showToast('请先在开发者模式导入数据'); return; }
+    const publicData = type === 'surname' 
+        ? (typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : [])
+        : (typeof GIVEN_NAME_DATA !== 'undefined' ? GIVEN_NAME_DATA : []);
+    const localData = type === 'surname' ? devData.surnames : devData.givenNames;
+    const data = [...publicData, ...localData];
+    if(data.length === 0) { showToast('暂无数据'); return; }
     const pick = data[Math.floor(Math.random() * data.length)];
     showToast(`🎲 ${pick.cn} (${pick.en})`);
 }
-
 // ========== 工具页 - 知识库（公共数据 + 本地数据） ==========
 function getAllKnowledge() {
     const publicData = (typeof KNOWLEDGE_DATA !== 'undefined') ? KNOWLEDGE_DATA : [];
