@@ -49,16 +49,8 @@
                     <h3>📐 不可能三角（唯能论魔法）</h3>
                     <p class="magic-tool-desc">维系叙事张力，约束能量型魔法体系的强度边界。三个顶点只能保留两个，必须放弃一个。</p>
                     <div class="triangle-visual">
-                        <svg viewBox="0 0 300 260" width="300" height="260">
-                            <polygon points="150,15 20,240 280,240" fill="none" stroke="var(--border)" stroke-width="2"/>
-                            <text x="150" y="40" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="bold">表现力</text>
-                            <text x="30" y="250" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="bold">便捷性</text>
-                            <text x="270" y="250" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="bold">性价比</text>
-                            <circle cx="150" cy="25" r="8" fill="var(--accent)" class="triangle-vertex" onclick="toggleTriangleOption('表现力')"/>
-                            <circle cx="20" cy="240" r="8" fill="var(--gold)" class="triangle-vertex" onclick="toggleTriangleOption('便捷性')"/>
-                            <circle cx="280" cy="240" r="8" fill="var(--text2)" class="triangle-vertex" onclick="toggleTriangleOption('性价比')"/>
-                        </svg>
-                    </div>
+    <div class="triangle-svg" id="triangle-svg"></div>
+</div>
                     <div class="triangle-options">
                         <button class="triangle-btn" onclick="toggleTriangleOption('表现力')">放弃表现力</button>
                         <button class="triangle-btn" onclick="toggleTriangleOption('便捷性')">放弃便捷性</button>
@@ -257,13 +249,13 @@
         document.getElementById('pyramid-detail').innerHTML = detailMap[level] || '';
     };
 
-       if(document.readyState === 'complete') {
+          if(document.readyState === 'complete') {
         initMagicTools();
-        setTimeout(drawTriangle, 100);
+        setTimeout(drawTriangle, 500);
     } else {
         window.addEventListener('load', () => {
             initMagicTools();
-            setTimeout(drawTriangle, 100);
+            setTimeout(drawTriangle, 500);
         });
     }
 })();
