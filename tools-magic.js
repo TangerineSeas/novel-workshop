@@ -147,9 +147,17 @@
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
-    window.drawTriangle = function() {
-        const svg = document.querySelector('#triangle-svg svg');
-        if(!svg) return;
+        window.drawTriangle = function() {
+        const container = document.getElementById('triangle-svg');
+        if(!container) return;
+        let svg = container.querySelector('svg');
+        if(!svg) {
+            svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 300 260');
+            svg.setAttribute('width', '300');
+            svg.setAttribute('height', '260');
+            container.appendChild(svg);
+        }
         const v1 = triangleVertices['表现力'];
         const v2 = triangleVertices['便捷性'];
         const v3 = triangleVertices['性价比'];
@@ -268,7 +276,7 @@
         });
     }
         // ===== 导出图片功能 =====
-    window.exportMagicToolImage = function(sectionId) {
+               window.exportMagicToolImage = function(sectionId) {
         const section = document.getElementById(sectionId);
         if(!section) return;
         
