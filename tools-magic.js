@@ -138,7 +138,7 @@
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
-    function drawTriangle() {
+    window.drawTriangle = function() {
         const svg = document.querySelector('#triangle-svg svg');
         if(!svg) return;
         const v1 = triangleVertices['表现力'];
@@ -249,13 +249,13 @@
         document.getElementById('pyramid-detail').innerHTML = detailMap[level] || '';
     };
 
-          if(document.readyState === 'complete') {
+             if(document.readyState === 'complete') {
         initMagicTools();
-        setTimeout(function() { drawTriangle(); }, 1000);
+        setTimeout(function() { window.drawTriangle(); }, 800);
     } else {
         window.addEventListener('load', () => {
             initMagicTools();
-            setTimeout(drawTriangle, 500);
+            setTimeout(function() { window.drawTriangle(); }, 800);
         });
     }
 })();
