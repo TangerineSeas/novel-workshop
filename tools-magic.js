@@ -329,20 +329,7 @@
         const textColor = styles.getPropertyValue('--text').trim() || '#e0e0e0';
         const accentColor = styles.getPropertyValue('--accent').trim() || '#4a90e2';
         
-        // 绘制背景
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, width, height);
-        
-        // 绘制标题
-        const title = section.querySelector('h3');
-        if(title) {
-            ctx.fillStyle = accentColor;
-            ctx.font = 'bold 18px Georgia, serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(title.textContent, width/2, 35);
-        }
-        
-                // 绘制背景区域
+                // 绘制背景
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, width, height);
         
