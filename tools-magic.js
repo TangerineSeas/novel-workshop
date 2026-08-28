@@ -80,6 +80,15 @@
                     <div class="pyramid-detail" id="pyramid-detail">点击金字塔各层查看详细说明</div>
                 </div>
 
+                           <!-- 水印与导出 -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding:10px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px">
+                    <div style="font-size:.7em;color:var(--text2)">
+                        <span>水印：小红书5508697487@地月双尸</span>
+                        <span style="margin:0 10px">|</span>
+                        <span>小红书26183246310@连城</span>
+                    </div>
+                    <button class="btn btn-sm btn-primary" onclick="exportMagicToolImage('magic-tools-container')">📷 一键导出图片</button>
+                </div>
             </div>
         `;
         toolsContainer.appendChild(magicContent);
@@ -258,4 +267,53 @@
             setTimeout(function() { window.drawTriangle(); }, 800);
         });
     }
+        // ===== 导出图片功能 =====
+    window.exportMagicToolImage = function(sectionId) {
+        const section = document.getElementById(sectionId);
+        if(!section) return;
+        
+        // 创建Canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置画布尺寸
+        const width = section.offsetWidth || 600;
+        const height = section.offsetHeight || 400;
+        canvas.width = width * 2;
+        canvas.height = height * 2;
+        ctx.scale(2, 2);
+        
+        // 获取计算后的样式
+        const styles = getComputedStyle(document.documentElement);
+        const bgColor = styles.getPropertyValue('--bg2').trim() || '#16213e';
+        const textColor = styles.getPropertyValue('--text').trim() || '#e0e0e0';
+        const accentColor = styles.getPropertyValue('--accent').trim() || '#4a90e2';
+        
+        // 绘制背景
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+        
+        // 绘制标题
+        const title = section.querySelector('h3');
+        if(title) {
+            ctx.fillStyle = accentColor;
+            ctx.font = 'bold 18px Georgia, serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(title.textContent, width/2, 35);
+        }
+        
+        // 绘制水印
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '12px Georgia, serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('小红书5508697487@地月双尸', 10, height - 25);
+        ctx.textAlign = 'right';
+        ctx.fillText('小红书26183246310@连城', width - 10, height - 25);
+        
+        // 导出图片
+        const link = document.createElement('a');
+        link.download = '魔法工具_' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    };
 })();
