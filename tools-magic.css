@@ -1,4 +1,4 @@
-/* ========== 魔法工具样式 ========== */
+/* ========== 魔法工具样式 v2 ========== */
 .magic-tools-container {
     max-width: 900px;
     margin: 0 auto;
@@ -7,86 +7,159 @@
 .magic-tool-section {
     background: var(--bg2);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 16px;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
 }
 
 .magic-tool-section h3 {
     color: var(--accent);
-    margin-bottom: 12px;
-    font-size: 1em;
+    margin-bottom: 16px;
+    font-size: 1.1em;
+    text-align: center;
 }
 
-/* Venn图工具 */
-.venn-container {
+.magic-tool-desc {
+    font-size: .8em;
+    color: var(--text2);
+    text-align: center;
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+
+/* ===== Venn图工具 ===== */
+.venn-wrapper {
     display: flex;
-    gap: 20px;
+    gap: 0;
+    justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
 }
-.venn-column {
-    flex: 1;
-    min-width: 180px;
+.venn-circle {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 3px solid var(--accent);
+    background: rgba(74,144,226,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    position: relative;
+    overflow-y: auto;
+}
+.venn-circle.left {
+    margin-right: -40px;
+}
+.venn-circle.right {
+    margin-left: -40px;
+    border-color: var(--gold);
+    background: rgba(212,168,67,0.08);
+}
+.venn-circle h4 {
+    font-size: .9em;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+.venn-circle.left h4 { color: var(--accent); }
+.venn-circle.right h4 { color: var(--gold); }
+.venn-circle ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+.venn-circle li {
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: .78em;
+    text-align: center;
+    transition: .2s;
+    margin-bottom: 2px;
+}
+.venn-circle li:hover {
+    background: rgba(255,255,255,0.1);
+}
+.venn-circle li.selected {
+    background: var(--accent);
+    color: #fff;
+}
+.venn-circle.right li.selected {
+    background: var(--gold);
+    color: #333;
+}
+.venn-overlap {
+    position: relative;
+    z-index: 2;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 2px dashed var(--text2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    color: var(--text2);
 }
 .venn-input-row {
     display: flex;
     gap: 6px;
-    margin-bottom: 8px;
+    margin-top: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
-.venn-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 250px;
-    overflow-y: auto;
+.venn-input-row input {
+    width: 140px;
+    padding: 6px 10px;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 8px;
-}
-.venn-list li {
-    padding: 6px 10px;
-    cursor: pointer;
     border-radius: 4px;
-    transition: background .2s;
-    font-size: .85em;
-}
-.venn-list li:hover {
-    background: var(--bg3);
-}
-.venn-list li.selected {
-    background: var(--accent);
-    color: #fff;
+    color: var(--text);
+    font-size: .8em;
 }
 .venn-result {
     margin-top: 16px;
-    padding: 12px;
+    padding: 14px;
     background: var(--bg);
     border: 1px dashed var(--accent);
     border-radius: 8px;
     font-size: .9em;
-    min-height: 60px;
+    text-align: center;
+    min-height: 50px;
 }
 
-/* 不可能三角工具 */
-.triangle-container {
-    text-align: center;
+/* ===== 不可能三角工具 ===== */
+.triangle-visual {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
 }
-.triangle-svg {
-    max-width: 300px;
-    margin: 0 auto;
+.triangle-visual svg {
+    max-width: 320px;
+}
+.triangle-vertex {
+    cursor: pointer;
+    transition: .2s;
+}
+.triangle-vertex:hover {
+    filter: brightness(1.3);
+}
+.triangle-vertex.active {
+    filter: drop-shadow(0 0 8px var(--danger));
 }
 .triangle-options {
     display: flex;
     gap: 10px;
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: 12px;
+    margin-top: 10px;
 }
 .triangle-btn {
-    padding: 8px 14px;
+    padding: 8px 16px;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 20px;
     background: var(--bg);
     color: var(--text);
     cursor: pointer;
@@ -94,36 +167,72 @@
     font-size: .85em;
 }
 .triangle-btn.active {
-    background: var(--accent);
+    background: var(--danger);
     color: #fff;
-    border-color: var(--accent);
+    border-color: var(--danger);
+}
+.triangle-result {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    font-size: .85em;
+    color: var(--text2);
+    text-align: center;
 }
 
-/* 金字塔工具 */
-.pyramid-container {
-    max-width: 500px;
-    margin: 0 auto;
+/* ===== 金字塔工具 ===== */
+.pyramid-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 15px;
 }
-.pyramid-level {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    margin-bottom: 10px;
+.pyramid-level-box {
     cursor: pointer;
     transition: .2s;
+    border-radius: 8px;
+    padding: 12px 20px;
+    text-align: center;
+    border: 2px solid var(--border);
     background: var(--bg);
 }
-.pyramid-level.active {
+.pyramid-level-box:hover {
+    border-color: var(--accent);
+}
+.pyramid-level-box.active {
     border-color: var(--accent);
     background: var(--bg3);
 }
-.pyramid-level h4 {
-    color: var(--accent);
-    margin-bottom: 6px;
-    font-size: .95em;
+.pyramid-level-box.top {
+    width: 35%;
+    border-color: var(--gold);
 }
-.pyramid-level p {
+.pyramid-level-box.mid {
+    width: 60%;
+    border-color: var(--accent);
+}
+.pyramid-level-box.bottom {
+    width: 85%;
+    border-color: var(--text2);
+}
+.pyramid-level-box h4 {
+    font-size: .85em;
+    color: var(--text);
+    margin-bottom: 3px;
+}
+.pyramid-level-box p {
+    font-size: .7em;
+    color: var(--text2);
+    margin: 0;
+}
+.pyramid-detail {
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 8px;
     font-size: .8em;
     color: var(--text2);
-    margin-bottom: 4px;
+    line-height: 1.7;
+    margin-top: 10px;
 }
