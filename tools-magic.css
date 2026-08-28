@@ -1,0 +1,129 @@
+/* ========== 魔法工具样式 ========== */
+.magic-tools-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.magic-tool-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.magic-tool-section h3 {
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-size: 1em;
+}
+
+/* Venn图工具 */
+.venn-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.venn-column {
+    flex: 1;
+    min-width: 180px;
+}
+.venn-input-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.venn-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px;
+}
+.venn-list li {
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background .2s;
+    font-size: .85em;
+}
+.venn-list li:hover {
+    background: var(--bg3);
+}
+.venn-list li.selected {
+    background: var(--accent);
+    color: #fff;
+}
+.venn-result {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--bg);
+    border: 1px dashed var(--accent);
+    border-radius: 8px;
+    font-size: .9em;
+    min-height: 60px;
+}
+
+/* 不可能三角工具 */
+.triangle-container {
+    text-align: center;
+}
+.triangle-svg {
+    max-width: 300px;
+    margin: 0 auto;
+}
+.triangle-options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+.triangle-btn {
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    transition: .2s;
+    font-size: .85em;
+}
+.triangle-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+/* 金字塔工具 */
+.pyramid-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+.pyramid-level {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: .2s;
+    background: var(--bg);
+}
+.pyramid-level.active {
+    border-color: var(--accent);
+    background: var(--bg3);
+}
+.pyramid-level h4 {
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-size: .95em;
+}
+.pyramid-level p {
+    font-size: .8em;
+    color: var(--text2);
+    margin-bottom: 4px;
+}
