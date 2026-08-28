@@ -6,7 +6,9 @@
 <title>西幻创作工坊 v3.1</title>
 <script src="knowledge.js"></script>
 <script src="names.js"></script>
-<style>
+.cal-day.has-note{border-color:var(--accent)}
+.note-dot{font-size:.7em;margin-top:2px}
+    <style>
 :root{--bg:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;--card:#1e2a45;--text:#e0e0e0;--text2:#b0b0b0;--accent:#4a90e2;--accent2:#5ba3f5;--border:#2a2a4a;--gold:#d4a843;--danger:#ff6b6b;--success:#4caf50;--link:#7ec8e3;--main:#e74c3c;--important:#f39c12;--minor:#95a5a6;--dev:#ff6b6b;}
 [data-theme="light"]{--bg:#f5f5f5;--bg2:#fff;--bg3:#e8e8e8;--card:#f9f9f9;--text:#333;--text2:#666;--accent:#2c5f8a;--accent2:#3a7ab5;--border:#d0d0d0;--gold:#b8912f;--link:#1a6b8a;--dev:#d63031;}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -311,7 +313,13 @@ button{cursor:pointer}
 <button class="btn btn-primary btn-sm" onclick="saveCalendar()">💾 保存历法</button>
 </div>
 <div class="card"><h3>📅 日历预览</h3>
-<div class="cal-month-nav"><button onclick="calPrevMonth()">← 上月</button><span id="calMonthTitle" style="font-weight:bold;color:var(--accent);min-width:130px;text-align:center"></span><button onclick="calNextMonth()">下月 →</button></div>
+<div class="cal-month-nav">
+    <button onclick="calPrevYear()">«</button>
+    <button onclick="calPrevMonth()">← 上月</button>
+    <span id="calMonthTitle" style="font-weight:bold;color:var(--accent);min-width:160px;text-align:center"></span>
+    <button onclick="calNextMonth()">下月 →</button>
+    <button onclick="calNextYear()">»</button>
+</div>
 <div class="calendar-grid" id="calendarGrid"></div>
 </div>
 </div>
@@ -1283,13 +1291,16 @@ function saveCollectionEntry(type, isEdit) {
     showToast('已保存');
 }
 let calViewMonth = 0;
+let calViewYear = new Date().getFullYear();
 function saveCalendar() {
     const w = currentWork(); if(!w) return;
+        const existingNotes = w.calendarData.notes || {};
     w.calendarData = {
         eraName: calEraName.value || '',
         weekDays: parseInt(calWeekDays.value) || 7,
         months: calMonths.value.split('\n').map(l => { const p = l.split(':'); return { name: p[0]?.trim() || '月', days: parseInt(p[1]) || 30 }; }).filter(m => m.name),
-        festivals: calFestivals.value.split('\n').map(l => { const p = l.split(':'); return { name: p[0]?.trim() || '', month: p[1]?.trim() || '', day: parseInt(p[2]) || 1 }; }).filter(f => f.name && f.month)
+        festivals: calFestivals.value.split('\n').map(l => { const p = l.split(':'); return { name: p[0]?.trim() || '', month: p[1]?.trim() || '', day: parseInt(p[2]) || 1 }; }).filter(f => f.name && f.month),
+        notes: existingNotes
     };
     saveAll(); showToast('历法已保存'); renderCalendar();
 }
@@ -1303,19 +1314,40 @@ function renderCalendar() {
     const month = data.months[calViewMonth];
     const grid = document.getElementById('calendarGrid');
     grid.style.gridTemplateColumns = `repeat(${data.weekDays}, 1fr)`;
-    document.getElementById('calMonthTitle').textContent = `${data.eraName || '帝国历'} · ${month.name}（${month.days}天）`;
+    document.getElementById('calMonthTitle').textContent = `${data.eraName || '帝国历'} ${calViewYear}年 · ${month.name}（${month.days}天）`;
     grid.innerHTML = '';
     for(let i=0; i<data.weekDays; i++) { const h = document.createElement('div'); h.className='cal-header'; h.textContent=`第${i+1}日`; grid.appendChild(h); }
+        const notes = w.calendarData.notes || {};
     for(let day=1; day<=month.days; day++) {
         const d = document.createElement('div');
         const fest = data.festivals.find(f => f.month === month.name && f.day === day);
-        d.className = 'cal-day' + (fest ? ' festival' : '');
-        d.innerHTML = fest ? `${day}<span class="festival-name">${fest.name}</span>` : day;
+        const dateKey = `${calViewYear}-${String(calViewMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const note = notes[dateKey] || '';
+        d.className = 'cal-day' + (fest ? ' festival' : '') + (note ? ' has-note' : '');
+        d.style.cursor = 'pointer';
+        d.innerHTML = `${day}${fest ? `<span class="festival-name">${fest.name}</span>` : ''}${note ? `<span class="note-dot">📝</span>` : ''}`;
+        d.onclick = () => openCalendarNote(dateKey, note);
         grid.appendChild(d);
     }
 }
 function calPrevMonth() { calViewMonth--; renderCalendar(); }
 function calNextMonth() { calViewMonth++; renderCalendar(); }
+    function calPrevYear() { calViewYear--; renderCalendar(); }
+function calNextYear() { calViewYear++; renderCalendar(); }
+
+function openCalendarNote(dateKey, existingNote) {
+    const note = prompt('请输入备注：', existingNote || '');
+    if(note === null) return;
+    const w = currentWork(); if(!w) return;
+    w.calendarData.notes = w.calendarData.notes || {};
+    if(note.trim() === '') {
+        delete w.calendarData.notes[dateKey];
+    } else {
+        w.calendarData.notes[dateKey] = note.trim();
+    }
+    saveAll();
+    renderCalendar();
+}
 function renderNameResults() {
     const container = document.getElementById('nameResults');
     container.innerHTML = '';
