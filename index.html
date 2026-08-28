@@ -334,7 +334,7 @@ button{cursor:pointer}
 <h2 style="color:var(--accent);margin-bottom:14px;">🔧 创作工具</h2>
 <div class="card"><h3>👑 姓氏生成器</h3>
 <div class="btn-row" style="margin-bottom:10px">
-<select class="form-select" id="nameTypeSelect" style="width:auto" onchange="renderNameResults()"><option value="surname">姓氏</option><option value="given">名字</option></select>
+<select class="form-select" id="nameTypeSelect" style="width:auto" onchange="renderNameResults()"><option value="surname">姓氏</option><option value="male">男名</option><option value="female">女名</option></select>
 <input class="form-input" id="meaningSearch" placeholder="🔍 按寓意搜索..." style="width:auto;min-width:150px" oninput="renderNameResults()">
 <button class="btn btn-primary btn-sm" onclick="generateRandomName()">🎲 随机生成</button>
 </div>
@@ -1260,10 +1260,15 @@ function renderNameResults() {
     
     let data = [];
     if(type === 'surname') {
-        data = (typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []).concat(devData.surnames || []);
+        data = [...(typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []), ...(devData.surnames || [])];
+    } else if(type === 'male') {
+        data = [...(typeof GIVEN_NAME_DATA_MALE !== 'undefined' ? GIVEN_NAME_DATA_MALE : []), ...(devData.givenNamesMale || [])];
     } else {
-        data = (typeof GIVEN_NAME_DATA !== 'undefined' ? GIVEN_NAME_DATA : []).concat(devData.givenNames || []);
+        data = [...(typeof GIVEN_NAME_DATA_FEMALE !== 'undefined' ? GIVEN_NAME_DATA_FEMALE : []), ...(devData.givenNamesFemale || [])];
     }
+    
+    // 按英文名字母排序
+    data.sort((a, b) => (a.en || '').localeCompare(b.en || ''));
     
     const filtered = data.filter(n => !q || (n.meaning||'').toLowerCase().includes(q) || (n.cn||'').toLowerCase().includes(q) || (n.en||'').toLowerCase().includes(q));
     
@@ -1284,14 +1289,18 @@ function generateRandomName() {
     
     let data = [];
     if(type === 'surname') {
-        data = (typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []).concat(devData.surnames || []);
+        data = [...(typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []), ...(devData.surnames || [])];
+    } else if(type === 'male') {
+        data = [...(typeof GIVEN_NAME_DATA_MALE !== 'undefined' ? GIVEN_NAME_DATA_MALE : []), ...(devData.givenNamesMale || [])];
     } else {
-        data = (typeof GIVEN_NAME_DATA !== 'undefined' ? GIVEN_NAME_DATA : []).concat(devData.givenNames || []);
+        data = [...(typeof GIVEN_NAME_DATA_FEMALE !== 'undefined' ? GIVEN_NAME_DATA_FEMALE : []), ...(devData.givenNamesFemale || [])];
     }
     
-    if(data.length === 0) { alert('暂无数据，请先在开发者模式导入'); return; }
-    
+    if(data.length === 0) { alert('暂无数据'); return; }
     const pick = data[Math.floor(Math.random() * data.length)];
+    const typeLabel = type === 'surname' ? '姓氏' : type === 'male' ? '男名' : '女名';
+    alert(`🎲 随机${typeLabel}：\n\n${pick.cn} (${pick.en})\n\n寓意：${pick.meaning || '未标注'}`);
+}
     
     // 大提示框
     alert(`🎲 随机${type === 'surname' ? '姓氏' : '名字'}：\n\n${pick.cn} (${pick.en})\n\n寓意：${pick.meaning || '未标注'}`);
