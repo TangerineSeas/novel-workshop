@@ -1680,13 +1680,14 @@ async function init() {
     } catch(e) {
         console.error('Supabase load failed:', e);
     }
-    if(savedDev.questionnaire) devData.questionnaire = savedDev.questionnaire;
-    if(savedDev.surnames) devData.surnames = savedDev.surnames;
-    if(savedDev.givenNamesMale) devData.givenNamesMale = savedDev.givenNamesMale;
-    if(savedDev.givenNamesFemale) devData.givenNamesFemale = savedDev.givenNamesFemale;
-    if(savedDev.knowledge) devData.knowledge = savedDev.knowledge;
-    if(savedDev.customBackgrounds) devData.customBackgrounds = savedDev.customBackgrounds;
-    if(savedDev.customFonts) devData.customFonts = savedDev.customFonts;
+        // 只有当devData为空时才从localStorage加载
+    if(devData.questionnaire.length === 0 && savedDev.questionnaire) devData.questionnaire = savedDev.questionnaire;
+    if(devData.surnames.length === 0 && savedDev.surnames) devData.surnames = savedDev.surnames;
+    if(devData.givenNamesMale.length === 0 && savedDev.givenNamesMale) devData.givenNamesMale = savedDev.givenNamesMale;
+    if(devData.givenNamesFemale.length === 0 && savedDev.givenNamesFemale) devData.givenNamesFemale = savedDev.givenNamesFemale;
+    if(devData.knowledge.length === 0 && savedDev.knowledge) devData.knowledge = savedDev.knowledge;
+    if(devData.customBackgrounds.length === 0 && savedDev.customBackgrounds) devData.customBackgrounds = savedDev.customBackgrounds;
+    if(devData.customFonts.length === 0 && savedDev.customFonts) devData.customFonts = savedDev.customFonts;
     if(works.length === 0) {
         const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString() };
         works.push(sample); currentWorkId = sample.id;
