@@ -334,7 +334,7 @@ button{cursor:pointer}
 <h2 style="color:var(--accent);margin-bottom:14px;">🔧 创作工具</h2>
 <div class="card"><h3>👑 姓氏生成器</h3>
 <div class="btn-row" style="margin-bottom:10px">
-<select class="form-select" id="nameTypeSelect" style="width:auto"><option value="surname">姓氏</option><option value="given">名字</option></select>
+<select class="form-select" id="nameTypeSelect" style="width:auto" onchange="renderNameResults()"><option value="surname">姓氏</option><option value="given">名字</option></select>
 <input class="form-input" id="meaningSearch" placeholder="🔍 按寓意搜索..." style="width:auto;min-width:150px" oninput="renderNameResults()">
 <button class="btn btn-primary btn-sm" onclick="generateRandomName()">🎲 随机生成</button>
 </div>
@@ -1252,32 +1252,49 @@ function calNextMonth() { calViewMonth++; renderCalendar(); }
 
 // ========== 工具页 - 姓名生成器 ==========
 function renderNameResults() {
-    const container = document.getElementById('nameResults'); container.innerHTML = '';
-    const type = document.getElementById('nameTypeSelect').value;
-    const q = document.getElementById('meaningSearch').value.toLowerCase().trim();
-    const publicData = type === 'surname' 
-        ? (typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : [])
-        : (typeof GIVEN_NAME_DATA !== 'undefined' ? GIVEN_NAME_DATA : []);
-    const localData = type === 'surname' ? devData.surnames : devData.givenNames;
-    const data = [...publicData, ...localData];
+    const container = document.getElementById('nameResults');
+    container.innerHTML = '';
+    const typeSelect = document.getElementById('nameTypeSelect');
+    const type = typeSelect ? typeSelect.value : 'surname';
+    const q = (document.getElementById('meaningSearch').value || '').toLowerCase().trim();
+    
+    let data = [];
+    if(type === 'surname') {
+        data = (typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []).concat(devData.surnames || []);
+    } else {
+        data = (typeof GIVEN_NAME_DATA !== 'undefined' ? GIVEN_NAME_DATA : []).concat(devData.givenNames || []);
+    }
+    
     const filtered = data.filter(n => !q || (n.meaning||'').toLowerCase().includes(q) || (n.cn||'').toLowerCase().includes(q) || (n.en||'').toLowerCase().includes(q));
-    if(filtered.length === 0) { container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无数据</p>'; return; }
-    filtered.slice(0, 30).forEach(n => {
-        const d = document.createElement('div'); d.className = 'entry-item';
-        d.innerHTML = `<div class="entry-name">${n.cn} <span style="font-size:.8em;color:var(--text2)">(${n.en})</span></div><div class="entry-desc">寓意：${n.meaning || '未标注'}</div>`;
-        container.appendChild(d);
+    
+    if(filtered.length === 0) {
+        container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无数据</p>';
+        return;
+    }
+    
+    let html = '';
+    filtered.slice(0, 50).forEach(n => {
+        html += `<div class="entry-item"><div class="entry-name">${n.cn} <span style="font-size:.8em;color:var(--text2)">(${n.en})</span></div><div class="entry-desc">寓意：${n.meaning || '未标注'}</div></div>`;
     });
+    container.innerHTML = html;
 }
 function generateRandomName() {
-    const type = document.getElementById('nameTypeSelect').value;
-    const publicData = type === 'surname' 
-        ? (typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : [])
-        : (typeof GIVEN_NAME_DATA !== 'undefined' ? GIVEN_NAME_DATA : []);
-    const localData = type === 'surname' ? devData.surnames : devData.givenNames;
-    const data = [...publicData, ...localData];
-    if(data.length === 0) { showToast('暂无数据'); return; }
+    const typeSelect = document.getElementById('nameTypeSelect');
+    const type = typeSelect ? typeSelect.value : 'surname';
+    
+    let data = [];
+    if(type === 'surname') {
+        data = (typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []).concat(devData.surnames || []);
+    } else {
+        data = (typeof GIVEN_NAME_DATA !== 'undefined' ? GIVEN_NAME_DATA : []).concat(devData.givenNames || []);
+    }
+    
+    if(data.length === 0) { alert('暂无数据，请先在开发者模式导入'); return; }
+    
     const pick = data[Math.floor(Math.random() * data.length)];
-    showToast(`🎲 ${pick.cn} (${pick.en})`);
+    
+    // 大提示框
+    alert(`🎲 随机${type === 'surname' ? '姓氏' : '名字'}：\n\n${pick.cn} (${pick.en})\n\n寓意：${pick.meaning || '未标注'}`);
 }
 // ========== 工具页 - 知识库（公共数据 + 本地数据） ==========
 function getAllKnowledge() {
