@@ -284,9 +284,9 @@ button{cursor:pointer}
     <option value="races">种族</option>
     <option value="magic">魔法</option>
     <option value="festivals">节日</option>
-    <option value="custom">自定义</option>
+    <option value="custom">自定义...</option>
 </select>
-<input class="form-input" id="customCollTypeName" placeholder="自定义大类名称" style="width:auto;min-width:140px;display:none">
+<input class="form-input" id="collCustomType" placeholder="输入自定义大类名" style="width:auto;min-width:130px;display:none">
 <input class="form-input" id="collName" placeholder="新词条名称" style="width:auto;min-width:140px">
 <button class="btn btn-primary btn-sm" onclick="addCollectionEntry()">+ 添加</button>
 </div>
@@ -467,23 +467,6 @@ button{cursor:pointer}
 </div></div>
 </div>
 
-    <!-- 词条编辑弹窗 -->
-<div class="modal" id="collectionEditorModal">
-<div class="modal-content">
-<div class="modal-header"><h3 style="color:var(--accent)">📝 编辑词条</h3><button class="modal-close" onclick="closeCollectionEditor()">✕</button></div>
-<div class="form-group"><label class="form-label">词条名称</label><input class="form-input" id="collEditName"></div>
-<div class="form-group"><label class="form-label">描述</label><textarea class="form-textarea" id="collEditDesc" style="min-height:150px" placeholder="输入描述...&#10;&#10;引用格式：[[类型:名称]]&#10;例如：[[places:北境]]、[[families:罗森家族]]"></textarea></div>
-<input type="hidden" id="collEditType">
-<input type="hidden" id="collEditOldName">
-<div class="btn-row" style="justify-content:space-between">
-<button class="btn btn-danger" onclick="deleteCollectionEntry()">🗑️ 删除</button>
-<div style="display:flex;gap:8px">
-<button class="btn btn-secondary" onclick="closeCollectionEditor()">取消</button>
-<button class="btn btn-primary" onclick="saveCollectionEditor()">保存</button>
-</div>
-</div>
-</div>
-</div>
 <div class="modal" id="charModal">
 <div class="modal-content">
 <div class="modal-header"><h3 style="color:var(--accent)">📝 人物档案</h3><button class="modal-close" onclick="closeCharEditor()">✕</button></div>
@@ -1188,26 +1171,14 @@ function showWorldviewDoc() {
     document.getElementById('wvDoc').style.display = 'block';
     document.getElementById('wvDoc').scrollIntoView({ behavior:'smooth' });
 }
-function toggleCustomCollType() {
-    const type = document.getElementById('collType').value;
-    document.getElementById('customCollTypeName').style.display = type === 'custom' ? 'inline-block' : 'none';
-}
 function addCollectionEntry() {
     const w = currentWork(); if(!w) return;
-    let type = document.getElementById('collType').value;
-    if(type === 'custom') {
-        const customName = document.getElementById('customCollTypeName').value.trim();
-        if(!customName) { showToast('请输入自定义大类名称'); return; }
-        type = customName;
-        if(!w.collectionEntries[type]) w.collectionEntries[type] = [];
-    }
-    const name = document.getElementById('collName').value.trim();
+    const type = getEffectiveCollType();
+if(!type) return;
+    const name = collName.value.trim();
     if(!name) { showToast('请输入名称'); return; }
-    const desc = prompt('请输入描述（用 [[类型:名称]] 引用其他词条）：');
-    w.collectionEntries[type].push({ name, desc: desc || '' });
-    document.getElementById('collName').value = '';
-    document.getElementById('customCollTypeName').value = '';
-    renderCollection(); saveAll(); showToast('已添加');
+    openCollectionModal(null, type, name);
+    collName.value = '';
 }
 function parseRefs(text) {
     const pattern = /\[\[([^\]]+)\]\]/g;
@@ -1237,61 +1208,81 @@ function jumpToEntry(type, name) {
 }
 function renderCollection() {
     const w = currentWork(); if(!w) return;
-    const typeSelect = document.getElementById('collType');
-    let type = typeSelect.value;
-    if(type === 'custom') {
-        type = document.getElementById('customCollTypeName').value.trim() || '自定义';
-    }
-    const q = document.getElementById('collSearch').value.toLowerCase().trim();
+    const type = getEffectiveCollType();
+if(!type) return;
+    const q = collSearch.value.toLowerCase().trim();
     const list = document.getElementById('collList'); list.innerHTML = '';
     const entries = (w.collectionEntries[type] || []).filter(e => !q || e.name.toLowerCase().includes(q) || (e.desc||'').toLowerCase().includes(q));
     if(entries.length === 0) { list.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无词条</p>'; return; }
     entries.forEach(e => {
         const d = document.createElement('div'); d.className = 'entry-item';
         d.innerHTML = `<div class="entry-name">${e.name}</div><div class="entry-desc">${parseRefs(e.desc || '无描述')}</div>`;
-        d.onclick = () => openCollectionEditor(type, e.name);
+        d.onclick = () => openCollectionModal(e, type, null);
         list.appendChild(d);
     });
 }
-function openCollectionEditor(type, name) {
-    const w = currentWork(); if(!w) return;
-    const entry = (w.collectionEntries[type] || []).find(e => e.name === name);
-    if(!entry) return;
-    document.getElementById('collectionEditorModal').classList.add('active');
-    document.getElementById('collEditName').value = entry.name;
-    document.getElementById('collEditDesc').value = entry.desc || '';
-    document.getElementById('collEditType').value = type;
-    document.getElementById('collEditOldName').value = name;
-}
-function saveCollectionEditor() {
-    const w = currentWork(); if(!w) return;
-    const type = document.getElementById('collEditType').value;
-    const oldName = document.getElementById('collEditOldName').value;
-    const newName = document.getElementById('collEditName').value.trim();
-    const newDesc = document.getElementById('collEditDesc').value;
-    const entries = w.collectionEntries[type] || [];
-    const idx = entries.findIndex(e => e.name === oldName);
-    if(idx >= 0) {
-        entries[idx].name = newName || oldName;
-        entries[idx].desc = newDesc;
+    function toggleCustomCollType() {
+    const type = collType.value;
+    document.getElementById('collCustomType').style.display = type === 'custom' ? 'inline-block' : 'none';
+    if(type !== 'custom') {
+        collSearch.value = '';
+        renderCollection();
     }
-    closeCollectionEditor();
-    renderCollection(); saveAll(); showToast('已保存');
 }
-function closeCollectionEditor() {
-    document.getElementById('collectionEditorModal').classList.remove('active');
+function getEffectiveCollType() {
+    if(collType.value === 'custom') {
+        const custom = document.getElementById('collCustomType').value.trim();
+        if(!custom) { showToast('请输入自定义大类名'); return null; }
+        return custom;
+    }
+    return collType.value;
 }
-function deleteCollectionEntry() {
+    function openCollectionModal(entry, type, presetName) {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">${entry ? '✏️ 编辑词条' : '➕ 添加词条'}</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">名称</label>
+                <input class="form-input" id="collModalName" value="${entry ? entry.name : (presetName || '')}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述</label>
+                <textarea class="form-textarea" id="collModalDesc" style="min-height:150px" placeholder="输入描述...&#10;&#10;💡 引用其他词条语法：[[类型:名称]]&#10;例如：[[places:北境]] 或 [[families:罗森家族]]">${entry ? (entry.desc || '') : ''}</textarea>
+            </div>
+            <div class="dev-hint" style="margin-bottom:10px">引用类型：places(地名) / families(家族) / history(历史事件) / races(种族) / magic(魔法) / festivals(节日) / 自定义大类名</div>
+            <div class="btn-row" style="justify-content:flex-end">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveCollectionEntry('${type}', ${entry ? 'true' : 'false'}')">保存</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('collModalName').focus();
+}
+    
+function saveCollectionEntry(type, isEdit) {
     const w = currentWork(); if(!w) return;
-    const type = document.getElementById('collEditType').value;
-    const oldName = document.getElementById('collEditOldName').value;
-    if(!confirm('确定删除此词条？')) return;
+    const name = document.getElementById('collModalName').value.trim();
+    const desc = document.getElementById('collModalDesc').value.trim();
+    if(!name) { showToast('请输入名称'); return; }
     const entries = w.collectionEntries[type] || [];
-    const idx = entries.findIndex(e => e.name === oldName);
-    if(idx >= 0) entries.splice(idx, 1);
-    closeCollectionEditor();
-    renderCollection(); saveAll(); showToast('已删除');
+    if(isEdit === 'true') {
+        const idx = entries.findIndex(e => e.name === name);
+        if(idx >= 0) entries[idx].desc = desc;
+    } else {
+        entries.push({ name, desc });
+    }
+    w.collectionEntries[type] = entries;
+    document.querySelector('.modal.active')?.remove();
+    renderCollection();
+    saveAll();
+    showToast('已保存');
 }
+let calViewMonth = 0;
 function saveCalendar() {
     const w = currentWork(); if(!w) return;
     w.calendarData = {
