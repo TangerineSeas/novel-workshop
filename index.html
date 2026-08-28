@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>西幻创作工坊 v2.2</title>
+<title>西幻创作工坊 v3.0</title>
+<script src="knowledge.js"></script>
 <style>
 :root{--bg:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;--card:#1e2a45;--text:#e0e0e0;--text2:#b0b0b0;--accent:#4a90e2;--accent2:#5ba3f5;--border:#2a2a4a;--gold:#d4a843;--danger:#ff6b6b;--success:#4caf50;--link:#7ec8e3;--main:#e74c3c;--important:#f39c12;--minor:#95a5a6;--dev:#ff6b6b;}
 [data-theme="light"]{--bg:#f5f5f5;--bg2:#fff;--bg3:#e8e8e8;--card:#f9f9f9;--text:#333;--text2:#666;--accent:#2c5f8a;--accent2:#3a7ab5;--border:#d0d0d0;--gold:#b8912f;--link:#1a6b8a;--dev:#d63031;}
@@ -188,8 +189,7 @@ button{cursor:pointer}
 </style>
 </head>
 <body>
-
-<header class="header">
+    <header class="header">
 <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
 <div class="logo" id="logo" onclick="logoClick()" title="西幻创作工坊">📖 西幻创作工坊</div>
 <nav class="header-nav" id="mainNav">
@@ -368,12 +368,10 @@ button{cursor:pointer}
 <button class="dev-tab" onclick="switchDevTab('knowledge',this)">📚 知识库管理</button>
 <button class="dev-tab" onclick="switchDevTab('export',this)">📦 导入/导出数据</button>
 </div>
-
-<!-- 问卷构建器 -->
 <div class="dev-content active" id="dev-questionnaire">
 <div class="dev-section">
 <h3>📝 自定义世界观问卷（附加问题）</h3>
-<p class="dev-hint" style="margin-bottom:10px">默认问题始终存在，此处添加的问题会追加到问卷末尾。选择“自定义分类”可输入分类名。</p>
+<p class="dev-hint" style="margin-bottom:10px">默认问题始终存在，此处添加的问题会追加到问卷末尾。选择"自定义分类"可输入分类名。</p>
 <div class="dev-row">
 <select id="devQCategory" style="width:130px" onchange="toggleCustomCatInput()">
 <option value="基础设定">基础设定</option>
@@ -393,8 +391,6 @@ button{cursor:pointer}
 <div class="dev-list" id="devQuestionList"></div>
 </div>
 </div>
-
-<!-- 姓名导入 -->
 <div class="dev-content" id="dev-names">
 <div class="dev-section">
 <h3>👑 姓氏与名字库</h3>
@@ -416,46 +412,33 @@ button{cursor:pointer}
 <div class="dev-list" id="devNameList"></div>
 </div>
 </div>
-
-<!-- 知识库管理 -->
 <div class="dev-content" id="dev-knowledge">
 <div class="dev-section">
 <h3>📚 知识库管理</h3>
-<p class="dev-hint" style="margin-bottom:10px">添加知识条目，支持分类和参考文献</p>
+<p class="dev-hint" style="margin-bottom:10px">添加知识条目，支持分类和参考文献。注意：此处添加的条目仅保存在你本地浏览器，需导出后整合到knowledge.js才能共享给所有人。</p>
 <div class="dev-row">
-<input id="devKbCategory" placeholder="大类（如：历史、宗教、军事）" style="width:130px">
-<input id="devKbSubcategory" placeholder="小类（如：中世纪、基督教、骑士）" style="width:130px">
-<input id="devKbTitle" placeholder="标题" style="flex:1;min-width:150px">
+<input id="devKbCategory" placeholder="大类" style="width:120px">
+<input id="devKbSubcategory" placeholder="小类" style="width:120px">
+<input id="devKbTitle" placeholder="标题" style="flex:1;min-width:140px">
 </div>
 <div class="dev-row"><textarea id="devKbContent" placeholder="内容..."></textarea></div>
 <div class="dev-row">
-<input id="devKbRefs" placeholder="参考文献（用逗号分隔）" style="flex:1;min-width:200px">
+<input id="devKbRefs" placeholder="参考文献/来源（用逗号分隔）" style="flex:1;min-width:180px">
 <button class="btn btn-dev btn-sm" onclick="addKbEntry()">+ 添加条目</button>
 </div>
 <div class="dev-list" id="devKbList"></div>
 </div>
 </div>
-
-<!-- 导入/导出 -->
 <div class="dev-content" id="dev-export">
 <div class="dev-section">
 <h3>📦 数据导入/导出</h3>
-<p class="dev-hint" style="margin-bottom:10px">导出所有开发者数据，或从JSON文件导入</p>
+<p class="dev-hint" style="margin-bottom:10px">导出所有开发者数据（问卷、姓名库、知识库条目），或从JSON文件导入</p>
 <div class="btn-row">
 <button class="btn btn-dev" onclick="exportDevData()">📤 导出开发者数据</button>
 <button class="btn btn-secondary" onclick="document.getElementById('devImportInput').click()">📥 导入开发者数据</button>
 <input type="file" id="devImportInput" accept=".json" style="display:none" onchange="importDevData(event)">
-<button class="btn btn-danger" onclick="clearDevData()">🗑️ 清空所有开发者数据</button>
 </div>
-</div>
-<div class="dev-section">
-<h3>📋 批量导入模板</h3>
-<p class="dev-hint" style="margin-bottom:8px">姓氏/名字模板（每行：中文名|英文名|寓意）：</p>
-<textarea class="form-textarea" readonly style="font-size:.75em">罗森|Rosen|玫瑰
-冯·霍亨|von Hohen|高贵的
-铁锤|Ironhammer|坚韧的工匠</textarea>
-<p class="dev-hint" style="margin:8px 0">知识库模板（JSON格式）：</p>
-<textarea class="form-textarea" readonly style="font-size:.75em">[{"category":"历史","subcategory":"中世纪","title":"封建制度","content":"...","references":["参考书1","参考书2"]}]</textarea>
+<p class="dev-hint">💡 共享知识库方法：在知识库管理中导出JSON → 把内容整合到GitHub的knowledge.js文件中 → 所有用户刷新即可看到</p>
 </div>
 </div>
 </div></div>
@@ -498,7 +481,6 @@ button{cursor:pointer}
 </div>
 
 <div class="save-toast" id="saveToast"><span>💾</span><span id="saveToastText">已保存</span></div>
-
 <script>
 // ========== 全局状态 ==========
 let works = [];
@@ -507,7 +489,7 @@ let avatarData = null;
 let saveTimer;
 let timerRunning = false;
 let timerSeconds = 0;
-let timerStartTime = null; // 计时开始时间戳
+let timerStartTime = null;
 let timerInterval;
 let devUnlocked = false;
 let logoClickCount = 0;
@@ -675,20 +657,15 @@ function formatDuration(sec) {
 // ========== 计时器（支持跨天分割） ==========
 function toggleTimer() {
     if(timerRunning) {
-        // 暂停
         timerRunning = false;
         clearInterval(timerInterval);
         document.getElementById('timerBtn').textContent = '⏱ 继续计时';
-        recordTimingSession(); // 结算本次计时段
+        recordTimingSession();
     } else {
-        // 开始或继续
         timerRunning = true;
-        timerStartTime = new Date(); // 记录开始时间
+        timerStartTime = new Date();
         document.getElementById('timerBtn').textContent = '⏸ 暂停';
-        timerInterval = setInterval(() => {
-            timerSeconds++;
-            updateTimerDisplay();
-        }, 1000);
+        timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000);
     }
 }
 function recordTimingSession() {
@@ -696,8 +673,7 @@ function recordTimingSession() {
     const now = new Date();
     const durationSec = Math.floor((now - timerStartTime) / 1000);
     if(durationSec <= 0) return;
-    // 跨天分割
-    const startDate = timerStartTime;
+    const startDate = new Date(timerStartTime);
     let current = new Date(startDate);
     while(current < now) {
         const endOfDay = new Date(current.getFullYear(), current.getMonth(), current.getDate(), 23, 59, 59);
@@ -710,9 +686,9 @@ function recordTimingSession() {
                 w.writingSessions.push({ date: dateKey, duration: segDuration, timestamp: Date.now() });
             }
         }
-        current = new Date(segEnd.getTime() + 1000); // 跳到下一天0点
+        current = new Date(segEnd.getTime() + 1000);
     }
-    timerSeconds = 0; // 重置累计秒数（用于显示）
+    timerSeconds = 0;
     updateTimerDisplay();
     timerStartTime = null;
     saveAll();
@@ -1056,7 +1032,7 @@ function saveCharacter() {
     saveAll(); showToast('人物已保存');
 }
 
-// ========== 世界观（动态问卷：默认问题+自定义问题） ==========
+// ========== 世界观（默认问题+自定义问题） ==========
 function switchWvTab(tab, btn) {
     document.querySelectorAll('.wv-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -1070,15 +1046,11 @@ function renderDynamicQuestionnaire() {
     const w = currentWork();
     const container = document.getElementById('dynamicQuestionnaire');
     container.innerHTML = '';
-    // 合并默认问题和自定义问题
     const defaultQuestions = getDefaultQuestions();
     const customQuestions = devData.questionnaire || [];
     const allQuestions = [...defaultQuestions, ...customQuestions];
     const groups = {};
-    allQuestions.forEach(q => {
-        if(!groups[q.category]) groups[q.category] = [];
-        groups[q.category].push(q);
-    });
+    allQuestions.forEach(q => { if(!groups[q.category]) groups[q.category] = []; groups[q.category].push(q); });
     Object.entries(groups).forEach(([cat, qs]) => {
         const card = document.createElement('div');
         card.className = 'card';
@@ -1299,12 +1271,17 @@ function generateRandomName() {
     showToast(`🎲 ${pick.cn} (${pick.en})`);
 }
 
-// ========== 工具页 - 知识库 ==========
+// ========== 工具页 - 知识库（公共数据 + 本地数据） ==========
+function getAllKnowledge() {
+    const publicData = (typeof KNOWLEDGE_DATA !== 'undefined') ? KNOWLEDGE_DATA : [];
+    const localData = devData.knowledge || [];
+    return [...publicData, ...localData];
+}
 function renderKnowledgeBase() {
     const container = document.getElementById('kbResults'); container.innerHTML = '';
     const catFilter = document.getElementById('kbCategoryFilter').value;
     const q = document.getElementById('kbSearch').value.toLowerCase().trim();
-    let filtered = devData.knowledge;
+    let filtered = getAllKnowledge();
     if(catFilter) filtered = filtered.filter(k => k.category === catFilter);
     if(q) filtered = filtered.filter(k => (k.title||'').toLowerCase().includes(q) || (k.content||'').toLowerCase().includes(q) || (k.subcategory||'').toLowerCase().includes(q));
     if(filtered.length === 0) { container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无知识条目</p>'; return; }
@@ -1315,7 +1292,7 @@ function renderKnowledgeBase() {
     });
 }
 
-// ========== 自定义资源导入（写作页调用） ==========
+// ========== 自定义资源导入 ==========
 function importCustomBg(event) {
     const file = event.target.files[0];
     if(!file) return;
@@ -1379,7 +1356,7 @@ function importBookTxt(event) {
     reader.readAsText(file, 'utf-8');
 }
 
-// ========== 开发者模式 - 问卷构建器 ==========
+// ========== 开发者模式 ==========
 function toggleCustomCatInput() {
     const cat = document.getElementById('devQCategory').value;
     document.getElementById('devQCustomCat').style.display = cat === 'custom' ? 'inline-block' : 'none';
@@ -1428,8 +1405,6 @@ function moveDevQuestion(i, dir) {
     renderDevQuestionList(); saveAll();
 }
 function removeDevQuestion(i) { devData.questionnaire.splice(i, 1); renderDevQuestionList(); saveAll(); }
-
-// ========== 开发者模式 - 姓名导入 ==========
 function addSingleName() {
     const type = document.getElementById('devNameType').value;
     const cn = document.getElementById('devNameCn').value.trim();
@@ -1473,8 +1448,6 @@ function removeDevName(type, i) {
     const arr = type === 'surname' ? devData.surnames : devData.givenNames;
     arr.splice(i, 1); renderDevNameList(); saveAll();
 }
-
-// ========== 开发者模式 - 知识库 ==========
 function addKbEntry() {
     const category = document.getElementById('devKbCategory').value.trim();
     const subcategory = document.getElementById('devKbSubcategory').value.trim();
@@ -1485,11 +1458,11 @@ function addKbEntry() {
     devData.knowledge.push({ category, subcategory, title, content, references: refs ? refs.split(',').map(s => s.trim()) : [] });
     document.getElementById('devKbCategory').value = ''; document.getElementById('devKbSubcategory').value = '';
     document.getElementById('devKbTitle').value = ''; document.getElementById('devKbContent').value = ''; document.getElementById('devKbRefs').value = '';
-    renderDevKbList(); saveAll(); showToast('知识条目已添加');
+    renderDevKbList(); saveAll(); showToast('知识条目已添加（仅本地，需导出后整合到knowledge.js才能共享）');
 }
 function renderDevKbList() {
     const list = document.getElementById('devKbList'); list.innerHTML = '';
-    if(devData.knowledge.length === 0) { list.innerHTML = '<p style="color:var(--text2);font-size:.8em">暂无条目</p>'; return; }
+    if(devData.knowledge.length === 0) { list.innerHTML = '<p style="color:var(--text2);font-size:.8em">暂无本地条目</p>'; return; }
     devData.knowledge.forEach((k, i) => {
         const d = document.createElement('div'); d.className = 'dev-list-item';
         d.innerHTML = `<div class="dev-item-info"><strong>${k.title}</strong> <span style="color:var(--text2)">[${k.category || '未分类'}/${k.subcategory || '未分类'}]</span></div>
@@ -1498,8 +1471,6 @@ function renderDevKbList() {
     });
 }
 function removeKbEntry(i) { devData.knowledge.splice(i, 1); renderDevKbList(); saveAll(); }
-
-// ========== 开发者模式 - 导入/导出 ==========
 function exportDevData() {
     const blob = new Blob([JSON.stringify(devData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1524,12 +1495,6 @@ function importDevData(event) {
         } catch(err) { showToast('导入失败：格式错误'); }
     };
     reader.readAsText(file);
-}
-function clearDevData() {
-    if(!confirm('确定清空所有开发者数据？')) return;
-    devData = { questionnaire: [], surnames: [], givenNames: [], knowledge: [], customBackgrounds: [], customFonts: [] };
-    saveAll(); renderDevQuestionList(); renderDevNameList(); renderDevKbList(); refreshEditorOptions();
-    showToast('已清空');
 }
 
 // ========== 键盘快捷键 ==========
@@ -1575,7 +1540,7 @@ function init() {
     updateFamilyFilters();
     const kbCatSel = document.getElementById('kbCategoryFilter');
     kbCatSel.innerHTML = '<option value="">全部分类</option>';
-    [...new Set(devData.knowledge.map(k => k.category).filter(c => c))].forEach(c => {
+    [...new Set(getAllKnowledge().map(k => k.category).filter(c => c))].forEach(c => {
         const o = document.createElement('option'); o.value = c; o.textContent = c; kbCatSel.appendChild(o);
     });
     window.addEventListener('resize', () => {
