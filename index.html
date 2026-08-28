@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>西幻创作工坊 v3.0</title>
+<title>西幻创作工坊 v3.1</title>
 <script src="knowledge.js"></script>
 <script src="names.js"></script>
 <style>
@@ -146,6 +146,11 @@ button{cursor:pointer}
 .relation-legend{display:flex;gap:12px;margin-top:8px;font-size:.7em;color:var(--text2);flex-wrap:wrap}
 .relation-filter-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
 #page-tools{flex-direction:column}
+.tools-tabs{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}
+.tools-tab{background:transparent;border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:16px;font-size:.8em;transition:.2s}
+.tools-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tools-content{display:none}
+.tools-content.active{display:block}
 #page-dev{flex-direction:column}
 .dev-header{background:linear-gradient(135deg,#2c3e50,#1a1a2e);padding:20px;border-radius:10px;margin-bottom:18px;border:1px solid var(--dev);text-align:center;position:relative}
 .dev-header h2{color:var(--dev);font-size:1.5em;margin-bottom:4px}
@@ -190,7 +195,7 @@ button{cursor:pointer}
 </style>
 </head>
 <body>
-    <header class="header">
+<header class="header">
 <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
 <div class="logo" id="logo" onclick="logoClick()" title="西幻创作工坊">📖 西幻创作工坊</div>
 <nav class="header-nav" id="mainNav">
@@ -204,7 +209,6 @@ button{cursor:pointer}
 <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
 </header>
 
-<!-- 主页 -->
 <div class="page active" id="page-home">
 <div class="page-scroll"><div class="page-container">
 <div class="home-hero"><h1>📖 我的作品</h1><p>选择一部作品继续创作，或创建新的世界</p>
@@ -218,7 +222,6 @@ button{cursor:pointer}
 </div></div>
 </div>
 
-<!-- 写作页 -->
 <div class="page" id="page-writing">
 <aside class="sidebar" id="sidebar">
 <div class="sb-section"><div class="sb-title">📋 章节列表</div><div id="chapterList"></div><button class="sb-add" onclick="addChapter()">+ 新建章节</button></div>
@@ -254,7 +257,6 @@ button{cursor:pointer}
 </aside>
 </div>
 
-<!-- 世界观页 -->
 <div class="page" id="page-worldview">
 <div class="page-scroll"><div class="page-container">
 <h2 style="color:var(--accent);margin-bottom:4px;">🌍 世界观构建</h2>
@@ -304,7 +306,6 @@ button{cursor:pointer}
 </div></div>
 </div>
 
-<!-- 人设页 -->
 <div class="page" id="page-characters">
 <div class="page-scroll"><div class="page-container">
 <h2 style="color:var(--accent);margin-bottom:12px;">👥 人物档案</h2>
@@ -328,11 +329,16 @@ button{cursor:pointer}
 </div></div>
 </div>
 
-<!-- 工具页 -->
 <div class="page" id="page-tools">
 <div class="page-scroll"><div class="page-container">
 <h2 style="color:var(--accent);margin-bottom:14px;">🔧 创作工具</h2>
-<div class="card"><h3>👑 姓氏生成器</h3>
+<div class="tools-tabs">
+<button class="tools-tab active" onclick="switchToolsTab('names',this)">👑 姓氏/名字</button>
+<button class="tools-tab" onclick="switchToolsTab('knowledge',this)">📚 知识库</button>
+<button class="tools-tab" onclick="switchToolsTab('books',this)">📖 上传书本</button>
+</div>
+<div class="tools-content active" id="tools-names">
+<div class="card"><h3>👑 姓氏/名字生成器</h3>
 <div class="btn-row" style="margin-bottom:10px">
 <select class="form-select" id="nameTypeSelect" style="width:auto" onchange="renderNameResults()"><option value="surname">姓氏</option><option value="male">男名</option><option value="female">女名</option></select>
 <input class="form-input" id="meaningSearch" placeholder="🔍 按寓意搜索..." style="width:auto;min-width:150px" oninput="renderNameResults()">
@@ -340,6 +346,8 @@ button{cursor:pointer}
 </div>
 <div id="nameResults" class="entry-list"></div>
 </div>
+</div>
+<div class="tools-content" id="tools-knowledge">
 <div class="card"><h3>📚 西方文化知识库</h3>
 <div class="btn-row" style="margin-bottom:10px">
 <select class="form-select" id="kbCategoryFilter" style="width:auto" onchange="renderKnowledgeBase()"><option value="">全部分类</option></select>
@@ -347,15 +355,17 @@ button{cursor:pointer}
 </div>
 <div id="kbResults" class="entry-list"></div>
 </div>
+</div>
+<div class="tools-content" id="tools-books">
 <div class="card"><h3>📖 导入书籍到知识库</h3>
 <p style="font-size:.8em;color:var(--text2);margin-bottom:12px">上传txt书籍文件，整本书作为一个知识条目</p>
 <input type="file" id="bookTxtInput" accept=".txt" style="display:none" onchange="importBookTxt(event)">
 <button class="btn btn-primary btn-sm" onclick="document.getElementById('bookTxtInput').click()">📤 上传txt书籍</button>
 </div>
+</div>
 </div></div>
 </div>
 
-<!-- 开发者模式页 -->
 <div class="page" id="page-dev">
 <div class="page-scroll"><div class="page-container">
 <div class="dev-header">
@@ -397,7 +407,7 @@ button{cursor:pointer}
 <h3>👑 姓氏与名字库</h3>
 <p class="dev-hint" style="margin-bottom:10px">导入姓氏和名字，支持按寓意搜索。格式：中文名|英文名|寓意（每行一个）</p>
 <div class="dev-row">
-<select id="devNameType" style="width:110px"><option value="surname">姓氏</option><option value="given">名字</option></select>
+<select id="devNameType" style="width:110px"><option value="surname">姓氏</option><option value="male">男名</option><option value="female">女名</option></select>
 <button class="btn btn-dev btn-sm" onclick="bulkImportNames()">📥 批量导入</button>
 </div>
 <div class="dev-row">
@@ -407,7 +417,7 @@ button{cursor:pointer}
 <button class="btn btn-dev btn-sm" onclick="addSingleName()">+ 添加</button>
 </div>
 <div class="dev-row">
-<select id="devNameListType" style="width:110px" onchange="renderDevNameList()"><option value="surname">姓氏</option><option value="given">名字</option></select>
+<select id="devNameListType" style="width:110px" onchange="renderDevNameList()"><option value="surname">姓氏</option><option value="male">男名</option><option value="female">女名</option></select>
 <span style="font-size:.75em;color:var(--text2)">共 <span id="devNameCount">0</span> 条</span>
 </div>
 <div class="dev-list" id="devNameList"></div>
@@ -445,7 +455,6 @@ button{cursor:pointer}
 </div></div>
 </div>
 
-<!-- 人设编辑器弹窗 -->
 <div class="modal" id="charModal">
 <div class="modal-content">
 <div class="modal-header"><h3 style="color:var(--accent)">📝 人物档案</h3><button class="modal-close" onclick="closeCharEditor()">✕</button></div>
@@ -470,7 +479,6 @@ button{cursor:pointer}
 </div>
 </div>
 
-<!-- 新作品弹窗 -->
 <div class="modal" id="newWorkModal">
 <div class="modal-content">
 <div class="modal-header"><h3 style="color:var(--accent)">📕 创建新作品</h3><button class="modal-close" onclick="closeNewWorkModal()">✕</button></div>
@@ -497,7 +505,8 @@ let logoClickCount = 0;
 let devData = {
     questionnaire: [],
     surnames: [],
-    givenNames: [],
+    givenNamesMale: [],
+    givenNamesFemale: [],
     knowledge: [],
     customBackgrounds: [],
     customFonts: []
@@ -505,7 +514,6 @@ let devData = {
 
 function currentWork() { return works.find(w => w.id === currentWorkId) || null; }
 
-// ========== 开发者模式解锁/退出 ==========
 function logoClick() {
     logoClickCount++;
     if(logoClickCount >= 5) {
@@ -523,7 +531,6 @@ function exitDevMode() {
     showToast('已退出开发者模式');
 }
 
-// ========== 页面切换 ==========
 function goPage(page) {
     if(page === 'dev' && !devUnlocked) { showToast('请先解锁开发者模式（连续点击Logo 5次）'); return; }
     if(page !== 'home' && page !== 'dev' && !currentWork()) { showToast('请先选择或创建作品'); return; }
@@ -538,7 +545,6 @@ function goPage(page) {
     if(page === 'dev') { renderDevQuestionList(); renderDevNameList(); renderDevKbList(); }
 }
 
-// ========== 主题 ==========
 function toggleTheme() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
@@ -546,7 +552,15 @@ function toggleTheme() {
     updateStyle(); saveAll();
 }
 
-// ========== 作品管理 ==========
+function switchToolsTab(tab, btn) {
+    document.querySelectorAll('.tools-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tools-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tools-' + tab).classList.add('active');
+    if(tab === 'names') renderNameResults();
+    if(tab === 'knowledge') renderKnowledgeBase();
+}
+
 function createNewWork() {
     document.getElementById('newWorkModal').classList.add('active');
     document.getElementById('nwTitle').value = '';
@@ -654,8 +668,6 @@ function formatDuration(sec) {
     if(m > 0) return m + '分钟';
     return sec + '秒';
 }
-
-// ========== 计时器（支持跨天分割） ==========
 function toggleTimer() {
     if(timerRunning) {
         timerRunning = false;
@@ -700,8 +712,6 @@ function updateTimerDisplay() {
     const s = String(timerSeconds%60).padStart(2,'0');
     document.getElementById('timerDisplay').textContent = h + ':' + m + ':' + s;
 }
-
-// ========== 导出 ==========
 function exportNovel() { const w = currentWork(); if(w) exportWork(w.id); }
 function exportWork(id) {
     const w = works.find(x => x.id === id); if(!w) return;
@@ -731,8 +741,6 @@ function exportWork(id) {
     const a = document.createElement('a'); a.href = url; a.download = w.title + '.txt'; a.click();
     URL.revokeObjectURL(url); showToast('导出成功');
 }
-
-// ========== 写作样式 ==========
 function updateStyle() {
     const ed = document.getElementById('editor');
     const paper = document.getElementById('editorPaper');
@@ -753,8 +761,6 @@ function updateStyle() {
     const w = currentWork();
     if(w) { w.editorSettings = { fontFamily:fontFamily.value, fontSize:fontSize.value, fontColor:fontColor.value, lineHeight:lineHeight.value, letterSpacing:letterSpacing.value, paperBg:paperBg.value }; }
 }
-
-// ========== 字数统计与保存 ==========
 function updateWordCount() {
     const len = document.getElementById('editor').value.length;
     document.getElementById('wordCount').textContent = len;
@@ -780,8 +786,6 @@ function saveAll() {
     localStorage.setItem('novelWorkshop', JSON.stringify({ works, currentWorkId }));
     localStorage.setItem('devData', JSON.stringify(devData));
 }
-
-// ========== 章节 ==========
 function addChapter() {
     const w = currentWork(); if(!w) return;
     const name = prompt('章节名称：'); if(!name) return;
@@ -810,8 +814,6 @@ function renderChapters() {
         el.appendChild(d);
     });
 }
-
-// ========== 人物 ==========
 function getBadge(imp) {
     const m = {main:'<span class="badge badge-main">主角</span>',important:'<span class="badge badge-important">重要配角</span>',minor:'<span class="badge badge-minor">次要配角</span>',extra:'<span class="badge badge-minor">龙套</span>'};
     return m[imp] || m.minor;
@@ -889,8 +891,6 @@ function updateFamilyFilters() {
         const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; relSel.appendChild(o);
     });
 }
-
-// ========== 关系图谱 ==========
 function parseRelations(filterFamily) {
     const w = currentWork();
     if(!w) return { nodes: [], edges: [] };
@@ -965,8 +965,6 @@ function drawRelationGraph() {
         ctx.fillText(n.name.length > 5 ? n.name.slice(0,5)+'…' : n.name, p.x, p.y + 3);
     });
 }
-
-// ========== 人设编辑器 ==========
 function toggleCustomRace() {
     const race = document.getElementById('cRace').value;
     document.getElementById('customRaceGroup').style.display = race === 'other' ? 'block' : 'none';
@@ -1032,8 +1030,6 @@ function saveCharacter() {
     closeCharEditor(); renderCharGrid(); renderSidebarChars(); updateFamilyFilters();
     saveAll(); showToast('人物已保存');
 }
-
-// ========== 世界观（默认问题+自定义问题） ==========
 function switchWvTab(tab, btn) {
     document.querySelectorAll('.wv-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -1163,8 +1159,6 @@ function showWorldviewDoc() {
     document.getElementById('wvDoc').style.display = 'block';
     document.getElementById('wvDoc').scrollIntoView({ behavior:'smooth' });
 }
-
-// ========== 设定合集 ==========
 function addCollectionEntry() {
     const w = currentWork(); if(!w) return;
     const type = collType.value; const name = collName.value.trim();
@@ -1213,8 +1207,6 @@ function renderCollection() {
         list.appendChild(d);
     });
 }
-
-// ========== 自定义日历 ==========
 let calViewMonth = 0;
 function saveCalendar() {
     const w = currentWork(); if(!w) return;
@@ -1249,15 +1241,12 @@ function renderCalendar() {
 }
 function calPrevMonth() { calViewMonth--; renderCalendar(); }
 function calNextMonth() { calViewMonth++; renderCalendar(); }
-
-// ========== 工具页 - 姓名生成器 ==========
 function renderNameResults() {
     const container = document.getElementById('nameResults');
     container.innerHTML = '';
     const typeSelect = document.getElementById('nameTypeSelect');
     const type = typeSelect ? typeSelect.value : 'surname';
     const q = (document.getElementById('meaningSearch').value || '').toLowerCase().trim();
-    
     let data = [];
     if(type === 'surname') {
         data = [...(typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []), ...(devData.surnames || [])];
@@ -1266,17 +1255,9 @@ function renderNameResults() {
     } else {
         data = [...(typeof GIVEN_NAME_DATA_FEMALE !== 'undefined' ? GIVEN_NAME_DATA_FEMALE : []), ...(devData.givenNamesFemale || [])];
     }
-    
-    // 按英文名字母排序
     data.sort((a, b) => (a.en || '').localeCompare(b.en || ''));
-    
     const filtered = data.filter(n => !q || (n.meaning||'').toLowerCase().includes(q) || (n.cn||'').toLowerCase().includes(q) || (n.en||'').toLowerCase().includes(q));
-    
-    if(filtered.length === 0) {
-        container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无数据</p>';
-        return;
-    }
-    
+    if(filtered.length === 0) { container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无数据</p>'; return; }
     let html = '';
     filtered.slice(0, 50).forEach(n => {
         html += `<div class="entry-item"><div class="entry-name">${n.cn} <span style="font-size:.8em;color:var(--text2)">(${n.en})</span></div><div class="entry-desc">寓意：${n.meaning || '未标注'}</div></div>`;
@@ -1286,7 +1267,6 @@ function renderNameResults() {
 function generateRandomName() {
     const typeSelect = document.getElementById('nameTypeSelect');
     const type = typeSelect ? typeSelect.value : 'surname';
-    
     let data = [];
     if(type === 'surname') {
         data = [...(typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []), ...(devData.surnames || [])];
@@ -1295,21 +1275,16 @@ function generateRandomName() {
     } else {
         data = [...(typeof GIVEN_NAME_DATA_FEMALE !== 'undefined' ? GIVEN_NAME_DATA_FEMALE : []), ...(devData.givenNamesFemale || [])];
     }
-    
     if(data.length === 0) { alert('暂无数据'); return; }
-// ========== 工具页 - 知识库（公共数据 + 本地数据） ==========
+    const pick = data[Math.floor(Math.random() * data.length)];
+    const typeLabel = type === 'surname' ? '姓氏' : type === 'male' ? '男名' : '女名';
+    alert(`🎲 随机${typeLabel}：\n\n${pick.cn} (${pick.en})\n\n寓意：${pick.meaning || '未标注'}`);
+}
 function getAllKnowledge() {
     const publicData = (typeof KNOWLEDGE_DATA !== 'undefined') ? KNOWLEDGE_DATA : [];
     const localData = devData.knowledge || [];
     return [...publicData, ...localData];
 }
-function renderKnowledgeBase() {
-    const container = document.getElementById('kbResults'); container.innerHTML = '';
-    const catFilter = document.getElementById('kbCategoryFilter').value;
-    const q = document.getElementById('kbSearch').value.toLowerCase().trim();
-    let filtered = getAllKnowledge();
-    if(catFilter) filtered = filtered.filter(k => k.category === catFilter);
-    if(q) filtered = filtered.filter(k => (k.title||'').toLowerCase().includes(q) || (k.content||'').toLowerCase().includes(q) || (k.subcategory||'').toLowerCase().includes(q));
 function renderKnowledgeBase() {
     const container = document.getElementById('kbResults'); container.innerHTML = '';
     const catFilter = document.getElementById('kbCategoryFilter').value;
@@ -1324,8 +1299,6 @@ function renderKnowledgeBase() {
         container.appendChild(d);
     });
 }
-
-// ========== 自定义资源导入 ==========
 function importCustomBg(event) {
     const file = event.target.files[0];
     if(!file) return;
@@ -1363,8 +1336,6 @@ function refreshEditorOptions() {
     devData.customFonts.forEach(f => { const o = document.createElement('option'); o.value = f.family; o.textContent = f.name; fontSelect.appendChild(o); });
     fontSelect.value = currentFont;
 }
-
-// ========== 工具页 - 书籍导入 ==========
 function importBookTxt(event) {
     const file = event.target.files[0];
     if(!file) return;
@@ -1388,8 +1359,6 @@ function importBookTxt(event) {
     };
     reader.readAsText(file, 'utf-8');
 }
-
-// ========== 开发者模式 ==========
 function toggleCustomCatInput() {
     const cat = document.getElementById('devQCategory').value;
     document.getElementById('devQCustomCat').style.display = cat === 'custom' ? 'inline-block' : 'none';
@@ -1444,8 +1413,9 @@ function addSingleName() {
     const en = document.getElementById('devNameEn').value.trim();
     const meaning = document.getElementById('devNameMeaning').value.trim();
     if(!cn) { showToast('请输入中文名'); return; }
-    const arr = type === 'surname' ? devData.surnames : devData.givenNames;
-    arr.push({ cn, en, meaning });
+    if(type === 'surname') devData.surnames.push({ cn, en, meaning });
+    else if(type === 'male') devData.givenNamesMale.push({ cn, en, meaning });
+    else devData.givenNamesFemale.push({ cn, en, meaning });
     document.getElementById('devNameCn').value = ''; document.getElementById('devNameEn').value = ''; document.getElementById('devNameMeaning').value = '';
     renderDevNameList(); saveAll(); showToast('已添加');
 }
@@ -1453,12 +1423,14 @@ function bulkImportNames() {
     const type = document.getElementById('devNameType').value;
     const input = prompt('请粘贴姓名数据（每行：中文名|英文名|寓意）：');
     if(!input) return;
-    const arr = type === 'surname' ? devData.surnames : devData.givenNames;
     let count = 0;
     input.split('\n').forEach(line => {
         const parts = line.split('|');
         if(parts.length >= 1 && parts[0].trim()) {
-            arr.push({ cn: parts[0].trim(), en: parts[1]?.trim() || '', meaning: parts[2]?.trim() || '' });
+            const entry = { cn: parts[0].trim(), en: parts[1]?.trim() || '', meaning: parts[2]?.trim() || '' };
+            if(type === 'surname') devData.surnames.push(entry);
+            else if(type === 'male') devData.givenNamesMale.push(entry);
+            else devData.givenNamesFemale.push(entry);
             count++;
         }
     });
@@ -1466,7 +1438,10 @@ function bulkImportNames() {
 }
 function renderDevNameList() {
     const type = document.getElementById('devNameListType').value;
-    const arr = type === 'surname' ? devData.surnames : devData.givenNames;
+    let arr = [];
+    if(type === 'surname') arr = devData.surnames;
+    else if(type === 'male') arr = devData.givenNamesMale;
+    else arr = devData.givenNamesFemale;
     document.getElementById('devNameCount').textContent = arr.length;
     const list = document.getElementById('devNameList'); list.innerHTML = '';
     if(arr.length === 0) { list.innerHTML = '<p style="color:var(--text2);font-size:.8em">暂无数据</p>'; return; }
@@ -1478,8 +1453,10 @@ function renderDevNameList() {
     });
 }
 function removeDevName(type, i) {
-    const arr = type === 'surname' ? devData.surnames : devData.givenNames;
-    arr.splice(i, 1); renderDevNameList(); saveAll();
+    if(type === 'surname') devData.surnames.splice(i, 1);
+    else if(type === 'male') devData.givenNamesMale.splice(i, 1);
+    else devData.givenNamesFemale.splice(i, 1);
+    renderDevNameList(); saveAll();
 }
 function addKbEntry() {
     const category = document.getElementById('devKbCategory').value.trim();
@@ -1519,7 +1496,8 @@ function importDevData(event) {
             const data = JSON.parse(e.target.result);
             if(data.questionnaire) devData.questionnaire = data.questionnaire;
             if(data.surnames) devData.surnames = data.surnames;
-            if(data.givenNames) devData.givenNames = data.givenNames;
+            if(data.givenNamesMale) devData.givenNamesMale = data.givenNamesMale;
+            if(data.givenNamesFemale) devData.givenNamesFemale = data.givenNamesFemale;
             if(data.knowledge) devData.knowledge = data.knowledge;
             if(data.customBackgrounds) devData.customBackgrounds = data.customBackgrounds;
             if(data.customFonts) devData.customFonts = data.customFonts;
@@ -1529,14 +1507,10 @@ function importDevData(event) {
     };
     reader.readAsText(file);
 }
-
-// ========== 键盘快捷键 ==========
 document.addEventListener('keydown', e => {
     if(e.ctrlKey && e.key === 's') { e.preventDefault(); saveAll(); showToast('已保存'); }
     if(e.ctrlKey && e.shiftKey && e.key === 'D') { e.preventDefault(); devUnlocked = true; document.getElementById('devNavBtn').style.display = 'block'; goPage('dev'); showToast('🔓 开发者模式'); }
 });
-
-// ========== 初始化 ==========
 function init() {
     const saved = JSON.parse(localStorage.getItem('novelWorkshop') || '{}');
     if(saved.works) works = saved.works;
@@ -1544,7 +1518,8 @@ function init() {
     const savedDev = JSON.parse(localStorage.getItem('devData') || '{}');
     if(savedDev.questionnaire) devData.questionnaire = savedDev.questionnaire;
     if(savedDev.surnames) devData.surnames = savedDev.surnames;
-    if(savedDev.givenNames) devData.givenNames = savedDev.givenNames;
+    if(savedDev.givenNamesMale) devData.givenNamesMale = savedDev.givenNamesMale;
+    if(savedDev.givenNamesFemale) devData.givenNamesFemale = savedDev.givenNamesFemale;
     if(savedDev.knowledge) devData.knowledge = savedDev.knowledge;
     if(savedDev.customBackgrounds) devData.customBackgrounds = savedDev.customBackgrounds;
     if(savedDev.customFonts) devData.customFonts = savedDev.customFonts;
