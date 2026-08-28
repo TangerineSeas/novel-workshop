@@ -192,11 +192,14 @@ button{cursor:pointer}
 .char-panel.active{right:0}
 .editor-paper{padding:18px 14px}
 }
+    .mobile-nav-overlay{display:none;position:fixed;top:56px;left:0;right:0;background:var(--bg2);z-index:99;border-bottom:1px solid var(--border);padding:10px;flex-wrap:wrap;gap:4px}
+.mobile-nav-overlay.active{display:flex}
+@media(min-width:901px){.mobile-nav-overlay{display:none!important}}
 </style>
 </head>
 <body>
 <header class="header">
-<button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+<button class="menu-btn" onclick="toggleMobileMenu()">☰</button>
 <div class="logo" id="logo" onclick="logoClick()" title="西幻创作工坊">📖 西幻创作工坊</div>
 <nav class="header-nav" id="mainNav">
 <button class="nav-btn" data-page="home" onclick="goPage('home')">🏠 主页</button>
@@ -1560,6 +1563,27 @@ function init() {
     saveAll();
 }
 window.addEventListener('load', init);
+    function toggleMobileMenu() {
+    let overlay = document.getElementById('mobileNavOverlay');
+    if(!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'mobileNavOverlay';
+        overlay.className = 'mobile-nav-overlay';
+        overlay.innerHTML = `
+            <button class="nav-btn" onclick="goPage('home');closeMobileMenu()">🏠 主页</button>
+            <button class="nav-btn" onclick="goPage('writing');closeMobileMenu()">✍️ 写作</button>
+            <button class="nav-btn" onclick="goPage('worldview');closeMobileMenu()">🌍 世界观</button>
+            <button class="nav-btn" onclick="goPage('characters');closeMobileMenu()">👥 人设</button>
+            <button class="nav-btn" onclick="goPage('tools');closeMobileMenu()">🔧 工具</button>
+        `;
+        document.body.appendChild(overlay);
+    }
+    overlay.classList.toggle('active');
+}
+function closeMobileMenu() {
+    const overlay = document.getElementById('mobileNavOverlay');
+    if(overlay) overlay.classList.remove('active');
+}
 </script>
 </body>
 </html>
