@@ -251,7 +251,7 @@
 
           if(document.readyState === 'complete') {
         initMagicTools();
-        setTimeout(drawTriangle, 500);
+        setTimeout(function() { drawTriangle(); }, 1000);
     } else {
         window.addEventListener('load', () => {
             initMagicTools();
