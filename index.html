@@ -1297,20 +1297,19 @@ function generateRandomName() {
     }
     
     if(data.length === 0) { alert('暂无数据'); return; }
-    const pick = data[Math.floor(Math.random() * data.length)];
-    const typeLabel = type === 'surname' ? '姓氏' : type === 'male' ? '男名' : '女名';
-    alert(`🎲 随机${typeLabel}：\n\n${pick.cn} (${pick.en})\n\n寓意：${pick.meaning || '未标注'}`);
-}
-    
-    // 大提示框
-    alert(`🎲 随机${type === 'surname' ? '姓氏' : '名字'}：\n\n${pick.cn} (${pick.en})\n\n寓意：${pick.meaning || '未标注'}`);
-}
 // ========== 工具页 - 知识库（公共数据 + 本地数据） ==========
 function getAllKnowledge() {
     const publicData = (typeof KNOWLEDGE_DATA !== 'undefined') ? KNOWLEDGE_DATA : [];
     const localData = devData.knowledge || [];
     return [...publicData, ...localData];
 }
+function renderKnowledgeBase() {
+    const container = document.getElementById('kbResults'); container.innerHTML = '';
+    const catFilter = document.getElementById('kbCategoryFilter').value;
+    const q = document.getElementById('kbSearch').value.toLowerCase().trim();
+    let filtered = getAllKnowledge();
+    if(catFilter) filtered = filtered.filter(k => k.category === catFilter);
+    if(q) filtered = filtered.filter(k => (k.title||'').toLowerCase().includes(q) || (k.content||'').toLowerCase().includes(q) || (k.subcategory||'').toLowerCase().includes(q));
 function renderKnowledgeBase() {
     const container = document.getElementById('kbResults'); container.innerHTML = '';
     const catFilter = document.getElementById('kbCategoryFilter').value;
