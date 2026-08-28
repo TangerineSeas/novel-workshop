@@ -807,11 +807,9 @@ function showToast(msg) {
     setTimeout(() => t.style.display = 'none', 1500);
 }
 async function saveAll() {
-    // 同时保存到localStorage作为备份
     localStorage.setItem('novelWorkshop', JSON.stringify({ works, currentWorkId }));
     localStorage.setItem('devData', JSON.stringify(devData));
     
-    // 保存到Supabase
     if(!currentUserId) return;
     try {
         const { error } = await db
