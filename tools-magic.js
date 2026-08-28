@@ -136,6 +136,89 @@
             `基于「${n}」的自然属性，呼应「${s}」的文化含义，产生...（待对方提供推导示例后完善）`;
     };
 
+    // ===== 可拖动三角形 =====
+    let triangleVertices = {
+        '表现力': { x: 150, y: 30 },
+        '便捷性': { x: 25, y: 235 },
+        '性价比': { x: 275, y: 235 }
+    };
+    let draggingVertex = null;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    function drawTriangle() {
+        const svg = document.querySelector('#triangle-svg svg');
+        if(!svg) return;
+        const v1 = triangleVertices['表现力'];
+        const v2 = triangleVertices['便捷性'];
+        const v3 = triangleVertices['性价比'];
+        
+        svg.innerHTML = `
+            <polygon points="${v1.x},${v1.y} ${v2.x},${v2.y} ${v3.x},${v3.y}" fill="rgba(74,144,226,0.1)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="${v1.x}" y="${v1.y - 15}" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="bold">表现力</text>
+            <text x="${v2.x - 15}" y="${v2.y + 20}" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="bold">便捷性</text>
+            <text x="${v3.x + 15}" y="${v3.y + 20}" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="bold">性价比</text>
+            <circle cx="${v1.x}" cy="${v1.y}" r="10" fill="var(--accent)" class="triangle-vertex" data-vertex="表现力" style="cursor:grab"/>
+            <circle cx="${v2.x}" cy="${v2.y}" r="10" fill="var(--gold)" class="triangle-vertex" data-vertex="便捷性" style="cursor:grab"/>
+            <circle cx="${v3.x}" cy="${v3.y}" r="10" fill="var(--text2)" class="triangle-vertex" data-vertex="性价比" style="cursor:grab"/>
+        `;
+        
+        // 绑定拖动事件
+        svg.querySelectorAll('.triangle-vertex').forEach(circle => {
+            circle.addEventListener('mousedown', startDragVertex);
+            circle.addEventListener('touchstart', startDragVertexTouch);
+            circle.addEventListener('click', function() {
+                if(!draggingVertex) toggleTriangleOption(this.dataset.vertex);
+            });
+        });
+        
+        document.addEventListener('mousemove', dragVertex);
+        document.addEventListener('mouseup', endDragVertex);
+        document.addEventListener('touchmove', dragVertexTouch);
+        document.addEventListener('touchend', endDragVertex);
+    }
+
+    function startDragVertex(e) {
+        draggingVertex = e.target.dataset.vertex;
+        const rect = e.target.closest('svg').getBoundingClientRect();
+        dragOffsetX = e.clientX - triangleVertices[draggingVertex].x;
+        dragOffsetY = e.clientY - triangleVertices[draggingVertex].y;
+        e.preventDefault();
+    }
+    
+    function startDragVertexTouch(e) {
+        draggingVertex = e.target.dataset.vertex;
+        const touch = e.touches[0];
+        dragOffsetX = touch.clientX - triangleVertices[draggingVertex].x;
+        dragOffsetY = touch.clientY - triangleVertices[draggingVertex].y;
+        e.preventDefault();
+    }
+
+    function dragVertex(e) {
+        if(!draggingVertex) return;
+        const svg = document.querySelector('#triangle-svg svg');
+        const rect = svg.getBoundingClientRect();
+        const scale = 300 / rect.width;
+        triangleVertices[draggingVertex].x = Math.max(5, Math.min(295, (e.clientX - rect.left) * scale));
+        triangleVertices[draggingVertex].y = Math.max(20, Math.min(250, (e.clientY - rect.top) * scale));
+        drawTriangle();
+    }
+    
+    function dragVertexTouch(e) {
+        if(!draggingVertex) return;
+        const touch = e.touches[0];
+        const svg = document.querySelector('#triangle-svg svg');
+        const rect = svg.getBoundingClientRect();
+        const scale = 300 / rect.width;
+        triangleVertices[draggingVertex].x = Math.max(5, Math.min(295, (touch.clientX - rect.left) * scale));
+        triangleVertices[draggingVertex].y = Math.max(20, Math.min(250, (touch.clientY - rect.top) * scale));
+        drawTriangle();
+        e.preventDefault();
+    }
+
+    function endDragVertex() {
+        setTimeout(() => { draggingVertex = null; }, 50);
+    }
     window.toggleTriangleOption = function(option) {
         const btns = document.querySelectorAll('.triangle-btn');
         btns.forEach(btn => {
@@ -174,9 +257,13 @@
         document.getElementById('pyramid-detail').innerHTML = detailMap[level] || '';
     };
 
-    if(document.readyState === 'complete') {
+       if(document.readyState === 'complete') {
         initMagicTools();
+        setTimeout(drawTriangle, 100);
     } else {
-        window.addEventListener('load', initMagicTools);
+        window.addEventListener('load', () => {
+            initMagicTools();
+            setTimeout(drawTriangle, 100);
+        });
     }
 })();
