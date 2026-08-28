@@ -87,7 +87,7 @@
                         <span style="margin:0 10px">|</span>
                         <span>小红书26183246310@连城</span>
                     </div>
-                    <button class="btn btn-sm btn-primary" onclick="exportMagicToolImage('magic-tools-container')">📷 一键导出图片</button>
+                   <button class="btn btn-sm btn-primary" onclick="exportMagicToolImage()">📷 一键导出图片</button>
                 </div>
             </div>
         `;
@@ -225,8 +225,39 @@
         e.preventDefault();
     }
 
-    function endDragVertex() {
-        setTimeout(() => { draggingVertex = null; }, 50);
+       function endDragVertex() {
+        setTimeout(() => { 
+            draggingVertex = null;
+            detectAbandonedVertex();
+        }, 50);
+    }
+
+    function detectAbandonedVertex() {
+        const v1 = triangleVertices['表现力'];
+        const v2 = triangleVertices['便捷性'];
+        const v3 = triangleVertices['性价比'];
+        
+        // 计算各顶点到对边的距离
+        // 距离最小的顶点 = 被放弃的顶点（最不突出）
+        const dist1 = distanceToLine(v1, v2, v3);
+        const dist2 = distanceToLine(v2, v1, v3);
+        const dist3 = distanceToLine(v3, v1, v2);
+        
+        const minDist = Math.min(dist1, dist2, dist3);
+        let abandoned;
+        if(minDist === dist1) abandoned = '表现力';
+        else if(minDist === dist2) abandoned = '便捷性';
+        else abandoned = '性价比';
+        
+        toggleTriangleOption(abandoned);
+    }
+    
+    function distanceToLine(point, lineA, lineB) {
+        const dx = lineB.x - lineA.x;
+        const dy = lineB.y - lineA.y;
+        const numerator = Math.abs(dy * point.x - dx * point.y + lineB.x * lineA.y - lineB.y * lineA.x);
+        const denominator = Math.sqrt(dx * dx + dy * dy);
+        return numerator / denominator;
     }
        window.toggleTriangleOption = function(option) {
         const btns = document.querySelectorAll('.triangle-btn');
@@ -307,76 +338,101 @@
         });
     }
         // ===== 导出图片功能 =====
-                   window.exportMagicToolImage = function(sectionId) {
-        const section = document.getElementById(sectionId);
-        if(!section) { alert('未找到内容区域'); return; }
-        if(section.offsetHeight === 0) { alert('内容区域高度为0，请先切换到魔法工具标签'); return; }
+                      window.exportMagicToolImage = function() {
+        const sections = document.querySelectorAll('.magic-tool-section');
+        if(sections.length === 0) { alert('未找到工具内容'); return; }
         
-        // 创建Canvas
+        // 计算总高度
+        let totalHeight = 0;
+        const widths = [];
+        sections.forEach(s => {
+            totalHeight += s.offsetHeight + 40;
+            widths.push(s.offsetWidth);
+        });
+        totalHeight += 60; // 底部水印区域
+        
+        const maxWidth = Math.max(...widths, 600);
+        
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        
-        // 设置画布尺寸
-        const width = section.offsetWidth || 600;
-        const height = section.offsetHeight || 400;
-        canvas.width = width * 2;
-        canvas.height = height * 2;
+        canvas.width = maxWidth * 2;
+        canvas.height = totalHeight * 2;
         ctx.scale(2, 2);
         
-        // 获取计算后的样式
         const styles = getComputedStyle(document.documentElement);
         const bgColor = styles.getPropertyValue('--bg2').trim() || '#16213e';
         const textColor = styles.getPropertyValue('--text').trim() || '#e0e0e0';
         const accentColor = styles.getPropertyValue('--accent').trim() || '#4a90e2';
         
-                // 绘制背景
+        // 绘制背景
         ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, width, height);
+        ctx.fillRect(0, 0, maxWidth, totalHeight);
         
-        // 绘制边框
-        ctx.strokeStyle = accentColor;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(5, 5, width - 10, height - 10);
+        // 逐个绘制工具区域
+        let yOffset = 20;
+        sections.forEach(section => {
+            const h = section.offsetHeight;
+            
+            // 绘制区域边框
+            ctx.strokeStyle = accentColor;
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(10, yOffset - 5, maxWidth - 20, h + 10);
+            
+            // 绘制标题
+            const title = section.querySelector('h3');
+            if(title) {
+                ctx.fillStyle = accentColor;
+                ctx.font = 'bold 18px Georgia, serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(title.textContent, maxWidth/2, yOffset + 25);
+            }
+            
+            // 绘制描述文字
+            const desc = section.querySelector('.magic-tool-desc');
+            if(desc) {
+                ctx.fillStyle = textColor;
+                ctx.font = '12px Georgia, serif';
+                ctx.textAlign = 'center';
+                // 处理文字换行
+                const words = desc.textContent.split('');
+                let line = '';
+                let lineY = yOffset + 45;
+                for(let i = 0; i < words.length; i++) {
+                    line += words[i];
+                    if(ctx.measureText(line).width > maxWidth - 80 && line.length > 10) {
+                        ctx.fillText(line, maxWidth/2, lineY);
+                        line = '';
+                        lineY += 18;
+                    }
+                }
+                if(line) ctx.fillText(line, maxWidth/2, lineY);
+            }
+            
+            yOffset += h + 40;
+        });
         
-        // 绘制标题
-        const title = section.querySelector('h3');
-        if(title) {
-            ctx.fillStyle = accentColor;
-            ctx.font = 'bold 20px Georgia, serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(title.textContent, width/2, 40);
-        }
-        
-        // 绘制分隔线
-        ctx.strokeStyle = 'rgba(200,200,200,0.3)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(20, 55);
-        ctx.lineTo(width - 20, 55);
-        ctx.stroke();
-        
-        // 绘制水印（半透明斜向水印）
+        // 绘制水印
         ctx.save();
         ctx.fillStyle = 'rgba(255,255,255,0.3)';
         ctx.font = '14px Georgia, serif';
         ctx.textAlign = 'center';
-        ctx.translate(width/2, height/2);
-        ctx.rotate(-0.3);
-        ctx.fillText('小红书5508697487@地月双尸', 0, -10);
-        ctx.fillText('小红书26183246310@连城', 0, 15);
+        ctx.translate(maxWidth/2, totalHeight/2);
+        ctx.rotate(-0.25);
+        ctx.fillText('小红书5508697487@地月双尸', 0, -15);
+        ctx.fillText('小红书26183246310@连城', 0, 10);
         ctx.restore();
         
-        // 绘制底部水印（清晰版）
-        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        // 底部清晰水印
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
         ctx.font = '11px Georgia, serif';
         ctx.textAlign = 'left';
-        ctx.fillText('小红书5508697487@地月双尸', 10, height - 20);
+        ctx.fillText('小红书5508697487@地月双尸', 10, totalHeight - 15);
         ctx.textAlign = 'right';
-        ctx.fillText('小红书26183246310@连城', width - 10, height - 20);
+        ctx.fillText('小红书26183246310@连城', maxWidth - 10, totalHeight - 15);
         
-        // 导出图片
+        // 导出
         const link = document.createElement('a');
-        link.download = '魔法工具_' + Date.now() + '.png';
+        link.download = '魔法工具合集_' + Date.now() + '.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
     };
