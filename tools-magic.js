@@ -228,7 +228,7 @@
     function endDragVertex() {
         setTimeout(() => { draggingVertex = null; }, 50);
     }
-    window.toggleTriangleOption = function(option) {
+       window.toggleTriangleOption = function(option) {
         const btns = document.querySelectorAll('.triangle-btn');
         btns.forEach(btn => {
             const text = btn.textContent.replace('放弃','');
@@ -241,8 +241,39 @@
             '性价比': '💀 放弃性价比：保留表现力与便捷性。<br>施法代价极高昂，通常超出施法者自身能够承受的范围。账单可以后置，但必须最终偿付且不可逃避。'
         };
         document.getElementById('triangle-result').innerHTML = resultMap[option] || '';
+        
+        // 根据放弃的顶点调整三角形形状
+        adjustTriangleShape(option);
     };
 
+    function adjustTriangleShape(abandoned) {
+        if(abandoned === '表现力') {
+            // 表现力顶点拉低，三角形变扁
+            triangleVertices['表现力'].x = 150;
+            triangleVertices['表现力'].y = 120;
+            triangleVertices['便捷性'].x = 30;
+            triangleVertices['便捷性'].y = 235;
+            triangleVertices['性价比'].x = 270;
+            triangleVertices['性价比'].y = 235;
+        } else if(abandoned === '便捷性') {
+            // 便捷性顶点拉高，三角形变高
+            triangleVertices['表现力'].x = 150;
+            triangleVertices['表现力'].y = 25;
+            triangleVertices['便捷性'].x = 80;
+            triangleVertices['便捷性'].y = 160;
+            triangleVertices['性价比'].x = 220;
+            triangleVertices['性价比'].y = 160;
+        } else if(abandoned === '性价比') {
+            // 性价比顶点拉偏，三角形变斜
+            triangleVertices['表现力'].x = 150;
+            triangleVertices['表现力'].y = 30;
+            triangleVertices['便捷性'].x = 80;
+            triangleVertices['便捷性'].y = 220;
+            triangleVertices['性价比'].x = 250;
+            triangleVertices['性价比'].y = 180;
+        }
+        window.drawTriangle();
+    }
     window.togglePyramidLevel = function(el, level) {
         document.querySelectorAll('.pyramid-level-box').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
@@ -276,9 +307,10 @@
         });
     }
         // ===== 导出图片功能 =====
-               window.exportMagicToolImage = function(sectionId) {
+                   window.exportMagicToolImage = function(sectionId) {
         const section = document.getElementById(sectionId);
-        if(!section) return;
+        if(!section) { alert('未找到内容区域'); return; }
+        if(section.offsetHeight === 0) { alert('内容区域高度为0，请先切换到魔法工具标签'); return; }
         
         // 创建Canvas
         const canvas = document.createElement('canvas');
@@ -310,13 +342,50 @@
             ctx.fillText(title.textContent, width/2, 35);
         }
         
-        // 绘制水印
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
-        ctx.font = '12px Georgia, serif';
+                // 绘制背景区域
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+        
+        // 绘制边框
+        ctx.strokeStyle = accentColor;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(5, 5, width - 10, height - 10);
+        
+        // 绘制标题
+        const title = section.querySelector('h3');
+        if(title) {
+            ctx.fillStyle = accentColor;
+            ctx.font = 'bold 20px Georgia, serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(title.textContent, width/2, 40);
+        }
+        
+        // 绘制分隔线
+        ctx.strokeStyle = 'rgba(200,200,200,0.3)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(20, 55);
+        ctx.lineTo(width - 20, 55);
+        ctx.stroke();
+        
+        // 绘制水印（半透明斜向水印）
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.font = '14px Georgia, serif';
+        ctx.textAlign = 'center';
+        ctx.translate(width/2, height/2);
+        ctx.rotate(-0.3);
+        ctx.fillText('小红书5508697487@地月双尸', 0, -10);
+        ctx.fillText('小红书26183246310@连城', 0, 15);
+        ctx.restore();
+        
+        // 绘制底部水印（清晰版）
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.font = '11px Georgia, serif';
         ctx.textAlign = 'left';
-        ctx.fillText('小红书5508697487@地月双尸', 10, height - 25);
+        ctx.fillText('小红书5508697487@地月双尸', 10, height - 20);
         ctx.textAlign = 'right';
-        ctx.fillText('小红书26183246310@连城', width - 10, height - 25);
+        ctx.fillText('小红书26183246310@连城', width - 10, height - 20);
         
         // 导出图片
         const link = document.createElement('a');
