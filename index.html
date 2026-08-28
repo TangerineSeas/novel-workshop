@@ -534,7 +534,7 @@ let devData = {
 
 const SUPABASE_URL = 'https://upylpcsuqqevergsrits.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVweWxwY3N1cXFldmVyZ3NyaXRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MzU1NjgsImV4cCI6MjEwMzQxMTU2OH0.8XrIA8g5yq8tL8bTAGe-XtJbGhOXv_mrwyiT80BEXmA';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUserId = null;
     function currentWork() { return works.find(w => w.id === currentWorkId) || null; }
 
@@ -814,7 +814,7 @@ async function saveAll() {
     // 保存到Supabase
     if(!currentUserId) return;
     try {
-        const { error } = await supabase
+        const { error } = await db
             .from('user_data')
             .upsert({
                 user_id: currentUserId,
@@ -1662,7 +1662,7 @@ async function init() {
     
     // 然后从Supabase加载云端数据
     try {
-        const { data, error } = await supabase
+        const { data, error } = await db
             .from('user_data')
             .select('data')
             .eq('user_id', currentUserId)
