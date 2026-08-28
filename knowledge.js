@@ -197,7 +197,7 @@ const KNOWLEDGE_DATA = [
     title: "中世纪妇女的角色",
     content: "按照当时的官方要求，妇女必须服从男性，无论是父亲、丈夫还是其他亲属。妇女的工作通常包括家务或其他家庭任务，如照顾儿童。农民妇女可以通过在家纺纱或酿酒来增加家庭收入，在收获季节也需在田间劳作。城镇妇女可以从事贸易，但通常是通过丈夫的权利，且不总是被允许培训学徒。贵族妇女可以在缺乏男性继承人时继承土地。",
     references: ["Power, E. Medieval Women. Cambridge University Press, 1975."]
-  }
+  },
     // ========== 四、农业与乡村 ==========
   {
     category: "农业与乡村",
@@ -318,7 +318,7 @@ const KNOWLEDGE_DATA = [
     title: "羊毛贸易",
     content: "羊毛是中世纪欧洲最重要的贸易商品之一。英格兰尤其以优质羊毛闻名，羊毛出口成为英格兰经济的重要支柱。新出现的西多会和奥古斯丁修会成为了北方羊毛贸易的重要参与者。羊毛从英格兰等地运往佛兰德斯和意大利的纺织中心，加工成呢绒后再销往全欧洲。这一贸易链条催生了大量的财富和城市繁荣。",
     references: ["Lopez, R.S. The Commercial Revolution of the Middle Ages, 950-1350. Cambridge University Press, 1976."]
-  }
+  },
   // ========== 六、宗教与教会 ==========
   {
     category: "宗教与教会",
@@ -454,7 +454,7 @@ const KNOWLEDGE_DATA = [
     title: "彩绘手稿",
     content: "彩绘手稿是中世纪书籍艺术的最高成就。抄写员用鹅毛笔在羊皮纸上抄写文字，画家则用金箔和矿物颜料绘制精美的首字母装饰和插图。彩绘手稿的制作极其耗时耗力，一本大型圣经可能需要数年才能完成。因此，彩绘手稿极其昂贵，只有教堂、修道院和极富裕的贵族才能拥有。彩绘手稿是研究中世纪绘画、信仰和日常生活的重要资料。",
     references: ["McKendrick, S. & Doyle, K. The Art of the Bible: Illuminated Manuscripts from the Medieval World. Thames & Hudson, 2016."]
-  }
+  },
   // ========== 九、医学与科学 ==========
   {
     category: "医学与科学",
@@ -577,7 +577,7 @@ const KNOWLEDGE_DATA = [
     title: "中世纪建筑技术",
     content: "中世纪的建筑技术以石砌和木构为主。石匠是备受尊敬的职业，他们负责教堂、城堡和城墙的建造。石匠行会保守着建筑技术的秘密，包括拱券的砌筑、飞扶壁的搭建和脚手架的架设等。中世纪的建筑工地组织严密——石匠、木匠、铁匠、瓦匠各司其职，大教堂的建造往往需要数十年甚至上百年才能完成。",
     references: ["Stalley, R. Early Medieval Architecture. Oxford University Press, 1999."]
-  }
+  },
   // ========== 十三、神话与信仰 ==========
   {
     category: "神话与信仰",
