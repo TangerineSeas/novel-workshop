@@ -875,9 +875,28 @@ function updateStyle() {
     if(bg.startsWith('custom_')) {
         const bgData = devData.customBackgrounds.find(b => b.id === bg);
         if(bgData) { paper.style.background = `url(${bgData.dataURL}) center/cover no-repeat`; }
-    } else if(bg === 'parchment') { paper.style.background = '#f4e4c1'; ed.style.color = '#3d2b1f'; }
-    else if(bg === 'lined') { paper.style.backgroundImage = isLight ? 'repeating-linear-gradient(transparent,transparent 31px,#ccc 31px,#ccc 32px)' : 'repeating-linear-gradient(transparent,transparent 31px,#333 31px,#333 32px)'; paper.style.backgroundColor = isLight ? '#fff' : '#1e2a45'; }
-    else if(bg === 'grid') { paper.style.backgroundImage = isLight ? 'repeating-linear-gradient(transparent,transparent 20px,#ddd 20px,#ddd 21px),repeating-linear-gradient(90deg,transparent,transparent 20px,#ddd 20px,#ddd 21px)' : 'repeating-linear-gradient(transparent,transparent 20px,#333 20px,#333 21px),repeating-linear-gradient(90deg,transparent,transparent 20px,#333 20px,#333 21px)'; paper.style.backgroundColor = isLight ? '#fff' : '#1e2a45'; }
+    } else if(bg === 'parchment') { 
+        paper.style.background = '#f4e4c1'; 
+        ed.style.color = '#3d2b1f'; 
+    }
+    else if(bg === 'lined') {
+        // 动态计算行高
+        const fontSize = parseFloat(ed.style.fontSize) || 16;
+        const lineHeight = parseFloat(ed.style.lineHeight) || 1.8;
+        const lineHeightPx = fontSize * lineHeight;
+        const lineColor = getComputedStyle(document.documentElement).getPropertyValue('--lined-line-color').trim() || '#ccc';
+        // 横线在每行中间
+        paper.style.backgroundImage = `linear-gradient(transparent calc(50% - 0.5px), ${lineColor} calc(50% - 0.5px), ${lineColor} calc(50% + 0.5px), transparent calc(50% + 0.5px))`;
+        paper.style.backgroundSize = `100% ${lineHeightPx}px`;
+        paper.style.backgroundColor = 'transparent';
+    }
+    else if(bg === 'grid') {
+        // 方格颜色使用主题变量，默认变浅
+        const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--grid-line-color').trim() || 'rgba(180,180,180,0.3)';
+        paper.style.backgroundImage = `linear-gradient(${gridColor} 1px, transparent 1px), linear-gradient(90deg, ${gridColor} 1px, transparent 1px)`;
+        paper.style.backgroundSize = '20px 20px';
+        paper.style.backgroundColor = 'transparent';
+    }
     const w = currentWork();
     if(w) { w.editorSettings = { fontFamily:fontFamily.value, fontSize:fontSize.value, fontColor:fontColor.value, lineHeight:lineHeight.value, letterSpacing:letterSpacing.value, paperBg:paperBg.value }; }
 }
