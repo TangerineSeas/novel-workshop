@@ -799,7 +799,7 @@ function updateWordCount() {
     const w = currentWork();
     if(w) {
         const ch = w.chapters.find(c => c.id === w.currentChapterId) || w.chapters[0];
-        if(ch) { ch.content = document.getElementById('editor').value; ch.wordCount = len; }
+        if(ch) { ch.content = document.getElementById('editor').value; ch.wordCount = len; renderChapters(); }
         const today = new Date().toISOString().slice(0,10);
         w.dailyWordCounts = w.dailyWordCounts || {};
         w.dailyWordCounts[today] = len;
