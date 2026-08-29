@@ -581,10 +581,10 @@ function goPage(page) {
     if(page === 'dev') { renderDevQuestionList(); renderDevNameList(); renderDevKbList(); }
 }
 
-const themes = ['dark', 'light', 'parchment', 'deepsea', 'black', 'pink'];
-const themeIcons = { dark: '🌙', light: '☀️', parchment: '📜', deepsea: '🌊', black: '⬛', pink: '🌹' };
-const themeNames = { dark: '深蓝', light: '浅色', parchment: '羊皮纸', deepsea: '深海', black: '暗黑', pink: '粉色' };
-
+const themes = ['dark', 'light', 'parchment', 'deepsea', 'black', 'pink', 'retrogreen'];
+const themeIcons = { dark: '🌙', light: '☀️', parchment: '📜', deepsea: '🌊', black: '⬛', pink: '🌹', retrogreen: '📗' };
+const themeNames = { dark: '深蓝', light: '浅色', parchment: '羊皮纸', deepsea: '深海', black: '暗黑', pink: '粉色', retrogreen: '复古绿' };
+    
 function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     const currentIndex = themes.indexOf(current);
