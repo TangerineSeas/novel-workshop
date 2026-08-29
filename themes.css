@@ -878,3 +878,255 @@
     pointer-events: none;
     z-index: 0;
 }
+
+/* ========== 粉色主题 ========== */
+[data-theme="pink"]{
+    --bg:#fce4ec;--bg2:#fff0f3;--bg3:#f8d4dd;--card:#fff5f7;
+    --text:#4a2028;--text2:#8a5a62;--accent:#c94a6a;--accent2:#d46a88;
+    --border:#e8c4cc;--gold:#c9a83f;--danger:#c94a4a;--success:#5aaf7a;
+    --link:#b83a5a;--main:#c94a4a;--important:#c98a3f;--minor:#9a8088;--dev:#c94a6a;
+}
+
+[data-theme="pink"] body {
+    background:
+        radial-gradient(ellipse 50% 40% at 15% 15%, rgba(201,74,106,0.08), transparent),
+        radial-gradient(ellipse 45% 35% at 85% 25%, rgba(201,74,106,0.06), transparent),
+        radial-gradient(ellipse 55% 45% at 50% 70%, rgba(201,74,106,0.05), transparent),
+        radial-gradient(ellipse 60% 50% at 70% 10%, rgba(160,50,80,0.04), transparent),
+        linear-gradient(180deg, #fce4ec, #f8d8e0, #fce4ec);
+}
+
+/* 粉色主题：深红色装饰 */
+[data-theme="pink"] .header {
+    background:
+        radial-gradient(ellipse 30% 70% at 20% 50%, rgba(160,50,80,0.1), transparent),
+        radial-gradient(ellipse 25% 60% at 80% 50%, rgba(160,50,80,0.08), transparent),
+        linear-gradient(to bottom, #fff0f3, #f8d4dd);
+    border-bottom: 2px solid #d4a0ac;
+}
+
+[data-theme="pink"] .logo::after {
+    content: "🕊️";
+    position: absolute;
+    top: -4px;
+    right: -20px;
+    font-size: 0.7em;
+}
+
+[data-theme="pink"] .home-hero h1::before {
+    content: "🌹 ";
+}
+
+[data-theme="pink"] .home-hero h1::after {
+    content: " 🕊️";
+}
+
+[data-theme="pink"] .card {
+    position: relative;
+    border: 1px solid #e0bcc4;
+    box-shadow: 2px 3px 12px rgba(160,50,80,0.1);
+}
+
+[data-theme="pink"] .card::before {
+    content: "🌹";
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 0.9em;
+    opacity: 0.4;
+}
+
+[data-theme="pink"] .card::after {
+    content: "🕊️";
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    font-size: 0.8em;
+    opacity: 0.3;
+}
+
+[data-theme="pink"] .editor-paper {
+    background: #fff5f7;
+    border: 1px solid #e0bcc4;
+    box-shadow: 3px 4px 18px rgba(160,50,80,0.12);
+    position: relative;
+}
+
+[data-theme="pink"] .editor-paper::before {
+    content: "🌹 🕊️ 🌹";
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 0.8em;
+    opacity: 0.35;
+    letter-spacing: 5px;
+}
+
+[data-theme="pink"] .editor-paper::after {
+    content: "💗 💗 💗";
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    font-size: 0.7em;
+    opacity: 0.3;
+    letter-spacing: 6px;
+}
+
+[data-theme="pink"] .btn {
+    border: 1px solid #c94a6a;
+    color: #c94a6a;
+    background: transparent;
+    border-radius: 4px;
+    transition: all .2s;
+}
+
+[data-theme="pink"] .btn:hover {
+    background: #c94a6a;
+    color: #fff0f3;
+}
+
+[data-theme="pink"] .btn-primary {
+    background: #c94a6a;
+    border: 1px solid #c94a6a;
+    color: #fff;
+}
+
+[data-theme="pink"] .btn-primary:hover {
+    background: #a83a5a;
+    color: #fff;
+}
+
+[data-theme="pink"] .form-input,
+[data-theme="pink"] .form-textarea,
+[data-theme="pink"] .form-select {
+    background: #fff5f7;
+    border: 1px solid #e0bcc4;
+    color: #4a2028;
+}
+
+[data-theme="pink"] .form-input:focus,
+[data-theme="pink"] .form-textarea:focus {
+    border-color: #c94a6a;
+    box-shadow: 0 0 8px rgba(201,74,106,0.25);
+}
+
+[data-theme="pink"] .sb-item {
+    border-left: 3px solid #d4a0ac;
+    background: #fff0f3;
+}
+
+[data-theme="pink"] .sb-item:hover {
+    border-left-color: #c94a6a;
+    background: #f8d4dd;
+}
+
+[data-theme="pink"] .entry-item {
+    background: #fff0f3;
+    border: 1px solid #e0bcc4;
+}
+
+[data-theme="pink"] .entry-item:hover {
+    border-color: #c94a6a;
+}
+
+[data-theme="pink"] .work-card {
+    background:
+        radial-gradient(ellipse 50% 40% at 30% 25%, rgba(201,74,106,0.08), transparent),
+        linear-gradient(180deg, #fff0f3, #fff5f7);
+    border: 1px solid #e0bcc4;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="pink"] .work-card::before {
+    content: "🌹";
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    font-size: 0.8em;
+    opacity: 0.3;
+}
+
+[data-theme="pink"] .work-card::after {
+    content: "💗";
+    position: absolute;
+    bottom: 5px;
+    left: 8px;
+    font-size: 0.7em;
+    opacity: 0.25;
+}
+
+[data-theme="pink"] .char-card {
+    background:
+        radial-gradient(3px 3px at 20% 25%, rgba(160,50,80,0.3), transparent),
+        radial-gradient(2px 2px at 70% 15%, rgba(160,50,80,0.25), transparent),
+        linear-gradient(180deg, #fff0f3, #fff5f7);
+    border: 1px solid #e0bcc4;
+}
+
+[data-theme="pink"] .nav-btn.active {
+    background: #c94a6a;
+    color: #fff;
+    border-radius: 3px;
+}
+
+[data-theme="pink"] .tools-tab.active,
+[data-theme="pink"] .wv-tab.active {
+    background: #c94a6a;
+    color: #fff;
+}
+
+[data-theme="pink"] .progress-fill {
+    background: linear-gradient(90deg, #c94a6a, #d46a88, #c94a6a);
+}
+
+[data-theme="pink"] .save-toast {
+    background: #fff0f3;
+    border: 1px solid #c94a6a;
+    color: #4a2028;
+}
+
+[data-theme="pink"] .badge-main { background: #a83a5a; }
+[data-theme="pink"] .badge-important { background: #c96a4a; }
+[data-theme="pink"] .badge-minor { background: #9a8088; }
+
+[data-theme="pink"] .modal-content {
+    background: #fff5f7;
+    border: 1px solid #e0bcc4;
+    box-shadow: 0 0 30px rgba(160,50,80,0.2);
+}
+
+[data-theme="pink"] .entry-link {
+    color: #b83a5a;
+}
+
+[data-theme="pink"] ::-webkit-scrollbar-thumb {
+    background: #d4a0ac;
+    border-radius: 3px;
+}
+
+[data-theme="pink"] .search-box::placeholder {
+    color: rgba(160,50,80,0.4);
+    font-style: italic;
+}
+
+[data-theme="pink"] .sb-title::before {
+    content: "💗 ";
+    font-size: 0.7em;
+}
+
+[data-theme="pink"] .stat-num {
+    color: #c94a6a !important;
+}
+
+[data-theme="pink"] .home-hero p::before {
+    content: "🕊️ ";
+    opacity: 0.5;
+    font-size: 0.8em;
+}
+
+[data-theme="pink"] .home-hero p::after {
+    content: " 🌹";
+    opacity: 0.5;
+    font-size: 0.8em;
+}
