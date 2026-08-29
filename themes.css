@@ -1121,8 +1121,7 @@
         radial-gradient(80px 80px at 80% 20%, rgba(40,40,80,0.25), transparent),
         radial-gradient(60px 60px at 20% 80%, rgba(45,45,90,0.25), transparent),
         linear-gradient(180deg, #0a0a14, #0d0d1a, #0a0a14);
-    background-attachment: fixed;
-}
+    
 
 /* ========== 羊皮纸主题·大面积纹理 ========== */
 [data-theme="parchment"] body {
@@ -1141,7 +1140,7 @@
         repeating-linear-gradient(0deg, rgba(139,94,52,0.03) 0px, rgba(139,94,52,0.03) 2px, transparent 2px, transparent 6px),
         repeating-linear-gradient(90deg, rgba(139,94,52,0.02) 0px, rgba(139,94,52,0.02) 2px, transparent 2px, transparent 8px),
         linear-gradient(180deg, #ecd9b0, #e8d4a5, #ecd9b0);
-    background-attachment: fixed;
+    
 }
 
 /* ========== 深海主题·大面积海洋波纹 ========== */
@@ -1158,5 +1157,79 @@
         repeating-linear-gradient(180deg, rgba(167,207,238,0.05) 0px, rgba(167,207,238,0.05) 20px, transparent 20px, transparent 40px),
         repeating-linear-gradient(90deg, rgba(167,207,238,0.03) 0px, rgba(167,207,238,0.03) 30px, transparent 30px, transparent 60px),
         linear-gradient(180deg, #0b2344 0%, #0d2a50 25%, #0f2f55 50%, #0c2850 75%, #081828 100%);
-    background-attachment: fixed;
+
+}
+
+    [data-theme="deepsea"] .modal {
+    z-index: 2000 !important;
+}
+
+[data-theme="deepsea"] .modal-close,
+[data-theme="deepsea"] .cp-close {
+    z-index: 2001 !important;
+    position: relative;
+}
+
+    /* 羊皮纸·墨斑装饰 */
+[data-theme="parchment"] .page-scroll {
+    position: relative;
+}
+
+[data-theme="parchment"] .page-scroll::before {
+    content: "";
+    position: fixed;
+    top: 15%;
+    right: 5%;
+    width: 80px;
+    height: 60px;
+    background: radial-gradient(ellipse 40% 50% at 40% 50%, rgba(80,50,20,0.1), transparent);
+    border-radius: 50%;
+    filter: blur(3px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+[data-theme="parchment"] .page-scroll::after {
+    content: "";
+    position: fixed;
+    bottom: 20%;
+    left: 8%;
+    width: 50px;
+    height: 40px;
+    background: radial-gradient(ellipse 45% 55% at 50% 50%, rgba(80,50,20,0.08), transparent);
+    border-radius: 50%;
+    filter: blur(4px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+[data-theme="parchment"] .card::before {
+    content: "❧";
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    color: rgba(139,94,52,0.5);
+    font-size: 1.2em;
+}
+
+[data-theme="parchment"] .entry-item::before {
+    content: "◦ ";
+    color: rgba(139,94,52,0.4);
+}
+
+[data-theme="parchment"] .sb-item-title::before {
+    content: "❧ ";
+    color: rgba(139,94,52,0.35);
+    font-size: 0.8em;
+}
+
+[data-theme="parchment"] .btn::first-letter {
+    font-size: 1.2em;
+    color: #8b5e34;
+}
+
+[data-theme="parchment"] .form-input::placeholder,
+[data-theme="parchment"] .form-textarea::placeholder {
+    font-style: italic;
+    color: rgba(139,94,52,0.5);
 }
