@@ -1667,3 +1667,23 @@
 [data-theme="retrogreen"] .entry-link {
     color: #515f40;
 }
+
+/* 移动端主题面板修复 */
+@media (max-width: 900px) {
+    #themePanel {
+        top: auto !important;
+        bottom: 70px !important;
+        right: 10px !important;
+        left: 10px !important;
+        max-width: none !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        padding: 12px !important;
+    }
+    
+    #themePanel > div {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 1.1em !important;
+    }
+}
