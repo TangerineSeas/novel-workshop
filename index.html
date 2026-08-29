@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>西幻创作工坊 v3.1.2</title>
 <link rel="stylesheet" href="themes.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Long+Cang&family=Ma+Shan+Zheng&display=swap" rel="stylesheet"><script src="knowledge.js"></script>
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="names.js"></script>
     <link rel="stylesheet" href="tools-magic.css">
 <script src="tools-magic.js"></script>
@@ -1606,7 +1606,7 @@ function refreshEditorOptions() {
     paperSelect.value = currentPaper;
     const fontSelect = document.getElementById('fontFamily');
     const currentFont = fontSelect.value;
-    fontSelect.innerHTML = "<option value='Georgia,serif'>Georgia</option><option value='Times New Roman,serif'>Times</option><option value='Arial,sans-serif'>Arial</option><option value='Courier New,monospace'>Courier</option><option value='Palatino Linotype,serif'>Palatino</option>";
+      fontSelect.innerHTML = "<option value='Georgia,serif'>Georgia</option><option value='Times New Roman,serif'>Times</option><option value='Arial,sans-serif'>Arial</option><option value='Courier New,monospace'>Courier</option><option value='Palatino Linotype,serif'>Palatino</option><option value='Ma Shan Zheng,serif'>手写体（马善政）</option><option value='Noto Serif SC,serif'>宋体（思源宋体）</option><option value='Noto Sans SC,sans-serif'>黑体（思源黑体）</option>";
     devData.customFonts.forEach(f => { const o = document.createElement('option'); o.value = f.family; o.textContent = f.name; fontSelect.appendChild(o); });
     fontSelect.value = currentFont;
 }
