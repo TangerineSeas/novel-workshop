@@ -798,7 +798,7 @@ const KNOWLEDGE_DATA = [
     title: "巨龙",
     content: "巨龙（Dragon）是中世纪最广为人知、也最具代表性的传说生物。在动物寓言集中，它通常被描绘为体型最大的蛇类，常常是'魔鬼'的化身。到了后世，龙的形象不断演变，被赋予了更复杂的形态与习性，成为奇幻作品中力量、智慧乃至贪婪的象征，从喷火的毁灭者到守护秘密的古老存在皆有出现。",
     references: ["T.H. White, The Book of Beasts: Being a Translation from a Latin Bestiary of the Twelfth Century（动物之书）", "王慧萍《怪物考：中世纪幻想艺术图文志》，2015年"]
-  }
+  },
   // ========== 世界构建与叙事类型 ==========
   {
     category: "世界构建与叙事类型",
