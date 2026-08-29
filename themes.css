@@ -865,10 +865,6 @@
     align-items: center !important;
 }
 
-[data-theme="deepsea"] .modal-content {
-    margin: auto;
-    max-height: 80vh;
-}
 
 /* ========== 暗黑主题·星空装饰 ========== */
 [data-theme="black"] body {
@@ -1070,12 +1066,6 @@
     background: #fdf6e3;
     border: 1px solid #c9b896;
     color: #3d2b1f;
-}
-
-[data-theme="deepsea"] .modal {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
 }
 
 [data-theme="deepsea"] .modal.active {
@@ -1365,4 +1355,20 @@
 [data-theme="deepsea"] .modal-content {
     z-index: 1001 !important;
     position: relative !important;
+}
+
+[data-theme="deepsea"] .modal {
+    display: none;
+}
+
+[data-theme="deepsea"] .modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme="deepsea"] .modal-close {
+    cursor: pointer;
+    z-index: 10;
+    position: relative;
 }
