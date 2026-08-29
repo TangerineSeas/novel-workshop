@@ -438,3 +438,317 @@
     border: 1px solid #2a4a6a;
     box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
 }
+/* ========== 深海主题装饰·进阶 ========== */
+
+/* 全局背景：深海渐变+气泡 */
+[data-theme="deepsea"] body {
+    background: linear-gradient(180deg, #0b2344 0%, #0d2a50 30%, #0f2f55 60%, #0b2344 100%);
+    position: relative;
+}
+
+[data-theme="deepsea"] body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(3px 3px at 15% 40%, rgba(255,255,255,0.15), transparent),
+        radial-gradient(2px 2px at 35% 70%, rgba(255,255,255,0.1), transparent),
+        radial-gradient(4px 4px at 55% 30%, rgba(255,255,255,0.12), transparent),
+        radial-gradient(2px 2px at 75% 60%, rgba(255,255,255,0.1), transparent),
+        radial-gradient(3px 3px at 90% 20%, rgba(255,255,255,0.15), transparent),
+        radial-gradient(2px 2px at 5% 90%, rgba(255,255,255,0.08), transparent),
+        radial-gradient(5px 5px at 45% 50%, rgba(255,255,255,0.06), transparent),
+        radial-gradient(3px 3px at 65% 85%, rgba(255,255,255,0.1), transparent),
+        radial-gradient(2px 2px at 25% 15%, rgba(255,255,255,0.12), transparent),
+        radial-gradient(4px 4px at 85% 75%, rgba(255,255,255,0.08), transparent);
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 0;
+    animation: deepsea-bubbles 8s ease-in-out infinite alternate;
+}
+
+@keyframes deepsea-bubbles {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-20px); }
+}
+
+/* Logo：加波浪效果 */
+[data-theme="deepsea"] .logo {
+    position: relative;
+    display: inline-block;
+}
+
+[data-theme="deepsea"] .logo::after {
+    content: "﹏﹏﹏";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #a7cfee;
+    font-size: 0.5em;
+    letter-spacing: 3px;
+    opacity: 0.6;
+}
+
+/* 侧边栏标题装饰 */
+[data-theme="deepsea"] .sb-title::before {
+    content: "◦ ";
+    color: #a7cfee;
+}
+
+[data-theme="deepsea"] .sb-title::after {
+    content: " ◦";
+    color: #a7cfee;
+}
+
+/* 新建作品按钮：发光效果 */
+[data-theme="deepsea"] .new-work-btn {
+    background: transparent;
+    border: 1px solid #a7cfee;
+    color: #daefff;
+    box-shadow: 0 0 15px rgba(167,207,238,0.3);
+    transition: all .3s;
+    font-variant: small-caps;
+    letter-spacing: 0.1em;
+}
+
+[data-theme="deepsea"] .new-work-btn:hover {
+    background: #daefff;
+    color: #0b2344;
+    box-shadow: 0 0 25px rgba(167,207,238,0.6);
+}
+
+/* 统计卡片：加装饰边框 */
+[data-theme="deepsea"] .stat-card {
+    position: relative;
+    border: 1px solid #2a4a6a;
+    background: linear-gradient(180deg, #0f2a4a, #112d50);
+}
+
+[data-theme="deepsea"] .stat-card::before {
+    content: "❖";
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(167,207,238,0.3);
+    font-size: 0.6em;
+}
+
+[data-theme="deepsea"] .stat-num {
+    color: #daefff !important;
+    text-shadow: 0 0 10px rgba(167,207,238,0.4);
+}
+
+/* 人物卡片：加鳞片纹理 */
+[data-theme="deepsea"] .char-card {
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="deepsea"] .char-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(15px 15px at 20% 30%, rgba(167,207,238,0.05), transparent),
+        radial-gradient(20px 20px at 80% 70%, rgba(167,207,238,0.04), transparent),
+        radial-gradient(12px 12px at 60% 20%, rgba(167,207,238,0.06), transparent);
+    pointer-events: none;
+}
+
+/* 人设头像：加光晕圈 */
+[data-theme="deepsea"] .char-card-avatar {
+    border: 2px solid #3a5a7a;
+    box-shadow: 0 0 12px rgba(167,207,238,0.3);
+}
+
+[data-theme="deepsea"] .cp-avatar {
+    border: 2px solid #3a5a7a;
+    box-shadow: 0 0 15px rgba(167,207,238,0.4);
+}
+
+/* 进度条：加波浪填充 */
+[data-theme="deepsea"] .progress-bar {
+    background: #0b2344;
+    border: 1px solid #2a4a6a;
+    overflow: hidden;
+}
+
+[data-theme="deepsea"] .progress-fill {
+    background: linear-gradient(90deg, #2a4a6a, #a7cfee, #2a4a6a);
+    background-size: 200% 100%;
+    animation: deepsea-progress 2s linear infinite;
+}
+
+@keyframes deepsea-progress {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+/* 搜索框：加放大镜装饰 */
+[data-theme="deepsea"] .search-box {
+    position: relative;
+}
+
+[data-theme="deepsea"] .search-box::placeholder {
+    color: rgba(167,207,238,0.5);
+    font-style: italic;
+}
+
+/* 下拉菜单：加装饰 */
+[data-theme="deepsea"] .form-select {
+    background-image: linear-gradient(45deg, transparent 50%, #a7cfee 50%),
+        linear-gradient(135deg, #a7cfee 50%, transparent 50%);
+    background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+}
+
+/* 按钮组：加间隔装饰 */
+[data-theme="deepsea"] .btn-row {
+    position: relative;
+}
+
+/* 保存提示：加波纹 */
+[data-theme="deepsea"] .save-toast {
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="deepsea"] .save-toast::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #a7cfee, transparent);
+}
+
+/* 章节列表：每个章节前加小装饰 */
+[data-theme="deepsea"] .sb-item-title::before {
+    content: "◦ ";
+    color: rgba(167,207,238,0.5);
+}
+
+/* 人物关系图：加背景装饰 */
+[data-theme="deepsea"] .relation-section {
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="deepsea"] .relation-section::before {
+    content: "⋆ ⋆ ⋆";
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    color: rgba(167,207,238,0.2);
+    letter-spacing: 8px;
+    font-size: 0.8em;
+}
+
+/* 世界观问卷卡片：加星角装饰 */
+[data-theme="deepsea"] .wv-tab.active {
+    position: relative;
+}
+
+[data-theme="deepsea"] .wv-tab.active::before {
+    content: "✦";
+    margin-right: 5px;
+    color: #0b2344;
+    font-size: 0.7em;
+}
+
+/* 历法日历：加装饰 */
+[data-theme="deepsea"] .cal-day.festival {
+    background: rgba(167,207,238,0.1);
+    border-color: #a7cfee;
+    box-shadow: 0 0 8px rgba(167,207,238,0.2);
+}
+
+/* 章节输入框：加内阴影 */
+[data-theme="deepsea"] .form-input,
+[data-theme="deepsea"] .form-textarea {
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* 通用链接装饰 */
+[data-theme="deepsea"] a {
+    position: relative;
+}
+
+[data-theme="deepsea"] .entry-item .entry-name::before {
+    content: "❖ ";
+    color: rgba(167,207,238,0.5);
+    font-size: 0.7em;
+}
+
+/* 工具标签装饰 */
+[data-theme="deepsea"] .tools-tab.active::before {
+    content: "◈ ";
+    color: #0b2344;
+    font-size: 0.7em;
+}
+
+/* 开发者模式标题装饰 */
+[data-theme="deepsea"] .dev-header {
+    background: linear-gradient(135deg, #0b2344, #1a3a63, #0b2344);
+    border: 1px solid #3a5a7a;
+    box-shadow: 0 0 30px rgba(167,207,238,0.2);
+}
+
+[data-theme="deepsea"] .dev-header h2::before {
+    content: "🔱 ";
+}
+
+/* 弹窗关闭按钮装饰 */
+[data-theme="deepsea"] .modal-close:hover,
+[data-theme="deepsea"] .cp-close:hover {
+    color: #a7cfee;
+    text-shadow: 0 0 8px rgba(167,207,238,0.6);
+}
+
+/* 时间线输入框装饰 */
+[data-theme="deepsea"] .timeline-entry input {
+    border-left: 2px solid #3a5a7a;
+}
+
+/* 整体字体微调 */
+[data-theme="deepsea"] {
+    letter-spacing: 0.01em;
+}
+
+[data-theme="deepsea"] h1,
+[data-theme="deepsea"] h2,
+[data-theme="deepsea"] h3,
+[data-theme="deepsea"] h4 {
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+}
+
+/* 装饰符号点缀 */
+[data-theme="deepsea"] .home-hero p::before {
+    content: "✦ ";
+    color: rgba(167,207,238,0.5);
+}
+
+[data-theme="deepsea"] .home-hero p::after {
+    content: " ✦";
+    color: rgba(167,207,238,0.5);
+}
+
+/* 按钮发光效果 */
+[data-theme="deepsea"] .btn-primary {
+    box-shadow: 0 0 10px rgba(167,207,238,0.2);
+}
+
+[data-theme="deepsea"] .btn-primary:hover {
+    box-shadow: 0 0 20px rgba(167,207,238,0.5);
+}
