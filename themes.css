@@ -257,3 +257,184 @@
 [data-theme="deepsea"] ::-webkit-scrollbar-thumb:hover {
     background: #3a5a7a;
 }
+/* ========== 深海主题装饰 ========== */
+
+/* 顶部导航：加星空闪烁效果 */
+[data-theme="deepsea"] .header {
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="deepsea"] .header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 60% 20%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 80% 60%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 90% 40%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 50% 90%, rgba(255,255,255,0.5), transparent);
+    background-repeat: no-repeat;
+    pointer-events: none;
+    animation: deepsea-twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes deepsea-twinkle {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* 侧边栏：加波浪装饰线 */
+[data-theme="deepsea"] .sidebar {
+    position: relative;
+}
+
+[data-theme="deepsea"] .sidebar::after {
+    content: "～ ～ ～ ～ ～ ～";
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(167,207,238,0.3);
+    font-size: 0.75em;
+    letter-spacing: 4px;
+    white-space: nowrap;
+}
+
+/* 主页标题装饰 */
+[data-theme="deepsea"] .home-hero h1::before {
+    content: "𓇼 ";
+    color: #a7cfee;
+}
+
+[data-theme="deepsea"] .home-hero h1::after {
+    content: " 𓆜⋆˚࿔";
+    color: #a7cfee;
+}
+
+/* 卡片四角装饰 */
+[data-theme="deepsea"] .card {
+    position: relative;
+}
+
+[data-theme="deepsea"] .card::before {
+    content: "✦";
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    color: rgba(167,207,238,0.5);
+    font-size: 0.8em;
+}
+
+[data-theme="deepsea"] .card::after {
+    content: "✧";
+    position: absolute;
+    bottom: 8px;
+    left: 12px;
+    color: rgba(167,207,238,0.4);
+    font-size: 0.7em;
+}
+
+/* 作品卡片：海洋渐变边框 */
+[data-theme="deepsea"] .work-card {
+    background: linear-gradient(180deg, #0f2a4a, #112d50);
+    border: 1px solid #2a4a6a;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="deepsea"] .work-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1a3a63, #a7cfee, #1a3a63);
+}
+
+/* 章节列表选中项：波浪下划线 */
+[data-theme="deepsea"] .sb-item.active {
+    position: relative;
+}
+
+[data-theme="deepsea"] .sb-item.active::after {
+    content: "﹏﹏﹏";
+    position: absolute;
+    bottom: 2px;
+    left: 10px;
+    color: #a7cfee;
+    font-size: 0.6em;
+    letter-spacing: 2px;
+}
+
+/* 编辑器纸张：加海波纹装饰 */
+[data-theme="deepsea"] .editor-paper {
+    position: relative;
+}
+
+[data-theme="deepsea"] .editor-paper::after {
+    content: "◦ ◦ ◦ ◦ ◦ ◦ ◦ ◦ ◦ ◦";
+    position: absolute;
+    bottom: 15px;
+    right: 25px;
+    color: rgba(167,207,238,0.25);
+    font-size: 0.7em;
+    letter-spacing: 5px;
+}
+
+/* 弹窗：加光晕 */
+[data-theme="deepsea"] .modal-content {
+    box-shadow: 0 0 50px rgba(167,207,238,0.3), inset 0 0 30px rgba(0,0,0,0.3);
+    border: 1px solid #3a5a7a;
+}
+
+/* 按钮：加下划线装饰 */
+[data-theme="deepsea"] .nav-btn {
+    position: relative;
+}
+
+[data-theme="deepsea"] .nav-btn:hover::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: #a7cfee;
+}
+
+/* 工具栏：底部加波光 */
+[data-theme="deepsea"] .toolbar {
+    position: relative;
+    border-bottom: 1px solid #2a4a6a;
+}
+
+[data-theme="deepsea"] .toolbar::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(167,207,238,0.5), transparent);
+    animation: deepsea-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes deepsea-shimmer {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+/* 关系图谱区域：加边框装饰 */
+[data-theme="deepsea"] #relationCanvas {
+    border: 1px solid #2a4a6a;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+}
