@@ -757,6 +757,48 @@ const KNOWLEDGE_DATA = [
     content: "中世纪欧洲人相信，在遥远的非洲、印度和东方地区生活着各种身体畸形的种族——如只有一只脚、躺下时用大脚遮阳的民族；五官长在胸前、没有头部的民族；狗头人身的民族等。这些"畸形种族"的传说源于古典地理学对未知世界的想象，后来被基督教纳入"上帝造物多样性"的神学框架。中世纪地图的边角常绘有这些怪人的形象，既是地理知识也是宗教寓言的呈现。",
     references: ["王慧萍《怪物考：中世纪的幻想文化志》，2015年，如果出版社"]
   },
+  {
+    category: "怪物与奇异生物",
+    subcategory: "奇幻/生物",
+    title: "曼提柯尔",
+    content: "曼提柯尔（Manticore）是动物寓言集中一种穷凶极恶的怪物，据说出没于亚洲的丛林中。它的外形极具迷惑性：拥有血红色的狮子身体、人类的面孔、三排锐利的牙齿，以及一条蝎子般的尾巴。它行动极为迅捷，能进行远距离跳跃，且以人肉为食，是中世纪想象中"最残忍、外形最奇特的野兽"。",
+    references: ["王慧萍《怪物考：中世纪幻想艺术图文志》，2015年", "Biggs, S.J. Weird and Wonderful Creatures of the Bestiary. The British Library, 2014."]
+  },
+  {
+    category: "怪物与奇异生物",
+    subcategory: "奇幻/生物",
+    title: "双头蛇",
+    content: "双头蛇（Amphivena/Amphisbaena）是一种外形古怪的蛇类生物，其名字来源于它独特的身体构造。据记载，它身体的两端各有一个头部，因此可以呈环形移动，并能向任一方向行进。古罗马学者老普林尼将其描述为一种剧毒而凶猛的野兽。在中世纪，它常被描绘成一种自我攻击的奇特生物。",
+    references: ["王慧萍《怪物考：中世纪幻想艺术图文志》，2015年", "Biggs, S.J. Weird and Wonderful Creatures of the Bestiary. The British Library, 2014."]
+  },
+  {
+    category: "怪物与奇异生物",
+    subcategory: "奇幻/生物",
+    title: "博纳肯",
+    content: "博纳肯（Bonnacon）是一种外表看起来像公牛，但实则拥有奇特防御机制的生物。据说它出没于亚洲某地，其角向内弯曲，似乎毫无攻击性。然而，当它受到威胁时，会喷射出带有剧毒的粪便。这种排泄物会在方圆两英亩的范围内散发恶臭，且热力足以灼伤一切，从而有效地阻止追捕者。",
+    references: ["Biggs, S.J. Weird and Wonderful Creatures of the Bestiary. The British Library, 2014."]
+  },
+  {
+    category: "怪物与奇异生物",
+    subcategory: "奇幻/生物",
+    title: "卢克罗塔",
+    content: "卢克罗塔（Leucrota）是另一种混合型怪物，结合了多种动物的特征。它的描述较为混乱，据说长着雄鹿的后半身、狮子的前半身和胸部，但蹄子是分叉的。它最显著的特征是横贯整个头部的大嘴和永久的咧嘴笑，其牙齿是连续的骨板，并且能够模仿人类的声音。",
+    references: ["Biggs, S.J. Weird and Wonderful Creatures of the Bestiary. The British Library, 2014."]
+  },
+  {
+    category: "怪物与奇异生物",
+    subcategory: "奇幻/生物",
+    title: "蛇蜥",
+    content: "蛇蜥（Basilisk）在动物寓言集中被视为"爬行动物之王"，也称"Regulus"。它的危险程度极高，据说其气息就能污染并毁灭周围的一切，而它的凝视更为可怕，任何与之对视的人都会立即死亡。不过，它也并非无敌，寓言称黄鼠狼是它的天敌，可以潜入其洞穴将其杀死。在中世纪的道德阐释中，蛇蜥常被视为"邪恶"的化身。",
+    references: ["Biggs, S.J. Weird and Wonderful Creatures of the Bestiary. The British Library, 2014."]
+  },
+  {
+    category: "怪物与奇异生物",
+    subcategory: "奇幻/生物",
+    title: "巨龙",
+    content: "巨龙（Dragon）是中世纪最广为人知、也最具代表性的传说生物。在动物寓言集中，它通常被描绘为体型最大的蛇类，常常是"魔鬼"的化身。到了后世，龙的形象不断演变，被赋予了更复杂的形态与习性，成为奇幻作品中力量、智慧乃至贪婪的象征，从喷火的毁灭者到守护秘密的古老存在皆有出现。",
+    references: ["T.H. White, The Book of Beasts: Being a Translation from a Latin Bestiary of the Twelfth Century（动物之书）", "王慧萍《怪物考：中世纪幻想艺术图文志》，2015年"]
+  }
   // ========== 世界构建与叙事类型 ==========
   {
     category: "世界构建与叙事类型",
