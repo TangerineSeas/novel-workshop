@@ -33,41 +33,77 @@
     --link:#5a9ad5;--main:#c94a4a;--important:#c98a3f;--minor:#7a7a7a;--dev:#c94a4a;
 }
 
-/* ========== 深海主题 ========== */
+/* 深海 */
 [data-theme="deepsea"]{
-    --bg:#0b2344;
-    --bg2:#112d50;
-    --bg3:#1a3a63;
-    --card:#0f2a4a;
-    --text:#daefff;
-    --text2:#8aabd0;
-    --accent:#7ea8d8;
-    --accent2:#a7cfee;
-    --border:#2a4a6a;
-    --gold:#d4c084;
-    --danger:#e08080;
-    --success:#80c080;
-    --link:#a7cfee;
-    --main:#e08080;
-    --important:#d4b060;
-    --minor:#8899aa;
-    --dev:#e08080;
+    --bg:#0b2344;--bg2:#112d50;--bg3:#1a3a63;--card:#0f2a4a;
+    --text:#daefff;--text2:#8aabd0;--accent:#7ea8d8;--accent2:#a7cfee;
+    --border:#2a4a6a;--gold:#d4c084;--danger:#e08080;--success:#80c080;
+    --link:#a7cfee;--main:#e08080;--important:#d4b060;--minor:#8899aa;--dev:#e08080;
 }
 
-/* 深海主题特殊装饰 */
+/* ========== 深海主题装饰 ========== */
 [data-theme="deepsea"] body {
     font-family: "Garamond", "Baskerville", "Georgia", "Times New Roman", serif;
+    background: 
+        radial-gradient(ellipse 80% 40% at 10% 95%, rgba(30,80,120,0.6), transparent),
+        radial-gradient(ellipse 60% 30% at 90% 90%, rgba(20,60,100,0.5), transparent),
+        radial-gradient(ellipse 70% 50% at 50% 100%, rgba(15,50,90,0.7), transparent),
+        radial-gradient(ellipse 50% 30% at 30% 0%, rgba(100,150,200,0.3), transparent),
+        radial-gradient(ellipse 40% 25% at 70% 5%, rgba(80,130,180,0.25), transparent),
+        radial-gradient(ellipse 60% 40% at 50% 50%, rgba(40,90,140,0.2), transparent),
+        linear-gradient(180deg, #0b2344 0%, #0d2a50 20%, #0e2d55 40%, #0c2850 60%, #0a2038 80%, #081828 100%);
 }
 
 [data-theme="deepsea"] .header {
-    background: linear-gradient(to bottom, #0b2344, #112d50);
+    background: 
+        radial-gradient(ellipse 30% 80% at 20% 50%, rgba(100,160,220,0.2), transparent),
+        radial-gradient(ellipse 25% 70% at 50% 50%, rgba(80,140,200,0.15), transparent),
+        radial-gradient(ellipse 30% 80% at 80% 50%, rgba(100,160,220,0.2), transparent),
+        linear-gradient(to bottom, #0b2344, #112d50);
     border-bottom: 1px solid #2a4a6a;
     box-shadow: 0 2px 15px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="deepsea"] .header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 60% 20%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 80% 60%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 90% 40%, rgba(255,255,255,0.7), transparent);
+    background-repeat: no-repeat;
+    pointer-events: none;
+    animation: deepsea-twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes deepsea-twinkle {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
 }
 
 [data-theme="deepsea"] .logo {
     color: #daefff;
     text-shadow: 0 0 10px rgba(167,207,238,0.5);
+    position: relative;
+    display: inline-block;
+}
+
+[data-theme="deepsea"] .logo::after {
+    content: "﹏﹏﹏";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #a7cfee;
+    font-size: 0.5em;
+    letter-spacing: 3px;
+    opacity: 0.6;
 }
 
 [data-theme="deepsea"] .nav-btn {
@@ -76,11 +112,23 @@
     color: #daefff;
     background: transparent;
     border: none;
+    position: relative;
 }
 
 [data-theme="deepsea"] .nav-btn:hover {
     background: rgba(167,207,238,0.15);
     color: #daefff;
+}
+
+[data-theme="deepsea"] .nav-btn:hover::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: #a7cfee;
 }
 
 [data-theme="deepsea"] .nav-btn.active {
@@ -90,8 +138,25 @@
 }
 
 [data-theme="deepsea"] .sidebar {
-    background: #0b2344;
+    background: 
+        radial-gradient(ellipse 50% 20% at 50% 0%, rgba(60,120,180,0.15), transparent),
+        radial-gradient(ellipse 40% 25% at 50% 50%, rgba(40,90,140,0.1), transparent),
+        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(30,70,110,0.15), transparent),
+        linear-gradient(180deg, #0b2344, #0e2a50);
     border-right: 1px solid #2a4a6a;
+    position: relative;
+}
+
+[data-theme="deepsea"] .sidebar::after {
+    content: "～ ～ ～ ～ ～ ～";
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(167,207,238,0.3);
+    font-size: 0.75em;
+    letter-spacing: 4px;
+    white-space: nowrap;
 }
 
 [data-theme="deepsea"] .sb-item {
@@ -105,8 +170,41 @@
     background: #1a3a63;
 }
 
+[data-theme="deepsea"] .sb-item.active {
+    position: relative;
+}
+
+[data-theme="deepsea"] .sb-item.active::after {
+    content: "﹏﹏﹏";
+    position: absolute;
+    bottom: 2px;
+    left: 10px;
+    color: #a7cfee;
+    font-size: 0.6em;
+    letter-spacing: 2px;
+}
+
+[data-theme="deepsea"] .sb-title::before {
+    content: "◦ ";
+    color: #a7cfee;
+}
+
+[data-theme="deepsea"] .sb-title::after {
+    content: " ◦";
+    color: #a7cfee;
+}
+
+[data-theme="deepsea"] .sb-item-title::before {
+    content: "◦ ";
+    color: rgba(167,207,238,0.5);
+}
+
 [data-theme="deepsea"] .editor-paper {
-    background: #0f2a4a;
+    background: 
+        radial-gradient(ellipse 30% 20% at 10% 10%, rgba(167,207,238,0.06), transparent),
+        radial-gradient(ellipse 25% 15% at 90% 20%, rgba(167,207,238,0.05), transparent),
+        radial-gradient(ellipse 40% 30% at 50% 90%, rgba(40,100,160,0.08), transparent),
+        linear-gradient(180deg, #0f2a4a, #112d50);
     box-shadow: 0 0 30px rgba(0,0,0,0.5);
     border: 1px solid #2a4a6a;
     position: relative;
@@ -122,16 +220,45 @@
     letter-spacing: 3px;
 }
 
+[data-theme="deepsea"] .editor-paper::after {
+    content: "◦ ◦ ◦ ◦ ◦ ◦ ◦ ◦ ◦ ◦";
+    position: absolute;
+    bottom: 15px;
+    right: 25px;
+    color: rgba(167,207,238,0.25);
+    font-size: 0.7em;
+    letter-spacing: 5px;
+}
+
 [data-theme="deepsea"] .card {
     background: #0f2a4a;
     border: 1px solid #2a4a6a;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    position: relative;
 }
 
 [data-theme="deepsea"] .card h3 {
     color: #daefff;
     font-variant: small-caps;
     letter-spacing: 0.06em;
+}
+
+[data-theme="deepsea"] .card::before {
+    content: "✦";
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    color: rgba(167,207,238,0.5);
+    font-size: 0.8em;
+}
+
+[data-theme="deepsea"] .card::after {
+    content: "✧";
+    position: absolute;
+    bottom: 8px;
+    left: 12px;
+    color: rgba(167,207,238,0.4);
+    font-size: 0.7em;
 }
 
 [data-theme="deepsea"] .btn {
@@ -153,11 +280,29 @@
     background: #223954;
     border: 1px solid #daefff;
     color: #daefff;
+    box-shadow: 0 0 10px rgba(167,207,238,0.2);
 }
 
 [data-theme="deepsea"] .btn-primary:hover {
     background: #daefff;
     color: #223954;
+    box-shadow: 0 0 20px rgba(167,207,238,0.5);
+}
+
+[data-theme="deepsea"] .new-work-btn {
+    background: transparent;
+    border: 1px solid #a7cfee;
+    color: #daefff;
+    box-shadow: 0 0 15px rgba(167,207,238,0.3);
+    transition: all .3s;
+    font-variant: small-caps;
+    letter-spacing: 0.1em;
+}
+
+[data-theme="deepsea"] .new-work-btn:hover {
+    background: #daefff;
+    color: #0b2344;
+    box-shadow: 0 0 25px rgba(167,207,238,0.6);
 }
 
 [data-theme="deepsea"] .form-input,
@@ -166,6 +311,7 @@
     background: #0b2344;
     border: 1px solid #2a4a6a;
     color: #daefff;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
 }
 
 [data-theme="deepsea"] .form-input:focus,
@@ -185,21 +331,25 @@
     border-color: #daefff;
 }
 
-[data-theme="deepsea"] .badge-main {
-    background: #c05050;
+[data-theme="deepsea"] .entry-item .entry-name::before {
+    content: "❖ ";
+    color: rgba(167,207,238,0.5);
+    font-size: 0.7em;
 }
 
-[data-theme="deepsea"] .badge-important {
-    background: #c09040;
+[data-theme="deepsea"] .entry-link {
+    color: #a7cfee;
 }
 
-[data-theme="deepsea"] .badge-minor {
-    background: #607890;
-}
+[data-theme="deepsea"] .badge-main { background: #c05050; }
+[data-theme="deepsea"] .badge-important { background: #c09040; }
+[data-theme="deepsea"] .badge-minor { background: #607890; }
 
 [data-theme="deepsea"] .char-card {
     background: #0f2a4a;
     border: 1px solid #2a4a6a;
+    position: relative;
+    overflow: hidden;
 }
 
 [data-theme="deepsea"] .char-card:hover {
@@ -207,107 +357,74 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
-[data-theme="deepsea"] .entry-link {
-    color: #a7cfee;
+[data-theme="deepsea"] .char-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(15px 15px at 20% 30%, rgba(167,207,238,0.05), transparent),
+        radial-gradient(20px 20px at 80% 70%, rgba(167,207,238,0.04), transparent),
+        radial-gradient(12px 12px at 60% 20%, rgba(167,207,238,0.06), transparent);
+    pointer-events: none;
+}
+
+[data-theme="deepsea"] .char-card-avatar {
+    border: 2px solid #3a5a7a;
+    box-shadow: 0 0 12px rgba(167,207,238,0.3);
+}
+
+[data-theme="deepsea"] .cp-avatar {
+    border: 2px solid #3a5a7a;
+    box-shadow: 0 0 15px rgba(167,207,238,0.4);
 }
 
 [data-theme="deepsea"] .save-toast {
     background: #1a3a63;
     border: 1px solid #daefff;
     color: #daefff;
+    position: fixed;
+    top: 70px;
+    bottom: auto;
+    right: 20px;
 }
 
-[data-theme="deepsea"] .modal-content {
-    background: #0f2a4a;
-    border: 1px solid #2a4a6a;
-    box-shadow: 0 0 40px rgba(0,0,0,0.6);
-}
-
-[data-theme="deepsea"] .tools-tab.active {
-    background: #daefff;
-    color: #0b2344;
-}
-
-[data-theme="deepsea"] .wv-tab.active {
-    background: #daefff;
-    color: #0b2344;
-}
-
+[data-theme="deepsea"] .tools-tab.active,
+[data-theme="deepsea"] .wv-tab.active,
 [data-theme="deepsea"] .dev-tab.active {
     background: #daefff;
     color: #0b2344;
 }
 
-[data-theme="deepsea"] .progress-fill {
-    background: #a7cfee;
+[data-theme="deepsea"] .tools-tab.active::before {
+    content: "◈ ";
+    color: #0b2344;
+    font-size: 0.7em;
 }
 
-[data-theme="deepsea"] .save-indicator {
-    background: #1a3a63;
-    border: 1px solid #daefff;
-    color: #daefff;
+[data-theme="deepsea"] .wv-tab.active::before {
+    content: "✦";
+    margin-right: 5px;
+    color: #0b2344;
+    font-size: 0.7em;
 }
 
-/* 深海主题滚动条 */
-[data-theme="deepsea"] ::-webkit-scrollbar-thumb {
-    background: #2a4a6a;
-    border-radius: 3px;
-}
-
-[data-theme="deepsea"] ::-webkit-scrollbar-thumb:hover {
-    background: #3a5a7a;
-}
-/* ========== 深海主题装饰 ========== */
-
-/* 顶部导航：加星空闪烁效果 */
-[data-theme="deepsea"] .header {
-    position: relative;
+[data-theme="deepsea"] .progress-bar {
+    background: #0b2344;
+    border: 1px solid #2a4a6a;
     overflow: hidden;
 }
 
-[data-theme="deepsea"] .header::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.8), transparent),
-        radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.6), transparent),
-        radial-gradient(1.5px 1.5px at 60% 20%, rgba(255,255,255,0.7), transparent),
-        radial-gradient(2px 2px at 80% 60%, rgba(255,255,255,0.5), transparent),
-        radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.6), transparent),
-        radial-gradient(1.5px 1.5px at 90% 40%, rgba(255,255,255,0.7), transparent),
-        radial-gradient(1px 1px at 50% 90%, rgba(255,255,255,0.5), transparent);
-    background-repeat: no-repeat;
-    pointer-events: none;
-    animation: deepsea-twinkle 4s ease-in-out infinite alternate;
+[data-theme="deepsea"] .progress-fill {
+    background: linear-gradient(90deg, #2a4a6a, #a7cfee, #2a4a6a);
+    background-size: 200% 100%;
+    animation: deepsea-progress 2s linear infinite;
 }
 
-@keyframes deepsea-twinkle {
-    0% { opacity: 0.5; }
-    100% { opacity: 1; }
+@keyframes deepsea-progress {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
 }
 
-/* 侧边栏：加波浪装饰线 */
-[data-theme="deepsea"] .sidebar {
-    position: relative;
-}
-
-[data-theme="deepsea"] .sidebar::after {
-    content: "～ ～ ～ ～ ～ ～";
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: rgba(167,207,238,0.3);
-    font-size: 0.75em;
-    letter-spacing: 4px;
-    white-space: nowrap;
-}
-
-/* 主页标题装饰 */
 [data-theme="deepsea"] .home-hero h1::before {
     content: "𓇼 ";
     color: #a7cfee;
@@ -318,30 +435,16 @@
     color: #a7cfee;
 }
 
-/* 卡片四角装饰 */
-[data-theme="deepsea"] .card {
-    position: relative;
-}
-
-[data-theme="deepsea"] .card::before {
-    content: "✦";
-    position: absolute;
-    top: 8px;
-    right: 12px;
+[data-theme="deepsea"] .home-hero p::before {
+    content: "✦ ";
     color: rgba(167,207,238,0.5);
-    font-size: 0.8em;
 }
 
-[data-theme="deepsea"] .card::after {
-    content: "✧";
-    position: absolute;
-    bottom: 8px;
-    left: 12px;
-    color: rgba(167,207,238,0.4);
-    font-size: 0.7em;
+[data-theme="deepsea"] .home-hero p::after {
+    content: " ✦";
+    color: rgba(167,207,238,0.5);
 }
 
-/* 作品卡片：海洋渐变边框 */
 [data-theme="deepsea"] .work-card {
     background: linear-gradient(180deg, #0f2a4a, #112d50);
     border: 1px solid #2a4a6a;
@@ -352,176 +455,11 @@
 [data-theme="deepsea"] .work-card::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     height: 3px;
     background: linear-gradient(90deg, #1a3a63, #a7cfee, #1a3a63);
 }
 
-/* 章节列表选中项：波浪下划线 */
-[data-theme="deepsea"] .sb-item.active {
-    position: relative;
-}
-
-[data-theme="deepsea"] .sb-item.active::after {
-    content: "﹏﹏﹏";
-    position: absolute;
-    bottom: 2px;
-    left: 10px;
-    color: #a7cfee;
-    font-size: 0.6em;
-    letter-spacing: 2px;
-}
-
-/* 编辑器纸张：加海波纹装饰 */
-[data-theme="deepsea"] .editor-paper {
-    position: relative;
-}
-
-[data-theme="deepsea"] .editor-paper::after {
-    content: "◦ ◦ ◦ ◦ ◦ ◦ ◦ ◦ ◦ ◦";
-    position: absolute;
-    bottom: 15px;
-    right: 25px;
-    color: rgba(167,207,238,0.25);
-    font-size: 0.7em;
-    letter-spacing: 5px;
-}
-
-/* 弹窗：加光晕 */
-[data-theme="deepsea"] .modal-content {
-    box-shadow: 0 0 50px rgba(167,207,238,0.3), inset 0 0 30px rgba(0,0,0,0.3);
-    border: 1px solid #3a5a7a;
-}
-
-/* 按钮：加下划线装饰 */
-[data-theme="deepsea"] .nav-btn {
-    position: relative;
-}
-
-[data-theme="deepsea"] .nav-btn:hover::after {
-    content: "";
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 1px;
-    background: #a7cfee;
-}
-
-/* 工具栏：底部加波光 */
-[data-theme="deepsea"] .toolbar {
-    position: relative;
-    border-bottom: 1px solid #2a4a6a;
-}
-
-[data-theme="deepsea"] .toolbar::after {
-    content: "";
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(167,207,238,0.5), transparent);
-    animation: deepsea-shimmer 3s ease-in-out infinite;
-}
-
-@keyframes deepsea-shimmer {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.8; }
-}
-
-/* 关系图谱区域：加边框装饰 */
-[data-theme="deepsea"] #relationCanvas {
-    border: 1px solid #2a4a6a;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
-}
-/* ========== 深海主题装饰·进阶 ========== */
-
-/* 全局背景：深海渐变+气泡 */
-[data-theme="deepsea"] body {
-    background: linear-gradient(180deg, #0b2344 0%, #0d2a50 30%, #0f2f55 60%, #0b2344 100%);
-    position: relative;
-}
-
-[data-theme="deepsea"] body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(3px 3px at 15% 40%, rgba(255,255,255,0.15), transparent),
-        radial-gradient(2px 2px at 35% 70%, rgba(255,255,255,0.1), transparent),
-        radial-gradient(4px 4px at 55% 30%, rgba(255,255,255,0.12), transparent),
-        radial-gradient(2px 2px at 75% 60%, rgba(255,255,255,0.1), transparent),
-        radial-gradient(3px 3px at 90% 20%, rgba(255,255,255,0.15), transparent),
-        radial-gradient(2px 2px at 5% 90%, rgba(255,255,255,0.08), transparent),
-        radial-gradient(5px 5px at 45% 50%, rgba(255,255,255,0.06), transparent),
-        radial-gradient(3px 3px at 65% 85%, rgba(255,255,255,0.1), transparent),
-        radial-gradient(2px 2px at 25% 15%, rgba(255,255,255,0.12), transparent),
-        radial-gradient(4px 4px at 85% 75%, rgba(255,255,255,0.08), transparent);
-    background-repeat: no-repeat;
-    pointer-events: none;
-    z-index: 0;
-    animation: deepsea-bubbles 8s ease-in-out infinite alternate;
-}
-
-@keyframes deepsea-bubbles {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-20px); }
-}
-
-/* Logo：加波浪效果 */
-[data-theme="deepsea"] .logo {
-    position: relative;
-    display: inline-block;
-}
-
-[data-theme="deepsea"] .logo::after {
-    content: "﹏﹏﹏";
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #a7cfee;
-    font-size: 0.5em;
-    letter-spacing: 3px;
-    opacity: 0.6;
-}
-
-/* 侧边栏标题装饰 */
-[data-theme="deepsea"] .sb-title::before {
-    content: "◦ ";
-    color: #a7cfee;
-}
-
-[data-theme="deepsea"] .sb-title::after {
-    content: " ◦";
-    color: #a7cfee;
-}
-
-/* 新建作品按钮：发光效果 */
-[data-theme="deepsea"] .new-work-btn {
-    background: transparent;
-    border: 1px solid #a7cfee;
-    color: #daefff;
-    box-shadow: 0 0 15px rgba(167,207,238,0.3);
-    transition: all .3s;
-    font-variant: small-caps;
-    letter-spacing: 0.1em;
-}
-
-[data-theme="deepsea"] .new-work-btn:hover {
-    background: #daefff;
-    color: #0b2344;
-    box-shadow: 0 0 25px rgba(167,207,238,0.6);
-}
-
-/* 统计卡片：加装饰边框 */
 [data-theme="deepsea"] .stat-card {
     position: relative;
     border: 1px solid #2a4a6a;
@@ -543,102 +481,6 @@
     text-shadow: 0 0 10px rgba(167,207,238,0.4);
 }
 
-/* 人物卡片：加鳞片纹理 */
-[data-theme="deepsea"] .char-card {
-    position: relative;
-    overflow: hidden;
-}
-
-[data-theme="deepsea"] .char-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(15px 15px at 20% 30%, rgba(167,207,238,0.05), transparent),
-        radial-gradient(20px 20px at 80% 70%, rgba(167,207,238,0.04), transparent),
-        radial-gradient(12px 12px at 60% 20%, rgba(167,207,238,0.06), transparent);
-    pointer-events: none;
-}
-
-/* 人设头像：加光晕圈 */
-[data-theme="deepsea"] .char-card-avatar {
-    border: 2px solid #3a5a7a;
-    box-shadow: 0 0 12px rgba(167,207,238,0.3);
-}
-
-[data-theme="deepsea"] .cp-avatar {
-    border: 2px solid #3a5a7a;
-    box-shadow: 0 0 15px rgba(167,207,238,0.4);
-}
-
-/* 进度条：加波浪填充 */
-[data-theme="deepsea"] .progress-bar {
-    background: #0b2344;
-    border: 1px solid #2a4a6a;
-    overflow: hidden;
-}
-
-[data-theme="deepsea"] .progress-fill {
-    background: linear-gradient(90deg, #2a4a6a, #a7cfee, #2a4a6a);
-    background-size: 200% 100%;
-    animation: deepsea-progress 2s linear infinite;
-}
-
-@keyframes deepsea-progress {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 200% 0%; }
-}
-
-/* 搜索框：加放大镜装饰 */
-[data-theme="deepsea"] .search-box {
-    position: relative;
-}
-
-[data-theme="deepsea"] .search-box::placeholder {
-    color: rgba(167,207,238,0.5);
-    font-style: italic;
-}
-
-/* 下拉菜单：加装饰 */
-[data-theme="deepsea"] .form-select {
-    background-image: linear-gradient(45deg, transparent 50%, #a7cfee 50%),
-        linear-gradient(135deg, #a7cfee 50%, transparent 50%);
-    background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%;
-    background-size: 5px 5px;
-    background-repeat: no-repeat;
-}
-
-/* 按钮组：加间隔装饰 */
-[data-theme="deepsea"] .btn-row {
-    position: relative;
-}
-
-/* 保存提示：加波纹 */
-[data-theme="deepsea"] .save-toast {
-    position: relative;
-    overflow: hidden;
-}
-
-[data-theme="deepsea"] .save-toast::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #a7cfee, transparent);
-}
-
-/* 章节列表：每个章节前加小装饰 */
-[data-theme="deepsea"] .sb-item-title::before {
-    content: "◦ ";
-    color: rgba(167,207,238,0.5);
-}
-
-/* 人物关系图：加背景装饰 */
 [data-theme="deepsea"] .relation-section {
     position: relative;
     overflow: hidden;
@@ -654,50 +496,17 @@
     font-size: 0.8em;
 }
 
-/* 世界观问卷卡片：加星角装饰 */
-[data-theme="deepsea"] .wv-tab.active {
-    position: relative;
+[data-theme="deepsea"] #relationCanvas {
+    border: 1px solid #2a4a6a;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
 }
 
-[data-theme="deepsea"] .wv-tab.active::before {
-    content: "✦";
-    margin-right: 5px;
-    color: #0b2344;
-    font-size: 0.7em;
-}
-
-/* 历法日历：加装饰 */
 [data-theme="deepsea"] .cal-day.festival {
     background: rgba(167,207,238,0.1);
     border-color: #a7cfee;
     box-shadow: 0 0 8px rgba(167,207,238,0.2);
 }
 
-/* 章节输入框：加内阴影 */
-[data-theme="deepsea"] .form-input,
-[data-theme="deepsea"] .form-textarea {
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
-}
-
-/* 通用链接装饰 */
-[data-theme="deepsea"] a {
-    position: relative;
-}
-
-[data-theme="deepsea"] .entry-item .entry-name::before {
-    content: "❖ ";
-    color: rgba(167,207,238,0.5);
-    font-size: 0.7em;
-}
-
-/* 工具标签装饰 */
-[data-theme="deepsea"] .tools-tab.active::before {
-    content: "◈ ";
-    color: #0b2344;
-    font-size: 0.7em;
-}
-
-/* 开发者模式标题装饰 */
 [data-theme="deepsea"] .dev-header {
     background: linear-gradient(135deg, #0b2344, #1a3a63, #0b2344);
     border: 1px solid #3a5a7a;
@@ -708,19 +517,16 @@
     content: "🔱 ";
 }
 
-/* 弹窗关闭按钮装饰 */
 [data-theme="deepsea"] .modal-close:hover,
 [data-theme="deepsea"] .cp-close:hover {
     color: #a7cfee;
     text-shadow: 0 0 8px rgba(167,207,238,0.6);
 }
 
-/* 时间线输入框装饰 */
 [data-theme="deepsea"] .timeline-entry input {
     border-left: 2px solid #3a5a7a;
 }
 
-/* 整体字体微调 */
 [data-theme="deepsea"] {
     letter-spacing: 0.01em;
 }
@@ -733,242 +539,206 @@
     letter-spacing: 0.05em;
 }
 
-/* 装饰符号点缀 */
-[data-theme="deepsea"] .home-hero p::before {
-    content: "✦ ";
+[data-theme="deepsea"] ::-webkit-scrollbar-thumb {
+    background: #2a4a6a;
+    border-radius: 3px;
+}
+
+[data-theme="deepsea"] ::-webkit-scrollbar-thumb:hover {
+    background: #3a5a7a;
+}
+
+[data-theme="deepsea"] .search-box::placeholder {
     color: rgba(167,207,238,0.5);
+    font-style: italic;
 }
 
-[data-theme="deepsea"] .home-hero p::after {
-    content: " ✦";
-    color: rgba(167,207,238,0.5);
-}
-
-/* 按钮发光效果 */
-[data-theme="deepsea"] .btn-primary {
-    box-shadow: 0 0 10px rgba(167,207,238,0.2);
-}
-
-[data-theme="deepsea"] .btn-primary:hover {
-    box-shadow: 0 0 20px rgba(167,207,238,0.5);
-}
-/* ========== 深海主题·大背景装饰 ========== */
-
-[data-theme="deepsea"] body {
-    background: 
-        /* 底部波浪层 */
-        radial-gradient(ellipse 80% 40% at 10% 95%, rgba(30,80,120,0.6), transparent),
-        radial-gradient(ellipse 60% 30% at 90% 90%, rgba(20,60,100,0.5), transparent),
-        radial-gradient(ellipse 70% 50% at 50% 100%, rgba(15,50,90,0.7), transparent),
-        /* 顶部星空光晕 */
-        radial-gradient(ellipse 50% 30% at 30% 0%, rgba(100,150,200,0.3), transparent),
-        radial-gradient(ellipse 40% 25% at 70% 5%, rgba(80,130,180,0.25), transparent),
-        radial-gradient(ellipse 60% 40% at 50% 50%, rgba(40,90,140,0.2), transparent),
-        /* 基础渐变 */
-        linear-gradient(180deg, #0b2344 0%, #0d2a50 20%, #0e2d55 40%, #0c2850 60%, #0a2038 80%, #081828 100%);
-}
-
-[data-theme="deepsea"] .page-scroll {
-    position: relative;
-}
-
-/* 页面左侧大波纹装饰 */
-[data-theme="deepsea"] .page-scroll::before {
-    content: "";
-    position: fixed;
-    left: -50px;
-    top: 20%;
-    width: 200px;
-    height: 500px;
-    background: 
-        radial-gradient(ellipse 60% 40% at 50% 20%, rgba(167,207,238,0.08), transparent),
-        radial-gradient(ellipse 70% 35% at 50% 50%, rgba(167,207,238,0.06), transparent),
-        radial-gradient(ellipse 50% 30% at 50% 80%, rgba(167,207,238,0.08), transparent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    filter: blur(15px);
-}
-
-/* 页面右侧大波纹装饰 */
-[data-theme="deepsea"] .page-scroll::after {
-    content: "";
-    position: fixed;
-    right: -80px;
-    bottom: 10%;
-    width: 250px;
-    height: 400px;
-    background: 
-        radial-gradient(ellipse 60% 40% at 50% 30%, rgba(167,207,238,0.07), transparent),
-        radial-gradient(ellipse 70% 35% at 50% 60%, rgba(167,207,238,0.05), transparent),
-        radial-gradient(ellipse 50% 30% at 50% 90%, rgba(167,207,238,0.07), transparent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 0;
-    filter: blur(20px);
-}
-
-/* 主页：大海波纹背景 */
-[data-theme="deepsea"] #page-home .page-scroll {
-    background: 
-        radial-gradient(ellipse 50% 30% at 20% 10%, rgba(100,160,220,0.15), transparent),
-        radial-gradient(ellipse 40% 25% at 80% 15%, rgba(80,140,200,0.12), transparent),
-        radial-gradient(ellipse 60% 40% at 50% 80%, rgba(40,100,160,0.15), transparent);
-}
-
-/* 编辑器纸张：大海沉浸背景 */
-[data-theme="deepsea"] .editor-paper {
-    background: 
-        radial-gradient(ellipse 30% 20% at 10% 10%, rgba(167,207,238,0.06), transparent),
-        radial-gradient(ellipse 25% 15% at 90% 20%, rgba(167,207,238,0.05), transparent),
-        radial-gradient(ellipse 40% 30% at 50% 90%, rgba(40,100,160,0.08), transparent),
-        linear-gradient(180deg, #0f2a4a, #112d50);
-}
-
-/* 顶部导航：深海光带 */
-[data-theme="deepsea"] .header {
-    background: 
-        radial-gradient(ellipse 30% 80% at 20% 50%, rgba(100,160,220,0.2), transparent),
-        radial-gradient(ellipse 25% 70% at 50% 50%, rgba(80,140,200,0.15), transparent),
-        radial-gradient(ellipse 30% 80% at 80% 50%, rgba(100,160,220,0.2), transparent),
-        linear-gradient(to bottom, #0b2344, #112d50);
-}
-
-/* 侧边栏：深海渐变 */
-[data-theme="deepsea"] .sidebar {
-    background: 
-        radial-gradient(ellipse 50% 20% at 50% 0%, rgba(60,120,180,0.15), transparent),
-        radial-gradient(ellipse 40% 25% at 50% 50%, rgba(40,90,140,0.1), transparent),
-        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(30,70,110,0.15), transparent),
-        linear-gradient(180deg, #0b2344, #0e2a50);
-}
-
-/* 底部大波浪装饰 */
-[data-theme="deepsea"] .main-container::after {
-    content: "";
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: 
-        radial-gradient(ellipse 50% 100% at 10% 100%, rgba(167,207,238,0.1), transparent),
-        radial-gradient(ellipse 40% 80% at 40% 100%, rgba(120,170,220,0.08), transparent),
-        radial-gradient(ellipse 50% 100% at 70% 100%, rgba(167,207,238,0.1), transparent),
-        radial-gradient(ellipse 40% 90% at 95% 100%, rgba(100,150,200,0.08), transparent);
-    pointer-events: none;
-    z-index: 0;
-    filter: blur(3px);
-}
-
-
-/* ========== 暗黑主题·星空装饰 ========== */
+/* ========== 暗黑主题装饰 ========== */
 [data-theme="black"] body {
-    background: 
-        radial-gradient(ellipse 50% 40% at 20% 20%, rgba(100,100,150,0.15), transparent),
-        radial-gradient(ellipse 40% 35% at 80% 30%, rgba(80,80,130,0.12), transparent),
-        radial-gradient(ellipse 60% 50% at 50% 70%, rgba(60,60,100,0.15), transparent),
-        linear-gradient(180deg, #0d0d0d, #111122, #0d0d0d);
+    background-color: #0a0a14;
+    background-image:
+        radial-gradient(2px 2px at 10% 15%, #fff, transparent),
+        radial-gradient(2px 2px at 25% 35%, #ddd, transparent),
+        radial-gradient(3px 3px at 40% 10%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 55% 25%, #eee, transparent),
+        radial-gradient(2.5px 2.5px at 70% 15%, #fff, transparent),
+        radial-gradient(2px 2px at 85% 30%, #ddd, transparent),
+        radial-gradient(3px 3px at 15% 55%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 30% 70%, #eee, transparent),
+        radial-gradient(2px 2px at 50% 50%, #fff, transparent),
+        radial-gradient(2.5px 2.5px at 65% 65%, #ddd, transparent),
+        radial-gradient(2px 2px at 80% 55%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 90% 75%, #eee, transparent),
+        radial-gradient(3px 3px at 20% 85%, #fff, transparent),
+        radial-gradient(2px 2px at 45% 90%, #ddd, transparent),
+        radial-gradient(2.5px 2.5px at 60% 80%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 75% 95%, #eee, transparent),
+        radial-gradient(2px 2px at 95% 50%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 5% 35%, #ddd, transparent),
+        radial-gradient(40px 40px at 50% 50%, rgba(50,50,100,0.3), transparent),
+        radial-gradient(80px 80px at 80% 20%, rgba(40,40,80,0.25), transparent),
+        radial-gradient(60px 60px at 20% 80%, rgba(45,45,90,0.25), transparent),
+        linear-gradient(180deg, #0a0a14, #0d0d1a, #0a0a14);
 }
 
-[data-theme="black"] body::before {
+[data-theme="black"] body::after {
     content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(2px 2px at 10% 20%, #ffffff, transparent),
-        radial-gradient(1.5px 1.5px at 25% 60%, #ddddff, transparent),
-        radial-gradient(2.5px 2.5px at 40% 15%, #ffffff, transparent),
-        radial-gradient(1px 1px at 55% 45%, #ccccff, transparent),
-        radial-gradient(2px 2px at 70% 75%, #ffffff, transparent),
-        radial-gradient(1.5px 1.5px at 85% 25%, #ddddff, transparent),
-        radial-gradient(2.5px 2.5px at 15% 85%, #ffffff, transparent),
-        radial-gradient(1px 1px at 35% 35%, #ccccff, transparent),
-        radial-gradient(2px 2px at 60% 55%, #ffffff, transparent),
-        radial-gradient(1.5px 1.5px at 90% 65%, #ddddff, transparent),
-        radial-gradient(3px 3px at 50% 10%, #ffffff, transparent),
-        radial-gradient(1px 1px at 5% 50%, #ccccff, transparent),
-        radial-gradient(2px 2px at 75% 90%, #ffffff, transparent),
-        radial-gradient(1.5px 1.5px at 45% 80%, #ddddff, transparent),
-        radial-gradient(2px 2px at 95% 40%, #ffffff, transparent);
-    background-repeat: no-repeat;
+    top: 15%;
+    right: 15%;
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+    transform: rotate(-35deg);
+    animation: black-shooting-star 3s ease-in-out infinite;
     pointer-events: none;
     z-index: 0;
-    animation: black-stars 6s ease-in-out infinite alternate;
 }
 
-@keyframes black-stars {
-    0% { opacity: 0.6; }
-    100% { opacity: 1; }
-}
-
-[data-theme="black"] .header {
-    background: 
-        radial-gradient(ellipse 30% 60% at 20% 50%, rgba(100,100,150,0.15), transparent),
-        radial-gradient(ellipse 25% 50% at 80% 50%, rgba(80,80,130,0.12), transparent),
-        linear-gradient(to bottom, #0d0d0d, #151520);
+@keyframes black-shooting-star {
+    0%, 70% { opacity: 0; transform: rotate(-35deg) translateX(0); }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: rotate(-35deg) translateX(-150px); }
 }
 
 [data-theme="black"] .logo::after {
     content: "✦";
     position: absolute;
-    top: -5px;
-    right: -15px;
-    color: rgba(255,255,255,0.4);
-    font-size: 0.7em;
-    animation: black-twinkle 2s ease-in-out infinite;
+    top: -3px;
+    right: -14px;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.65em;
+    animation: black-twinkle 2.5s ease-in-out infinite;
 }
 
 @keyframes black-twinkle {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
 }
 
-[data-theme="black"] .work-card {
-    background: linear-gradient(180deg, #151520, #1a1a2a);
+[data-theme="black"] .home-hero h1::before {
+    content: "⋆ ";
+    color: rgba(255,255,255,0.5);
+}
+
+[data-theme="black"] .home-hero h1::after {
+    content: " ⋆";
+    color: rgba(255,255,255,0.5);
+}
+
+[data-theme="black"] .card {
+    position: relative;
     border: 1px solid #2a2a3a;
 }
 
-[data-theme="black"] .work-card::before {
+[data-theme="black"] .card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+}
+
+[data-theme="black"] .card::after {
     content: "✦";
     position: absolute;
-    top: 5px;
+    bottom: 6px;
     right: 10px;
+    color: rgba(255,255,255,0.15);
+    font-size: 0.6em;
+}
+
+[data-theme="black"] .work-card {
+    position: relative;
+    overflow: hidden;
+    background: 
+        radial-gradient(ellipse 60% 50% at 30% 20%, rgba(60,40,120,0.3), transparent),
+        radial-gradient(ellipse 50% 40% at 70% 80%, rgba(40,30,100,0.25), transparent),
+        linear-gradient(180deg, #151520, #1a1a2a);
+}
+
+[data-theme="black"] .work-card::after {
+    content: "· · ·";
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
     color: rgba(255,255,255,0.2);
+    letter-spacing: 6px;
+    font-size: 0.6em;
+}
+
+[data-theme="black"] .sb-title::before {
+    content: "⋆ ";
+    color: rgba(255,255,255,0.4);
     font-size: 0.7em;
 }
 
-/* ========== 羊皮纸主题·纹理装饰 ========== */
-[data-theme="parchment"] body {
-    background: 
-        radial-gradient(ellipse 40% 30% at 20% 20%, rgba(139,94,52,0.08), transparent),
-        radial-gradient(ellipse 35% 25% at 80% 30%, rgba(139,94,52,0.06), transparent),
-        radial-gradient(ellipse 50% 35% at 50% 70%, rgba(139,94,52,0.07), transparent),
-        radial-gradient(ellipse 60% 40% at 60% 10%, rgba(160,120,70,0.05), transparent),
-        linear-gradient(180deg, #f2e8d0, #eee0c0, #f2e8d0);
+[data-theme="black"] .btn-primary::after {
+    content: " ✦";
+    color: rgba(255,255,255,0.6);
+    font-size: 0.7em;
 }
 
-[data-theme="parchment"] body::before {
+[data-theme="black"] .stat-num {
+    text-shadow: 0 0 8px rgba(255,255,255,0.3);
+}
+
+[data-theme="black"] .entry-item::before {
+    content: "· ";
+    color: rgba(255,255,255,0.3);
+}
+
+[data-theme="black"] .nav-btn.active::before {
+    content: "✦ ";
+    color: #fff;
+    font-size: 0.7em;
+}
+
+[data-theme="black"] .tools-tab.active::before {
+    content: "✦ ";
+    color: #fff;
+    font-size: 0.7em;
+}
+
+[data-theme="black"] .char-card {
+    background: 
+        radial-gradient(3px 3px at 20% 25%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(2px 2px at 70% 15%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(2.5px 2.5px at 85% 55%, rgba(255,255,255,0.45), transparent),
+        radial-gradient(2px 2px at 15% 75%, rgba(255,255,255,0.35), transparent),
+        linear-gradient(180deg, #151520, #1a1a2a);
+}
+
+[data-theme="black"] .sidebar::before {
     content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: absolute;
+    top: 20%;
     right: 0;
-    bottom: 0;
-    background-image: 
-        radial-gradient(8px 8px at 15% 30%, rgba(139,94,52,0.06), transparent),
-        radial-gradient(5px 5px at 45% 60%, rgba(139,94,52,0.04), transparent),
-        radial-gradient(10px 10px at 70% 20%, rgba(139,94,52,0.05), transparent),
-        radial-gradient(6px 6px at 90% 70%, rgba(139,94,52,0.06), transparent),
-        radial-gradient(12px 12px at 30% 85%, rgba(139,94,52,0.04), transparent),
-        radial-gradient(4px 4px at 60% 40%, rgba(139,94,52,0.05), transparent);
-    background-repeat: no-repeat;
-    pointer-events: none;
-    z-index: 0;
-    filter: blur(2px);
+    width: 1px;
+    height: 60%;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.3), transparent);
+}
+
+/* ========== 羊皮纸主题装饰 ========== */
+[data-theme="parchment"] body {
+    background-color: #ecd9b0;
+    background-image:
+        radial-gradient(15px 15px at 10% 20%, rgba(139,94,52,0.08), transparent),
+        radial-gradient(20px 20px at 30% 50%, rgba(139,94,52,0.06), transparent),
+        radial-gradient(12px 12px at 55% 15%, rgba(139,94,52,0.07), transparent),
+        radial-gradient(18px 18px at 75% 45%, rgba(139,94,52,0.05), transparent),
+        radial-gradient(25px 25px at 90% 70%, rgba(139,94,52,0.08), transparent),
+        radial-gradient(14px 14px at 5% 80%, rgba(139,94,52,0.06), transparent),
+        radial-gradient(22px 22px at 40% 85%, rgba(139,94,52,0.05), transparent),
+        radial-gradient(16px 16px at 65% 30%, rgba(139,94,52,0.07), transparent),
+        radial-gradient(28px 28px at 85% 10%, rgba(139,94,52,0.04), transparent),
+        radial-gradient(10px 10px at 50% 65%, rgba(139,94,52,0.06), transparent),
+        repeating-linear-gradient(0deg, rgba(139,94,52,0.03) 0px, rgba(139,94,52,0.03) 2px, transparent 2px, transparent 6px),
+        repeating-linear-gradient(90deg, rgba(139,94,52,0.02) 0px, rgba(139,94,52,0.02) 2px, transparent 2px, transparent 8px),
+        linear-gradient(180deg, #ecd9b0, #e8d4a5, #ecd9b0);
 }
 
 [data-theme="parchment"] .header {
@@ -1064,73 +834,47 @@
     color: #3d2b1f;
 }
 
-
-/* ========== 暗黑主题·大面积星空 ========== */
-[data-theme="black"] body {
-    background-color: #0a0a14;
-    background-image:
-        radial-gradient(2px 2px at 10% 15%, #fff, transparent),
-        radial-gradient(2px 2px at 25% 35%, #ddd, transparent),
-        radial-gradient(3px 3px at 40% 10%, #fff, transparent),
-        radial-gradient(1.5px 1.5px at 55% 25%, #eee, transparent),
-        radial-gradient(2.5px 2.5px at 70% 15%, #fff, transparent),
-        radial-gradient(2px 2px at 85% 30%, #ddd, transparent),
-        radial-gradient(3px 3px at 15% 55%, #fff, transparent),
-        radial-gradient(1.5px 1.5px at 30% 70%, #eee, transparent),
-        radial-gradient(2px 2px at 50% 50%, #fff, transparent),
-        radial-gradient(2.5px 2.5px at 65% 65%, #ddd, transparent),
-        radial-gradient(2px 2px at 80% 55%, #fff, transparent),
-        radial-gradient(1.5px 1.5px at 90% 75%, #eee, transparent),
-        radial-gradient(3px 3px at 20% 85%, #fff, transparent),
-        radial-gradient(2px 2px at 45% 90%, #ddd, transparent),
-        radial-gradient(2.5px 2.5px at 60% 80%, #fff, transparent),
-        radial-gradient(1.5px 1.5px at 75% 95%, #eee, transparent),
-        radial-gradient(2px 2px at 95% 50%, #fff, transparent),
-        radial-gradient(1.5px 1.5px at 5% 35%, #ddd, transparent),
-        radial-gradient(40px 40px at 50% 50%, rgba(50,50,100,0.3), transparent),
-        radial-gradient(80px 80px at 80% 20%, rgba(40,40,80,0.25), transparent),
-        radial-gradient(60px 60px at 20% 80%, rgba(45,45,90,0.25), transparent),
-        linear-gradient(180deg, #0a0a14, #0d0d1a, #0a0a14);
-    background-attachment: fixed;
+[data-theme="parchment"] .entry-item::before {
+    content: "◦ ";
+    color: rgba(139,94,52,0.4);
 }
 
-/* ========== 羊皮纸主题·大面积纹理 ========== */
-[data-theme="parchment"] body {
-    background-color: #ecd9b0;
-    background-image:
-        radial-gradient(15px 15px at 10% 20%, rgba(139,94,52,0.08), transparent),
-        radial-gradient(20px 20px at 30% 50%, rgba(139,94,52,0.06), transparent),
-        radial-gradient(12px 12px at 55% 15%, rgba(139,94,52,0.07), transparent),
-        radial-gradient(18px 18px at 75% 45%, rgba(139,94,52,0.05), transparent),
-        radial-gradient(25px 25px at 90% 70%, rgba(139,94,52,0.08), transparent),
-        radial-gradient(14px 14px at 5% 80%, rgba(139,94,52,0.06), transparent),
-        radial-gradient(22px 22px at 40% 85%, rgba(139,94,52,0.05), transparent),
-        radial-gradient(16px 16px at 65% 30%, rgba(139,94,52,0.07), transparent),
-        radial-gradient(28px 28px at 85% 10%, rgba(139,94,52,0.04), transparent),
-        radial-gradient(10px 10px at 50% 65%, rgba(139,94,52,0.06), transparent),
-        repeating-linear-gradient(0deg, rgba(139,94,52,0.03) 0px, rgba(139,94,52,0.03) 2px, transparent 2px, transparent 6px),
-        repeating-linear-gradient(90deg, rgba(139,94,52,0.02) 0px, rgba(139,94,52,0.02) 2px, transparent 2px, transparent 8px),
-        linear-gradient(180deg, #ecd9b0, #e8d4a5, #ecd9b0);
-    background-attachment: fixed;
+[data-theme="parchment"] .sb-item-title::before {
+    content: "❧ ";
+    color: rgba(139,94,52,0.35);
+    font-size: 0.8em;
 }
 
-/* ========== 深海主题·大面积海洋波纹 ========== */
-[data-theme="deepsea"] body {
-    background-color: #0b2344;
-    background-image:
-        radial-gradient(ellipse 50% 30% at 20% 10%, rgba(80,150,210,0.4), transparent),
-        radial-gradient(ellipse 40% 25% at 75% 15%, rgba(60,120,180,0.35), transparent),
-        radial-gradient(ellipse 55% 35% at 40% 40%, rgba(70,140,200,0.25), transparent),
-        radial-gradient(ellipse 45% 30% at 85% 55%, rgba(50,110,170,0.3), transparent),
-        radial-gradient(ellipse 60% 40% at 25% 75%, rgba(40,100,160,0.25), transparent),
-        radial-gradient(ellipse 50% 35% at 65% 85%, rgba(55,125,185,0.3), transparent),
-        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(30,80,140,0.2), transparent),
-        repeating-linear-gradient(180deg, rgba(167,207,238,0.05) 0px, rgba(167,207,238,0.05) 20px, transparent 20px, transparent 40px),
-        repeating-linear-gradient(90deg, rgba(167,207,238,0.03) 0px, rgba(167,207,238,0.03) 30px, transparent 30px, transparent 60px),
-        linear-gradient(180deg, #0b2344 0%, #0d2a50 25%, #0f2f55 50%, #0c2850 75%, #081828 100%);
-    background-attachment: fixed;
+[data-theme="parchment"] .form-input::placeholder,
+[data-theme="parchment"] .form-textarea::placeholder {
+    font-style: italic;
+    color: rgba(139,94,52,0.5);
 }
 
-[data-theme="deepsea"] .modal.active {
-    display: flex;
+[data-theme="parchment"] .page-scroll::before {
+    content: "";
+    position: fixed;
+    top: 15%;
+    right: 5%;
+    width: 80px;
+    height: 60px;
+    background: radial-gradient(ellipse 40% 50% at 40% 50%, rgba(80,50,20,0.1), transparent);
+    border-radius: 50%;
+    filter: blur(3px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+[data-theme="parchment"] .page-scroll::after {
+    content: "";
+    position: fixed;
+    bottom: 20%;
+    left: 8%;
+    width: 50px;
+    height: 40px;
+    background: radial-gradient(ellipse 45% 55% at 50% 50%, rgba(80,50,20,0.08), transparent);
+    border-radius: 50%;
+    filter: blur(4px);
+    pointer-events: none;
+    z-index: 0;
 }
