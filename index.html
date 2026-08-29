@@ -483,7 +483,7 @@ button{cursor:pointer}
 </div>
 
 <div class="modal" id="charModal">
-    <div class="modal" id="charModal" style="display:none !important;">
+    <div class="modal" id="charModal">
 <div class="modal-content">
 <div class="modal-header"><h3 style="color:var(--accent)">📝 人物档案</h3><button class="modal-close" onclick="closeCharEditor()">✕</button></div>
 <div class="form-group" style="text-align:center">
@@ -508,7 +508,7 @@ button{cursor:pointer}
 </div>
 
 <div class="modal" id="newWorkModal">
-    <div class="modal" id="newWorkModal" style="display:none !important;">
+    <div class="modal" id="newWorkModal">
 <div class="modal-content">
 <div class="modal-header"><h3 style="color:var(--accent)">📕 创建新作品</h3><button class="modal-close" onclick="closeNewWorkModal()">✕</button></div>
 <div class="form-group"><label class="form-label">书名</label><input class="form-input" id="nwTitle"></div>
@@ -604,7 +604,6 @@ function switchToolsTab(tab, btn) {
 
 function createNewWork() {
     document.getElementById('newWorkModal').classList.add('active');
-document.getElementById('newWorkModal').style.display = 'flex';
     document.getElementById('nwTitle').value = '';
     document.getElementById('nwWorldviewSrc').value = 'new';
     document.getElementById('nwCopySelect').style.display = 'none';
@@ -612,8 +611,7 @@ document.getElementById('newWorkModal').style.display = 'flex';
     works.forEach(w => { const o = document.createElement('option'); o.value = w.id; o.textContent = w.title; sel.appendChild(o); });
     document.getElementById('nwWorldviewSrc').onchange = function() { document.getElementById('nwCopySelect').style.display = this.value === 'copy' ? 'block' : 'none'; };
 }
-function closeNewWorkModal() { document.getElementById('newWorkModal').classList.remove('active');
-document.getElementById('newWorkModal').style.display = 'none'; }
+function closeNewWorkModal() { document.getElementById('newWorkModal').classList.remove('active');}
 function confirmCreateWork() {
     const title = document.getElementById('nwTitle').value.trim();
     if(!title) { showToast('请输入书名'); return; }
@@ -1063,7 +1061,6 @@ function toggleCustomRace() {
 }
 function openCharEditor(index) {
     document.getElementById('charModal').classList.add('active');
-document.getElementById('charModal').style.display = 'flex';
     document.getElementById('cEditIndex').value = index;
     avatarData = null;
     const w = currentWork();
@@ -1087,8 +1084,7 @@ document.getElementById('charModal').style.display = 'flex';
         toggleCustomRace();
     }
 }
-function closeCharEditor() { document.getElementById('charModal').classList.remove('active');
-document.getElementById('charModal').style.display = 'none';}
+function closeCharEditor() { document.getElementById('charModal').classList.remove('active');}
 function previewAvatar() {
     const f = document.getElementById('avatarInput').files[0];
     if(!f) return;
