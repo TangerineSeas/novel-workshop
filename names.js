@@ -122,7 +122,7 @@ const SURNAME_DATA = [
   { cn: "柳溪", en: "Willowbrook", meaning: "柳树小溪" },
   { cn: "冬裔", en: "Winterborn", meaning: "生于冬日之人" },
   { cn: "智慧守护者", en: "Wisdomkeeper", meaning: "守护智慧之人" },
-  { cn: "赖特", en: "Wright", meaning: "工匠，制造者" }
+  { cn: "赖特", en: "Wright", meaning: "工匠，制造者" },
     { cn: "阿达尔伯恩", en: "Adalbern", meaning: "高贵的熊" },
   { cn: "阿尔滕贝格", en: "Altenberg", meaning: "古山" },
   { cn: "安特里姆", en: "Antrim", meaning: "孤独的山脊" },
