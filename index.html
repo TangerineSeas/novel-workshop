@@ -576,9 +576,9 @@ function goPage(page) {
     if(page === 'dev') { renderDevQuestionList(); renderDevNameList(); renderDevKbList(); }
 }
 
-const themes = ['dark', 'light', 'parchment', 'black'];
-const themeIcons = { dark: '🌙', light: '☀️', parchment: '📜', black: '⬛' };
-const themeNames = { dark: '深蓝', light: '浅色', parchment: '羊皮纸', black: '暗黑' };
+const themes = ['dark', 'light', 'parchment', 'deepsea', 'black'];
+const themeIcons = { dark: '🌙', light: '☀️', parchment: '📜', deepsea: '🌊', black: '⬛' };
+const themeNames = { dark: '深蓝', light: '浅色', parchment: '羊皮纸', deepsea: '深海', black: '暗黑' };
 
 function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
