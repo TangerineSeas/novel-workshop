@@ -865,6 +865,10 @@
     align-items: center !important;
 }
 
+[data-theme="deepsea"] .modal-content {
+    margin: auto;
+    max-height: 80vh;
+}
 
 /* ========== 暗黑主题·星空装饰 ========== */
 [data-theme="black"] body {
@@ -1068,8 +1072,20 @@
     color: #3d2b1f;
 }
 
+[data-theme="deepsea"] .modal {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
 [data-theme="deepsea"] .modal.active {
     display: flex !important;
+}
+
+[data-theme="deepsea"] .modal-content {
+    margin: auto !important;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 [data-theme="deepsea"] .save-toast {
@@ -1105,7 +1121,8 @@
         radial-gradient(80px 80px at 80% 20%, rgba(40,40,80,0.25), transparent),
         radial-gradient(60px 60px at 20% 80%, rgba(45,45,90,0.25), transparent),
         linear-gradient(180deg, #0a0a14, #0d0d1a, #0a0a14);
-    
+    background-attachment: fixed;
+}
 
 /* ========== 羊皮纸主题·大面积纹理 ========== */
 [data-theme="parchment"] body {
@@ -1124,117 +1141,33 @@
         repeating-linear-gradient(0deg, rgba(139,94,52,0.03) 0px, rgba(139,94,52,0.03) 2px, transparent 2px, transparent 6px),
         repeating-linear-gradient(90deg, rgba(139,94,52,0.02) 0px, rgba(139,94,52,0.02) 2px, transparent 2px, transparent 8px),
         linear-gradient(180deg, #ecd9b0, #e8d4a5, #ecd9b0);
-    
+    background-attachment: fixed;
 }
 
 /* ========== 深海主题·大面积海洋波纹 ========== */
 [data-theme="deepsea"] body {
-    background: 
-        radial-gradient(ellipse 80% 40% at 10% 95%, rgba(30,80,120,0.6), transparent),
-        radial-gradient(ellipse 60% 30% at 90% 90%, rgba(20,60,100,0.5), transparent),
-        radial-gradient(ellipse 70% 50% at 50% 100%, rgba(15,50,90,0.7), transparent),
-        radial-gradient(ellipse 50% 30% at 30% 0%, rgba(100,150,200,0.3), transparent),
-        radial-gradient(ellipse 40% 25% at 70% 5%, rgba(80,130,180,0.25), transparent),
-        radial-gradient(ellipse 60% 40% at 50% 50%, rgba(40,90,140,0.2), transparent),
-        linear-gradient(180deg, #0b2344 0%, #0d2a50 20%, #0e2d55 40%, #0c2850 60%, #0a2038 80%, #081828 100%);
+    background-color: #0b2344;
+    background-image:
+        radial-gradient(ellipse 50% 30% at 20% 10%, rgba(80,150,210,0.4), transparent),
+        radial-gradient(ellipse 40% 25% at 75% 15%, rgba(60,120,180,0.35), transparent),
+        radial-gradient(ellipse 55% 35% at 40% 40%, rgba(70,140,200,0.25), transparent),
+        radial-gradient(ellipse 45% 30% at 85% 55%, rgba(50,110,170,0.3), transparent),
+        radial-gradient(ellipse 60% 40% at 25% 75%, rgba(40,100,160,0.25), transparent),
+        radial-gradient(ellipse 50% 35% at 65% 85%, rgba(55,125,185,0.3), transparent),
+        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(30,80,140,0.2), transparent),
+        repeating-linear-gradient(180deg, rgba(167,207,238,0.05) 0px, rgba(167,207,238,0.05) 20px, transparent 20px, transparent 40px),
+        repeating-linear-gradient(90deg, rgba(167,207,238,0.03) 0px, rgba(167,207,238,0.03) 30px, transparent 30px, transparent 60px),
+        linear-gradient(180deg, #0b2344 0%, #0d2a50 25%, #0f2f55 50%, #0c2850 75%, #081828 100%);
+    background-attachment: fixed;
 }
 
-    /* 羊皮纸·墨斑装饰 */
-[data-theme="parchment"] .page-scroll {
-    position: relative;
-}
+/* ========== 暗黑主题·小装饰 ========== */
 
-[data-theme="parchment"] .page-scroll::before {
-    content: "";
-    position: fixed;
-    top: 15%;
-    right: 5%;
-    width: 80px;
-    height: 60px;
-    background: radial-gradient(ellipse 40% 50% at 40% 50%, rgba(80,50,20,0.1), transparent);
-    border-radius: 50%;
-    filter: blur(3px);
-    pointer-events: none;
-    z-index: 0;
-}
-
-[data-theme="parchment"] .page-scroll::after {
-    content: "";
-    position: fixed;
-    bottom: 20%;
-    left: 8%;
-    width: 50px;
-    height: 40px;
-    background: radial-gradient(ellipse 45% 55% at 50% 50%, rgba(80,50,20,0.08), transparent);
-    border-radius: 50%;
-    filter: blur(4px);
-    pointer-events: none;
-    z-index: 0;
-}
-
-[data-theme="parchment"] .card::before {
-    content: "❧";
-    position: absolute;
-    top: 8px;
-    right: 12px;
-    color: rgba(139,94,52,0.5);
-    font-size: 1.2em;
-}
-
-[data-theme="parchment"] .entry-item::before {
-    content: "◦ ";
-    color: rgba(139,94,52,0.4);
-}
-
-[data-theme="parchment"] .sb-item-title::before {
-    content: "❧ ";
-    color: rgba(139,94,52,0.35);
-    font-size: 0.8em;
-}
-
-[data-theme="parchment"] .btn::first-letter {
-    font-size: 1.2em;
-    color: #8b5e34;
-}
-
-[data-theme="parchment"] .form-input::placeholder,
-[data-theme="parchment"] .form-textarea::placeholder {
-    font-style: italic;
-    color: rgba(139,94,52,0.5);
-}
-
-[data-theme="deepsea"] .modal {
-    pointer-events: auto !important;
-}
-
-[data-theme="deepsea"] .modal-close {
-    pointer-events: auto !important;
-    cursor: pointer !important;
-    z-index: 3000 !important;
-    position: relative !important;
-}
-
-[data-theme="deepsea"] .modal-header {
-    pointer-events: auto !important;
-}
-
-[data-theme="deepsea"] .modal-content {
-    pointer-events: auto !important;
-}
-
-[data-theme="deepsea"] .btn,
-[data-theme="deepsea"] .btn-primary,
-[data-theme="deepsea"] .btn-secondary {
-    pointer-events: auto !important;
-    z-index: 3001 !important;
-    position: relative !important;
-}
-
-/* 暗黑主题·小装饰 */
+/* Logo 旁加闪烁的星星 */
 [data-theme="black"] .logo::after {
     content: "✦";
     position: absolute;
-    top: -4px;
+    top: -3px;
     right: -14px;
     color: rgba(255,255,255,0.5);
     font-size: 0.65em;
@@ -1246,9 +1179,20 @@
     50% { opacity: 1; transform: scale(1.3); }
 }
 
+/* 主页标题前后加星星 */
+[data-theme="black"] .home-hero h1::before {
+    content: "⋆ ";
+    color: rgba(255,255,255,0.5);
+}
+
+[data-theme="black"] .home-hero h1::after {
+    content: " ⋆";
+    color: rgba(255,255,255,0.5);
+}
+
+/* 卡片右上角加小星星 */
 [data-theme="black"] .card {
     position: relative;
-    border: 1px solid #2a2a3a;
 }
 
 [data-theme="black"] .card::after {
@@ -1260,20 +1204,10 @@
     font-size: 0.6em;
 }
 
-[data-theme="black"] .home-hero h1::before {
-    content: "⋆ ";
-    color: rgba(255,255,255,0.5);
-}
-
-[data-theme="black"] .home-hero h1::after {
-    content: " ⋆";
-    color: rgba(255,255,255,0.5);
-}
-
+/* 作品卡片底部加点点装饰 */
 [data-theme="black"] .work-card {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(180deg, #151520, #1a1a2a);
 }
 
 [data-theme="black"] .work-card::after {
@@ -1287,70 +1221,77 @@
     font-size: 0.6em;
 }
 
+/* 侧边栏标题前加星星 */
 [data-theme="black"] .sb-title::before {
     content: "⋆ ";
     color: rgba(255,255,255,0.4);
     font-size: 0.7em;
 }
 
-[data-theme="black"] .btn {
-    position: relative;
-}
-
+/* 主按钮后加小星星 */
 [data-theme="black"] .btn-primary::after {
     content: " ✦";
     color: rgba(255,255,255,0.6);
     font-size: 0.7em;
 }
 
+/* 统计数字加微光 */
 [data-theme="black"] .stat-num {
     text-shadow: 0 0 8px rgba(255,255,255,0.3);
 }
 
+/* 列表项前加小点 */
 [data-theme="black"] .entry-item::before {
     content: "· ";
     color: rgba(255,255,255,0.3);
 }
 
+/* 激活导航按钮前加星星 */
 [data-theme="black"] .nav-btn.active::before {
     content: "✦ ";
     color: #fff;
     font-size: 0.7em;
 }
 
-    [data-theme="deepsea"] .modal {
-    display: none !important;
+/* 工具标签激活时加装饰 */
+[data-theme="black"] .tools-tab.active::before {
+    content: "✦ ";
+    color: #fff;
+    font-size: 0.7em;
 }
 
-[data-theme="deepsea"] .modal.active {
-    display: flex !important;
+/* 输入框聚焦时加微光 */
+[data-theme="black"] .form-input:focus,
+[data-theme="black"] .form-textarea:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 8px rgba(74,144,226,0.4);
 }
 
-[data-theme="deepsea"] .modal-close,
-[data-theme="deepsea"] .cp-close,
-[data-theme="deepsea"] .modal-header button {
-    position: relative !important;
-    z-index: 9999 !important;
-    pointer-events: auto !important;
-    cursor: pointer !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+/* 人物卡片悬停时加星 */
+[data-theme="black"] .char-card::before {
+    content: "✦";
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    color: rgba(255,255,255,0.1);
+    font-size: 0.6em;
+    opacity: 0;
+    transition: opacity .3s;
 }
 
-[data-theme="deepsea"] .modal {
-    z-index: 1000 !important;
+[data-theme="black"] .char-card:hover::before {
+    opacity: 1;
 }
 
-[data-theme="deepsea"] .modal.active {
-    z-index: 1000 !important;
+/* 保存提示加边框装饰 */
+[data-theme="black"] .save-toast {
+    border: 1px solid #2a2a3a;
+    box-shadow: 0 0 10px rgba(255,255,255,0.1);
 }
 
-[data-theme="deepsea"] .modal-content {
-    z-index: 1001 !important;
-    position: relative !important;
-}
-
-[data-theme="deepsea"] .modal.active {
-    display: flex !important;
+/* 章节列表选中项前加星 */
+[data-theme="black"] .sb-item.active::before {
+    content: "✦ ";
+    color: rgba(255,255,255,0.6);
+    font-size: 0.7em;
 }
