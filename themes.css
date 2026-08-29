@@ -1403,3 +1403,31 @@
         min-width: 100% !important;
     }
 }
+
+/* 移动端深海主题修复 */
+@media (max-width: 900px) {
+    [data-theme="deepsea"] .sidebar {
+        background: #0b2344 !important;
+        background-image: none !important;
+        width: 270px !important;
+        left: -270px !important;
+        transition: left .3s !important;
+    }
+    
+    [data-theme="deepsea"] .sidebar.open {
+        left: 0 !important;
+    }
+    
+    [data-theme="deepsea"] .sidebar::after {
+        display: none !important;
+    }
+    
+    [data-theme="deepsea"] .writing-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    [data-theme="deepsea"] #page-writing {
+        position: relative;
+    }
+}
