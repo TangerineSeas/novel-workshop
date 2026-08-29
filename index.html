@@ -233,7 +233,12 @@ button{cursor:pointer}
 
 <div class="page" id="page-writing">
 <aside class="sidebar" id="sidebar">
-<div class="sb-section"><div class="sb-title">📋 章节列表</div><div id="chapterList"></div><button class="sb-add" onclick="addChapter()">+ 新建章节</button></div>
+<div class="sb-section">
+    <div class="sb-title">📋 章节列表</div>
+    <div id="workTitleDisplay" style="font-size:.75em;color:var(--accent);font-weight:bold;margin-bottom:8px;padding:4px 8px;background:var(--bg);border-radius:4px"></div>
+    <div id="chapterList"></div>
+    <button class="sb-add" onclick="addChapter()">+ 新建章节</button>
+</div>
 <div class="sb-section"><div class="sb-title">👥 本章出场</div><div id="sidebarChars"></div><button class="sb-add" onclick="goPage('characters')">+ 管理人设</button></div>
 <div class="sb-section"><div class="sb-title">🔧 快捷工具</div>
 <div class="sb-item" onclick="goPage('tools')"><div class="sb-item-title">姓氏生成器</div><div class="sb-item-desc">贵族/平民姓氏</div></div>
@@ -846,14 +851,48 @@ function switchChapter(id) {
 function renderChapters() {
     const w = currentWork();
     const el = document.getElementById('chapterList'); el.innerHTML = '';
+    const titleDisplay = document.getElementById('workTitleDisplay');
     if(!w) return;
+    
+    // 显示作品名称
+    if(titleDisplay) {
+        titleDisplay.textContent = '📖 ' + w.title;
+        titleDisplay.onclick = () => renameWork();
+    }
+    
     w.chapters.forEach(ch => {
         const d = document.createElement('div');
         d.className = 'sb-item' + (ch.id === w.currentChapterId ? ' active' : '');
         d.innerHTML = `<div class="sb-item-title">${ch.name}</div><div class="sb-item-desc">${ch.wordCount||0} 字</div>`;
         d.onclick = () => switchChapter(ch.id);
+        d.ondblclick = () => renameChapter(ch.id);
         el.appendChild(d);
     });
+}
+
+function renameWork() {
+    const w = currentWork(); if(!w) return;
+    const name = prompt('修改作品名称：', w.title);
+    if(name && name.trim()) {
+        w.title = name.trim();
+        renderChapters();
+        renderHome();
+        saveAll();
+        showToast('作品名已更新');
+    }
+}
+
+function renameChapter(chapterId) {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === chapterId);
+    if(!ch) return;
+    const name = prompt('修改章节名称：', ch.name);
+    if(name && name.trim()) {
+        ch.name = name.trim();
+        renderChapters();
+        saveAll();
+        showToast('章节名已更新');
+    }
 }
 function getBadge(imp) {
     const m = {main:'<span class="badge badge-main">主角</span>',important:'<span class="badge badge-important">重要配角</span>',minor:'<span class="badge badge-minor">次要配角</span>',extra:'<span class="badge badge-minor">龙套</span>'};
