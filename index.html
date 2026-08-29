@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>西幻创作工坊 v3.1.2</title>
 <link rel="stylesheet" href="themes.css">
-<script src="knowledge.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Long+Cang&family=Ma+Shan+Zheng&display=swap" rel="stylesheet"><script src="knowledge.js"></script>
 <script src="names.js"></script>
     <link rel="stylesheet" href="tools-magic.css">
 <script src="tools-magic.js"></script>
@@ -247,7 +247,17 @@ button{cursor:pointer}
 </aside>
 <main class="writing-main">
 <div class="toolbar">
-<label>字体</label><select id="fontFamily" onchange="updateStyle()"><option value="'Georgia',serif">Georgia</option><option value="'Times New Roman',serif">Times</option><option value="'Arial',sans-serif">Arial</option><option value="'Courier New',monospace">Courier</option><option value="'Palatino Linotype',serif">Palatino</option></select>
+<label>字体</label><select id="fontFamily" onchange="updateStyle()">
+    <option value="'Georgia',serif">Georgia</option>
+    <option value="'Times New Roman',serif">Times</option>
+    <option value="'Arial',sans-serif">Arial</option>
+    <option value="'Courier New',monospace">Courier</option>
+    <option value="'Palatino Linotype',serif">Palatino</option>
+    <option value="'Long Cang',cursive">手写体·龙藏</option>
+    <option value="'Ma Shan Zheng',cursive">手写体·马善政</option>
+    <option value="'Noto Serif SC',serif">宋体·思源宋</option>
+    <option value="'Noto Sans SC',sans-serif">黑体·思源黑</option>
+</select>
 <label>字号</label><select id="fontSize" onchange="updateStyle()"><option value="14px">小</option><option value="16px" selected>中</option><option value="18px">大</option><option value="20px">特大</option></select>
 <label>颜色</label><input type="color" id="fontColor" value="#e0e0e0" onchange="updateStyle()">
 <label>行距</label><select id="lineHeight" onchange="updateStyle()"><option value="1.5">紧凑</option><option value="1.8" selected>标准</option><option value="2.0">宽松</option><option value="2.5">很宽</option></select>
