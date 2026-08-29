@@ -1455,3 +1455,44 @@
         right: 0 !important;
     }
 }
+
+/* 强制修复深海主题移动端侧边栏 */
+@media (max-width: 900px) {
+    [data-theme="deepsea"] .sidebar {
+        width: 270px !important;
+        min-width: 270px !important;
+        max-width: 270px !important;
+        flex-basis: 270px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    [data-theme="deepsea"] .writing-main {
+        width: calc(100% - 270px) !important;
+        flex-basis: auto !important;
+    }
+    
+    /* 如果侧边栏是固定定位，覆盖它的left */
+    [data-theme="deepsea"] .sidebar {
+        position: fixed !important;
+        left: -270px !important;
+        top: 56px !important;
+        height: calc(100vh - 56px) !important;
+        z-index: 50 !important;
+    }
+    
+    [data-theme="deepsea"] .sidebar.open {
+        left: 0 !important;
+    }
+    
+    /* 确保写作区域占满全宽 */
+    [data-theme="deepsea"] #page-writing {
+        position: relative !important;
+    }
+    
+    [data-theme="deepsea"] .writing-main {
+        position: relative !important;
+        left: 0 !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
