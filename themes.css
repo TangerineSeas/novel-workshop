@@ -1380,3 +1380,32 @@
         top: calc(70px + env(safe-area-inset-top)) !important;
     }
 }
+
+/* 深海主题移动端修复 */
+@media (max-width: 900px) {
+    [data-theme="deepsea"] .page-scroll::before,
+    [data-theme="deepsea"] .page-scroll::after,
+    [data-theme="deepsea"] .main-container::after,
+    [data-theme="deepsea"] .main-container::before {
+        display: none !important;
+    }
+    
+    [data-theme="deepsea"] .sidebar {
+        width: 270px !important;
+        max-width: 270px !important;
+        left: -270px !important;
+    }
+    
+    [data-theme="deepsea"] .sidebar.open {
+        left: 0 !important;
+    }
+    
+    [data-theme="deepsea"] .writing-main {
+        width: 100% !important;
+        flex: 1 !important;
+    }
+    
+    [data-theme="deepsea"] body {
+        overflow-x: hidden;
+    }
+}
