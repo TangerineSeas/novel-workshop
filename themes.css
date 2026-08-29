@@ -1381,118 +1381,25 @@
     }
 }
 
-/* 深海主题移动端修复 */
-@media (max-width: 900px) {
-    [data-theme="deepsea"] .page-scroll::before,
-    [data-theme="deepsea"] .page-scroll::after,
-    [data-theme="deepsea"] .main-container::after,
-    [data-theme="deepsea"] .main-container::before {
-        display: none !important;
-    }
-    
+@media(max-width:900px){
     [data-theme="deepsea"] .sidebar {
-        width: 270px !important;
-        max-width: 270px !important;
-        left: -270px !important;
-    }
-    
-    [data-theme="deepsea"] .sidebar.open {
-        left: 0 !important;
-    }
-    
-    [data-theme="deepsea"] .writing-main {
-        width: 100% !important;
-        flex: 1 !important;
-    }
-    
-    [data-theme="deepsea"] body {
-        overflow-x: hidden;
-    }
-}
-
-/* 深海主题·写作页面移动端修复 */
-@media (max-width: 900px) {
-    [data-theme="deepsea"] #page-writing {
-        display: flex !important;
-        flex-direction: row !important;
-        width: 100% !important;
-        overflow: hidden !important;
-    }
-    
-    [data-theme="deepsea"] #page-writing .sidebar {
         position: fixed !important;
         left: -270px !important;
         top: 56px !important;
-        width: 270px !important;
-        min-width: 270px !important;
-        max-width: 270px !important;
         height: calc(100vh - 56px) !important;
+        width: 270px !important;
         z-index: 50 !important;
         transition: left .3s !important;
-    }
-    
-    [data-theme="deepsea"] #page-writing .sidebar.open {
-        left: 0 !important;
-    }
-    
-    [data-theme="deepsea"] #page-writing .writing-main {
-        flex: 1 !important;
-        width: 100% !important;
-        min-width: 0 !important;
-        margin-left: 0 !important;
-    }
-    
-    [data-theme="deepsea"] #page-writing .char-panel {
-        position: fixed !important;
-        right: -290px !important;
-        top: 56px !important;
-        width: 290px !important;
-        height: calc(100vh - 56px) !important;
-        z-index: 50 !important;
-    }
-    
-    [data-theme="deepsea"] #page-writing .char-panel.active {
-        right: 0 !important;
-    }
-}
-
-/* 强制修复深海主题移动端侧边栏 */
-@media (max-width: 900px) {
-    [data-theme="deepsea"] .sidebar {
-        width: 270px !important;
-        min-width: 270px !important;
-        max-width: 270px !important;
-        flex-basis: 270px !important;
-        flex-shrink: 0 !important;
-    }
-    
-    [data-theme="deepsea"] .writing-main {
-        width: calc(100% - 270px) !important;
-        flex-basis: auto !important;
-    }
-    
-    /* 如果侧边栏是固定定位，覆盖它的left */
-    [data-theme="deepsea"] .sidebar {
-        position: fixed !important;
-        left: -270px !important;
-        top: 56px !important;
-        height: calc(100vh - 56px) !important;
-        z-index: 50 !important;
+        background: #0b2344 !important;
     }
     
     [data-theme="deepsea"] .sidebar.open {
         left: 0 !important;
     }
     
-    /* 确保写作区域占满全宽 */
-    [data-theme="deepsea"] #page-writing {
-        position: relative !important;
-    }
-    
     [data-theme="deepsea"] .writing-main {
-        position: relative !important;
-        left: 0 !important;
-        margin-left: 0 !important;
         width: 100% !important;
+        flex: 1 !important;
+        min-width: 100% !important;
     }
 }
