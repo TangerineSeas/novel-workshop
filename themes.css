@@ -1333,3 +1333,11 @@
     color: #fff;
     font-size: 0.7em;
 }
+
+    [data-theme="deepsea"] .modal {
+    display: none !important;
+}
+
+[data-theme="deepsea"] .modal.active {
+    display: flex !important;
+}
