@@ -1341,3 +1341,28 @@
 [data-theme="deepsea"] .modal.active {
     display: flex !important;
 }
+
+[data-theme="deepsea"] .modal-close,
+[data-theme="deepsea"] .cp-close,
+[data-theme="deepsea"] .modal-header button {
+    position: relative !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+[data-theme="deepsea"] .modal {
+    z-index: 1000 !important;
+}
+
+[data-theme="deepsea"] .modal.active {
+    z-index: 1000 !important;
+}
+
+[data-theme="deepsea"] .modal-content {
+    z-index: 1001 !important;
+    position: relative !important;
+}
