@@ -42,6 +42,13 @@
                         <button class="btn btn-sm btn-primary" onclick="generateVennInspiration()">🎲 随机组合推导</button>
                     </div>
                     <div class="venn-result" id="venn-result">点击左右两侧词汇进行组合，或点击随机组合</div>
+                                    <!-- 原型快速填充 -->
+                <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border)">
+                    <label style="font-size:.8em;color:var(--text2);display:block;margin-bottom:6px">📚 泛灵魔法原型速查（点击原型查看详情）：</label>
+                    <select id="archetypeSelect" onchange="showArchetypeDetail(this.value)" style="width:100%;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:.85em">
+                        <option value="">-- 选择一个原型 --</option>
+                    </select>
+                </div>
                 </div>
 
                 <!-- ===== 工具二：不可能三角 ===== -->
@@ -91,6 +98,16 @@
                 </div>
             </div>
         `;
+                // 填充原型下拉框
+        const archetypeSelect = document.getElementById('archetypeSelect');
+        if(archetypeSelect && window.MAGIC_ARCHETYPES) {
+            window.MAGIC_ARCHETYPES.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.id;
+                opt.textContent = `${a.id}. ${a.name}`;
+                archetypeSelect.appendChild(opt);
+            });
+        }
         toolsContainer.appendChild(magicContent);
     }
 
@@ -376,5 +393,230 @@
         }).catch(err => {
             alert('导出失败：' + err.message);
         });
+    };
+        // ===== 20条普适泛灵魔法原型 =====
+    window.MAGIC_ARCHETYPES = [
+        {
+            id: 20,
+            name: "超凡入圣的技艺/工艺",
+            natural: ["生铁", "熟铁", "炭与钢的转化", "绘画颜料", "工具思维", "歌唱能力"],
+            social: ["第一工匠", "技艺秘密传承", "口传歌诀", "北欧侏儒铁匠", "西非熔炉神", "中国李老君"],
+            detail: "几乎必然与造物主或其神谱中的亲属相关。技艺秘密严格保守在血亲或师徒之间。几乎仅出现于冶金革命后的复杂文明。普遍使用口传歌诀/诗篇来对抗信息流失。"
+        },
+        {
+            id: 19,
+            name: "区域神/土地公/地缚灵",
+            natural: ["千年橡树", "不融的雪山", "长时间使用的井"],
+            social: ["土地庙祭祀圈", "城隍庙", "村落划界", "奠基宰牲", "开工仪式"],
+            detail: "将特定地理空间神圣化。从古代城市奠基宰牲祭神，到今天装修开工斩鸡头烧黄纸，都是对区域守护灵的敬畏。"
+        },
+        {
+            id: 18,
+            name: "誓言/契约/Geas",
+            natural: ["泥板文字", "金属镌刻", "盐", "听觉与发声"],
+            social: ["公开立誓", "社会性死亡", "成文法雏形", "爱尔兰Geas"],
+            detail: "公开立誓的仪式场景中，违约可能导致社会性死亡。在爱尔兰盖尔传说中，Geas既是祝福又是诅咒。"
+        },
+        {
+            id: 17,
+            name: "迷醉/情欲/欢宴之力",
+            natural: ["葡萄发酵乙醇", "麦角碱", "曼陀罗", "毒蝇伞", "群体臆症"],
+            social: ["萨满文化", "高纬度地区", "生理极限崇拜"],
+            detail: "对生理极限状态的崇拜，主要存在于高纬度地区萨满文化之中。通过迷醉状态接触超自然。"
+        },
+        {
+            id: 16,
+            name: "丰饶仪式/聚宝仪式",
+            natural: ["春耕秋收", "成长周期", "贵金属不锈"],
+            social: ["播种-收获逻辑", "埋藏财物祈福", "聚宝盆", "许愿币"],
+            detail: "在几乎一切社会都有分布。将播种-收获的经济逻辑投射到一切事物上——埋下什么就能收获什么，魔法即投资。"
+        },
+        {
+            id: 15,
+            name: "杀戮之舞/神打/出马",
+            natural: ["无氧代谢", "肾上腺素", "痛阈提升"],
+            social: ["集体附身仪式", "游神传统", "熊皮斗篷", "毛利哈卡战舞"],
+            detail: "群体臆症的古典军事化运用。萨满文化圈战前的集体附身仪式、东亚的游神传统、北欧狂战士传说。"
+        },
+        {
+            id: 14,
+            name: "占卜/预兆/先知",
+            natural: ["鸟群形状", "牛肠纹路", "龟甲裂缝", "骨片朝向"],
+            social: ["商周卜甲", "罗马占卜", "占星术", "随机数即天意"],
+            detail: "东商周，西罗马。将随机数视为天意或超自然所操纵的命运之揭示。"
+        },
+        {
+            id: 13,
+            name: "逢魔之刻/意外律",
+            natural: ["日出日落", "山洞", "海岸", "门廊", "桥梁"],
+            social: ["黄昏即逢魔", "成人礼", "门槛治疗", "天主教洗礼"],
+            detail: "将社会空间和时间的交界线定义为穿透现实结构的特定魔法条件。黄昏即日本的逢魔之刻。"
+        },
+        {
+            id: 12,
+            name: "女巫魔药/天材地宝",
+            natural: ["柳树皮", "罂粟汁液", "蒿草"],
+            social: ["经验药理学", "灵性植物"],
+            detail: "在有效成分被化学式定义命名之前，所有经验药理学的处理对象都是具有灵性的植物。"
+        },
+        {
+            id: 11,
+            name: "驱使兽群/化兽/德鲁伊",
+            natural: ["狼群等级", "鸟群结构", "动物感官"],
+            social: ["头牛头羊依赖", "动物母语", "猎物道歉仪式", "换皮者", "兽头神祇"],
+            detail: "以人类之身运用兽类的本能优势。西伯利亚萨满的动物母语观念、印第安猎人的猎物道歉仪式。"
+        },
+        {
+            id: 10,
+            name: "月相与潮汐轮回",
+            natural: ["月球公转", "潮汐涨落", "月经周期"],
+            social: ["周期性重复崇拜", "自然节律"],
+            detail: "全人类普适的对周期性重复的自然节律的崇拜和运用。"
+        },
+        {
+            id: 9,
+            name: "火之毁灭与扬升",
+            natural: ["燃烧", "火焰颜色", "森林火灾", "烟尘上升"],
+            social: ["祭祀用烟", "神的居所在天上"],
+            detail: "火焚烧物体制造的烟是唯一一种将物质摧毁同时副产物向上飘至天空的物理现象。结合神的居所在天上，构成了最初的祭祀仪式。"
+        },
+        {
+            id: 8,
+            name: "水之涤净/水之孕育",
+            natural: ["溶解性", "流动性", "反射成像", "无光缺氧"],
+            social: ["洗礼", "骨灰撒河", "井泉通冥", "溺水者葬仪"],
+            detail: "水通过浸泡来删除或覆盖既往状态。洗礼作为旧人死、新人活的仪式。"
+        },
+        {
+            id: 7,
+            name: "血缘之纽带/祖先之灵",
+            natural: ["可见线条", "遗传相似性", "氏族结构"],
+            social: ["宗族祭祀", "不可见的线", "祖先降灾", "贵族谱系"],
+            detail: "血缘关系被视为不可见的线。宗族体系对祭祀共同祖先的建构，贵族谱系作为合法性来源。"
+        },
+        {
+            id: 6,
+            name: "梦境启示/出神",
+            natural: ["快速眼动睡眠", "记忆重放", "感官剥夺幻觉"],
+            social: ["灵魂外出", "彼岸世界", "神明启示"],
+            detail: "做梦即是灵魂外出办事，可借此获得神明或命运的启示。"
+        },
+        {
+            id: 5,
+            name: "跨越生死界限/通灵",
+            natural: ["磷火", "误认脸孔", "心理联想"],
+            social: ["死者吐露秘密", "季节变化", "灾祸起源"],
+            detail: "死者比生者多知道一件事——死后是什么样。生者相信死者可以吐露生者急需的秘密。"
+        },
+        {
+            id: 4,
+            name: "天象即神威",
+            natural: ["雷暴", "日食", "月食", "彗星", "洪水"],
+            social: ["神祇意志", "王权彰显", "威吓敌人"],
+            detail: "天象即神祇在表达意志、发泄愤怒。古典文明通过解读这些巨响与强光来威吓敌人、彰显王权。"
+        },
+        {
+            id: 3,
+            name: "大地与母性生殖力",
+            natural: ["植物生长", "土壤肥力", "尸体转化养分"],
+            social: ["地母神原型", "顺产与丰收", "养分来自大地"],
+            detail: "跨文化的地母神原型，用于解释流产/顺产和欠收/丰收。"
+        },
+        {
+            id: 2,
+            name: "灵魂/另一个自我",
+            natural: ["名字", "倒影", "影子", "梦中行动"],
+            social: ["踩影子禁忌", "烧名字纸", "肖像夺魂", "替身偶人", "真名号令"],
+            detail: "踩影子、烧名字纸作为民俗禁忌。替身偶人作为第二身体的寄宿物。称呼真名即可号令本人。"
+        },
+        {
+            id: 1,
+            name: "存在/言灵/创世",
+            natural: ["发声能力", "语言符号", "狼孩事件"],
+            social: ["终极目的论", "神创论", "语言即本质"],
+            detail: "人类对自身为何存在的终极目的论解释。将逻辑和语言所描述的单一对象视为现实本质。一切形式的古典神创论。"
+        }
+    ];
+        // ===== 原型详情悬浮窗 =====
+    window.showArchetypeDetail = function(id) {
+        if(!id) return;
+        const archetype = window.MAGIC_ARCHETYPES.find(a => a.id == id);
+        if(!archetype) return;
+        
+        // 关闭旧悬浮窗
+        const oldPopup = document.getElementById('archetypePopup');
+        if(oldPopup) oldPopup.remove();
+        
+        // 创建悬浮窗
+        const popup = document.createElement('div');
+        popup.id = 'archetypePopup';
+        popup.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg2);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 4000;
+            max-width: 400px;
+            width: 90%;
+            max-height: 70vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        `;
+        
+        popup.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <h3 style="color:var(--accent);margin:0">${archetype.id}. ${archetype.name}</h3>
+                <button onclick="closeArchetypePopup()" style="background:none;border:none;color:var(--text);font-size:1.3em;cursor:pointer">✕</button>
+            </div>
+            <p style="font-size:.85em;line-height:1.7;color:var(--text2);margin-bottom:12px">${archetype.detail}</p>
+            <div style="margin-bottom:10px">
+                <strong style="font-size:.8em;color:var(--accent)">🌿 自然性词汇：</strong>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:5px">
+                    ${archetype.natural.map(w => `<span style="padding:4px 10px;background:var(--bg3);border-radius:12px;font-size:.75em;cursor:pointer" onclick="addVennWordFromArchetype('natural','${w}')">${w}</span>`).join('')}
+                </div>
+            </div>
+            <div style="margin-bottom:12px">
+                <strong style="font-size:.8em;color:var(--gold)">🏛️ 社会性词汇：</strong>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:5px">
+                    ${archetype.social.map(w => `<span style="padding:4px 10px;background:var(--bg3);border-radius:12px;font-size:.75em;cursor:pointer" onclick="addVennWordFromArchetype('social','${w}')">${w}</span>`).join('')}
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:center">
+                <button class="btn btn-sm btn-primary" onclick="fillAllFromArchetype(${archetype.id})">📥 全部填入</button>
+                <button class="btn btn-sm btn-secondary" onclick="closeArchetypePopup()">关闭</button>
+            </div>
+        `;
+        
+        document.body.appendChild(popup);
+    };
+    
+    window.closeArchetypePopup = function() {
+        const popup = document.getElementById('archetypePopup');
+        if(popup) popup.remove();
+    };
+    
+    window.addVennWordFromArchetype = function(type, word) {
+        const list = document.getElementById('venn-' + type + '-list');
+        if(!list) return;
+        // 检查是否已存在
+        const existing = [...list.querySelectorAll('li')].some(li => li.textContent === word);
+        if(existing) return;
+        const li = document.createElement('li');
+        li.textContent = word;
+        li.onclick = function() { this.classList.toggle('selected'); };
+        list.appendChild(li);
+    };
+    
+    window.fillAllFromArchetype = function(id) {
+        const archetype = window.MAGIC_ARCHETYPES.find(a => a.id == id);
+        if(!archetype) return;
+        archetype.natural.forEach(w => addVennWordFromArchetype('natural', w));
+        archetype.social.forEach(w => addVennWordFromArchetype('social', w));
+        closeArchetypePopup();
+        showToast('已填入词汇');
     };
 })();
