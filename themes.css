@@ -1072,12 +1072,6 @@
     display: flex !important;
 }
 
-[data-theme="deepsea"] .modal-content {
-    margin: auto !important;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
 [data-theme="deepsea"] .save-toast {
     position: fixed;
     top: 70px !important;
@@ -1357,18 +1351,6 @@
     position: relative !important;
 }
 
-[data-theme="deepsea"] .modal {
-    display: none;
-}
-
 [data-theme="deepsea"] .modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-[data-theme="deepsea"] .modal-close {
-    cursor: pointer;
-    z-index: 10;
-    position: relative;
+    display: flex !important;
 }
