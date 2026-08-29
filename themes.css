@@ -1431,3 +1431,239 @@
         position: relative;
     }
 }
+
+/* ========== 复古绿色主题 ========== */
+[data-theme="retrogreen"]{
+    --bg:#e5e6e2;--bg2:#f0f1ed;--bg3:#d5d6d0;--card:#f5f6f2;
+    --text:#333333;--text2:#666a5e;--accent:#515f40;--accent2:#767b5e;
+    --border:#b8bca8;--gold:#b8912f;--danger:#b8352a;--success:#4a8a3a;
+    --link:#515f40;--main:#b8352a;--important:#b87a2a;--minor:#8a8a80;--dev:#b8352a;
+}
+
+[data-theme="retrogreen"] body {
+    background:
+        radial-gradient(ellipse 50% 40% at 15% 15%, rgba(81,95,64,0.06), transparent),
+        radial-gradient(ellipse 45% 35% at 85% 25%, rgba(81,95,64,0.05), transparent),
+        radial-gradient(ellipse 55% 45% at 50% 70%, rgba(81,95,64,0.04), transparent),
+        linear-gradient(180deg, #e5e6e2, #dcddd8, #e5e6e2);
+}
+
+[data-theme="retrogreen"] .header {
+    background: #515f40;
+    border-bottom: 2px solid #767b5e;
+    box-shadow: 0 2px 10px rgba(81,95,64,0.3);
+}
+
+[data-theme="retrogreen"] .logo {
+    color: #ffffff;
+    text-shadow: none;
+}
+
+[data-theme="retrogreen"] .nav-btn {
+    color: #ffffff;
+    background: transparent;
+    border: none;
+}
+
+[data-theme="retrogreen"] .nav-btn:hover {
+    background: rgba(255,255,255,0.15);
+    color: #ffffff;
+}
+
+[data-theme="retrogreen"] .nav-btn.active {
+    background: #767b5e;
+    color: #ffffff;
+    border-radius: 3px;
+}
+
+[data-theme="retrogreen"] .sidebar {
+    background: #e5e6e2;
+    border-right: 1px solid #b8bca8;
+}
+
+[data-theme="retrogreen"] .sb-item {
+    background: #f0f1ed;
+    border-left: 3px solid transparent;
+    color: #333333;
+}
+
+[data-theme="retrogreen"] .sb-item:hover {
+    border-left-color: #515f40;
+    background: #d5d6d0;
+}
+
+[data-theme="retrogreen"] .sb-item.active {
+    border-left-color: #515f40;
+    background: #d5d6d0;
+}
+
+[data-theme="retrogreen"] .editor-paper {
+    background: #f5f6f2;
+    border: 1px solid #b8bca8;
+    box-shadow: 2px 3px 12px rgba(81,95,64,0.15);
+    position: relative;
+}
+
+[data-theme="retrogreen"] .editor-paper::before {
+    content: "📗";
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 0.9em;
+    opacity: 0.3;
+}
+
+[data-theme="retrogreen"] .card {
+    background: #f5f6f2;
+    border: 1px solid #b8bca8;
+    box-shadow: 2px 3px 10px rgba(81,95,64,0.1);
+    position: relative;
+}
+
+[data-theme="retrogreen"] .card::before {
+    content: "📗";
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 0.8em;
+    opacity: 0.25;
+}
+
+[data-theme="retrogreen"] .btn {
+    background: #767b5e;
+    border: 1px solid #515f40;
+    color: #ffffff;
+    border-radius: 4px;
+    transition: all .2s;
+}
+
+[data-theme="retrogreen"] .btn:hover {
+    background: #515f40;
+    color: #ffffff;
+}
+
+[data-theme="retrogreen"] .btn-primary {
+    background: #767b5e;
+    border: 1px solid #515f40;
+    color: #ffffff;
+}
+
+[data-theme="retrogreen"] .btn-primary:hover {
+    background: #515f40;
+    color: #ffffff;
+}
+
+[data-theme="retrogreen"] .form-input,
+[data-theme="retrogreen"] .form-textarea,
+[data-theme="retrogreen"] .form-select {
+    background: #ffffff;
+    border: 1px solid #b8bca8;
+    color: #333333;
+}
+
+[data-theme="retrogreen"] .form-input:focus,
+[data-theme="retrogreen"] .form-textarea:focus {
+    border-color: #515f40;
+    box-shadow: 0 0 8px rgba(81,95,64,0.25);
+}
+
+[data-theme="retrogreen"] .entry-item {
+    background: #f0f1ed;
+    border: 1px solid #b8bca8;
+}
+
+[data-theme="retrogreen"] .entry-item:hover {
+    border-color: #515f40;
+}
+
+[data-theme="retrogreen"] .work-card {
+    background: #f5f6f2;
+    border: 1px solid #b8bca8;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="retrogreen"] .work-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #515f40, #767b5e, #515f40);
+}
+
+[data-theme="retrogreen"] .work-card::after {
+    content: "📗";
+    position: absolute;
+    bottom: 5px;
+    left: 8px;
+    font-size: 0.7em;
+    opacity: 0.2;
+}
+
+[data-theme="retrogreen"] .char-card {
+    background: #f5f6f2;
+    border: 1px solid #b8bca8;
+}
+
+[data-theme="retrogreen"] .char-card:hover {
+    border-color: #515f40;
+    box-shadow: 0 4px 15px rgba(81,95,64,0.2);
+}
+
+[data-theme="retrogreen"] .save-toast {
+    background: #515f40;
+    border: 1px solid #767b5e;
+    color: #ffffff;
+}
+
+[data-theme="retrogreen"] .tools-tab.active,
+[data-theme="retrogreen"] .wv-tab.active,
+[data-theme="retrogreen"] .dev-tab.active {
+    background: #515f40;
+    color: #ffffff;
+}
+
+[data-theme="retrogreen"] .progress-fill {
+    background: linear-gradient(90deg, #515f40, #767b5e, #515f40);
+}
+
+[data-theme="retrogreen"] .home-hero h1::before {
+    content: "📗 ";
+    opacity: 0.5;
+    font-size: 0.8em;
+}
+
+[data-theme="retrogreen"] .home-hero h1::after {
+    content: " 📗";
+    opacity: 0.5;
+    font-size: 0.8em;
+}
+
+[data-theme="retrogreen"] .sb-title::before {
+    content: "📝 ";
+    font-size: 0.7em;
+}
+
+[data-theme="retrogreen"] .modal-content {
+    background: #f5f6f2;
+    border: 2px solid #767b5e;
+    box-shadow: 0 0 30px rgba(81,95,64,0.3);
+}
+
+[data-theme="retrogreen"] .badge-main { background: #b8352a; }
+[data-theme="retrogreen"] .badge-important { background: #b87a2a; }
+[data-theme="retrogreen"] .badge-minor { background: #8a8a80; }
+
+[data-theme="retrogreen"] ::-webkit-scrollbar-thumb {
+    background: #b8bca8;
+    border-radius: 3px;
+}
+
+[data-theme="retrogreen"] .search-box::placeholder {
+    color: rgba(81,95,64,0.4);
+    font-style: italic;
+}
+
+[data-theme="retrogreen"] .entry-link {
+    color: #515f40;
+}
