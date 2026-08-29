@@ -207,7 +207,7 @@ const GIVEN_NAME_DATA_MALE = [
   { cn: "瓦尔特", en: "Walter", meaning: "统治军队的人，贵族常用" },
   { cn: "沃特", en: "Wat", meaning: "统治军队的人，但更常用于平民" },
   { cn: "威廉", en: "William", meaning: "坚定的保护者，征服者之名" },
-  { cn: "温斯顿", en: "Winston", meaning: "喜乐之石，也带有贵族色彩" }
+  { cn: "温斯顿", en: "Winston", meaning: "喜乐之石，也带有贵族色彩" },
     { cn: "阿拉里克", en: "Alaric", meaning: "全境统治者" },
   { cn: "鲍德里克", en: "Baldric", meaning: "勇敢的统治者" },
   { cn: "卡多克", en: "Cadoc", meaning: "战斗之人" },
@@ -285,7 +285,7 @@ const GIVEN_NAME_DATA_FEMALE = [
   { cn: "苏", en: "Sue", meaning: "百合花，Susan的昵称" },
   { cn: "蒂娜", en: "Tina", meaning: "小溪，Christina的昵称" },
   { cn: "维姬", en: "Vickie", meaning: "胜利的，Victoria的昵称" },
-  { cn: "维多利亚", en: "Victoria", meaning: "胜利，女王的名字" }
+  { cn: "维多利亚", en: "Victoria", meaning: "胜利，女王的名字" },
     { cn: "阿德拉", en: "Adela", meaning: "高贵之人" },
   { cn: "艾尔维", en: "Ailbhe", meaning: "洁白如玉" },
   { cn: "阿尔德吉斯", en: "Aldgyth", meaning: "战争之女" },
