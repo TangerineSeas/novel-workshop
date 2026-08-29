@@ -584,17 +584,83 @@ function goPage(page) {
 const themes = ['dark', 'light', 'parchment', 'deepsea', 'black', 'pink', 'retrogreen'];
 const themeIcons = { dark: '🌙', light: '☀️', parchment: '📜', deepsea: '🌊', black: '⬛', pink: '🌹', retrogreen: '📗' };
 const themeNames = { dark: '深蓝', light: '浅色', parchment: '羊皮纸', deepsea: '深海', black: '暗黑', pink: '粉色', retrogreen: '复古绿' };
-    
+
 function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme') || 'dark';
-    const currentIndex = themes.indexOf(current);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    const nextTheme = themes[nextIndex];
-    document.documentElement.setAttribute('data-theme', nextTheme);
-    document.getElementById('themeBtn').textContent = themeIcons[nextTheme] || '🌙';
+    // 显示主题选择面板
+    let panel = document.getElementById('themePanel');
+    if(panel) {
+        panel.remove();
+        return;
+    }
+    
+    panel = document.createElement('div');
+    panel.id = 'themePanel';
+    panel.style.cssText = `
+        position: fixed;
+        top: 60px;
+        right: 15px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 15px;
+        z-index: 3000;
+        box-shadow: 0 4px 25px rgba(0,0,0,0.3);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        max-width: 300px;
+        justify-content: center;
+    `;
+    
+    themes.forEach(theme => {
+        const circle = document.createElement('div');
+        circle.style.cssText = `
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            border: 2px solid var(--border);
+            transition: all .2s;
+        `;
+        circle.textContent = themeIcons[theme] || '🎨';
+        circle.title = themeNames[theme] || theme;
+        
+        // 当前主题高亮
+        if(document.documentElement.getAttribute('data-theme') === theme) {
+            circle.style.borderColor = 'var(--accent)';
+            circle.style.boxShadow = '0 0 10px var(--accent)';
+        }
+        
+        circle.onclick = () => {
+            applyTheme(theme);
+            panel.remove();
+        };
+        
+        panel.appendChild(circle);
+    });
+    
+    document.body.appendChild(panel);
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('themeBtn').textContent = themeIcons[theme] || '🎨';
+    localStorage.setItem('novelTheme', theme);
     updateStyle();
     saveAll();
-    showToast('主题：' + (themeNames[nextTheme] || nextTheme));
+    showToast('主题已切换：' + (themeNames[theme] || theme));
+}
+
+function loadSavedTheme() {
+    const saved = localStorage.getItem('novelTheme');
+    if(saved && themes.includes(saved)) {
+        document.documentElement.setAttribute('data-theme', saved);
+        document.getElementById('themeBtn').textContent = themeIcons[saved] || '🎨';
+    }
 }
 function switchToolsTab(tab, btn) {
     document.querySelectorAll('.tools-tab').forEach(b => b.classList.remove('active'));
@@ -1705,6 +1771,12 @@ function importDevData(event) {
     };
     reader.readAsText(file);
 }
+    document.addEventListener('click', function(e) {
+    const panel = document.getElementById('themePanel');
+    if(panel && !panel.contains(e.target) && e.target !== document.getElementById('themeBtn')) {
+        panel.remove();
+    }
+});
 document.addEventListener('keydown', e => {
     if(e.ctrlKey && e.key === 's') { e.preventDefault(); saveAll(); showToast('已保存'); }
     if(e.ctrlKey && e.shiftKey && e.key === 'D') { e.preventDefault(); devUnlocked = true; document.getElementById('devNavBtn').style.display = 'block'; goPage('dev'); showToast('🔓 开发者模式'); }
@@ -1786,7 +1858,10 @@ async function init() {
     });
     saveAll();
 }
-window.addEventListener('load', () => { init(); });
+window.addEventListener('load', () => { 
+    loadSavedTheme();
+    init(); 
+});
     function toggleMobileMenu() {
     let overlay = document.getElementById('mobileNavOverlay');
     if(!overlay) {
