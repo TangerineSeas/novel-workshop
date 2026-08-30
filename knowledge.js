@@ -873,6 +873,119 @@ const KNOWLEDGE_DATA = [
     content: "炼金术士在奇幻世界观中占据特殊地位——他们既是学者又是实践者，居于科学与神秘学的交界处。炼金术士的社会地位因作品而异：在有的设定中，他们是受贵族资助的宫廷学者；在另一些设定中，他们是游离于主流社会之外的孤独研究者。炼金术士通常拥有自己的实验室，配备蒸馏器、坩埚、研钵和各类药剂原料。他们不仅要掌握化学知识，还需要理解魔法符号和天体运行规律。",
     references: ["幻想世界史研究会《奇幻世界大百科》，2016年，枫树林出版"]
   },
+    // ========== 社会构成与职业 ==========
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "吟游诗人",
+    content: "吟游诗人（Bard）是凯尔特文化中一种专精于叙说故事（包含口述历史及系谱）、制造韵文、编作曲目等技艺的人，通常被君主或贵族雇用，以纪念其祖先事迹并赞颂其当下的行动。在凯尔特社会中，吟游诗人与德鲁伊、预言者同属'有学问的阶层'。而在更广泛的中世纪欧洲语境中，吟游诗人（Minstrel）一词源于拉丁语'minister'（仆人），原指任何类型的演艺人员——包括音乐家、杂耍艺人和说书人。13世纪末期以后，该词开始专指以音乐和歌唱为领主助兴的表演者。吟游诗人在中世纪穿梭于集市、酒馆和贵族大宅之间，用歌曲和故事娱乐大众。他们是世俗音乐的创作者、表演者和传播者，自己作诗、作曲，自己演唱、演奏。",
+    references: ["维基百科'吟游诗人'词条", '1911 Encyclopædia Britannica "Minstrel'词条"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "盗贼",
+    content: "中世纪欧洲的盗贼和亡命之徒是一个复杂的社会群体，既有普通罪犯，也有因反抗领主压迫而被放逐的'法外之徒'。传奇人物罗宾汉便是中世纪盗贼传说中最典型的代表——他既是官方眼中的'盗贼'（thief）和'亡命之徒'（outlaw），也被民间视为劫富济贫的英雄。中世纪英格兰的史料记载了诸多盗贼团体，如莱斯特郡的福尔维尔家族（Folvilles of Ashby-Folville），他们在14世纪活跃于英格兰中部，从事抢劫、绑架和敲诈等活动。盗贼团体有时会形成松散的互助网络，在特定地区活动并享有当地民众的某种默许甚至保护。",
+    references: ["Keen, M. The Outlaws of Medieval Legend", "Stones, E.L.G. The Folvilles of Ashby-Folville"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "牧师",
+    content: "牧师是中世纪基督教教会体系中的核心神职人员。中世纪800至1250年间的在俗教士（secular clergy）——包括牧师、主教、执事和教士——主要负责牧养平信徒。他们主持圣礼，其教堂庇护穷人、收藏圣徒遗物，并提供保护与社区的场所。牧师的职责在神学上被定义为'由上帝标记、执行圣事并祝圣圣体的人'。在实际工作中，牧师兼任传道人、告解神师和牧灵关怀提供者等多重角色。牧师通常接受神学教育，在堂区教堂中服务，与普通民众的日常生活有着最密切的联系。",
+    references: ["Ott, J.S. & Jones, A.T. The Medieval Clergy, 800-1250: A Sourcebook (2024)", "A Companion to Priesthood and Holy Orders in the Middle Ages (2015)"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "游侠",
+    content: "游侠（Ranger）在中世纪英格兰的实际对应者是王室森林中的'林务官'（Forester）和'巡林骑手'（Rider/Ranger）。根据英格兰《森林宪章》（Carta de Foresta）的记载，王室森林中设有专门的官员负责管理林木和野生动物。林务官和巡林骑手宣誓在其管辖区域内保护野兽和木材。到了14世纪，巡林骑手（equitator）已经承担着在庄园法庭上呈报森林违法行为的职责。罗宾汉传说中，主角本人就经常被描述为一名'王室任命的森林巡林官'（officially appointed forest ranger），这一身份在15世纪的民谣中尤为突出。在奇幻设定中，游侠被浪漫化为守护森林与荒野的独行侠客。",
+    references: ["A History of Police in England", "Pollard, A.J. Imagining Robin Hood: The Late-Medieval Stories in Historical Context"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "德鲁伊",
+    content: "德鲁伊（Druid）是古代凯尔特社会中的祭司、哲学家和神学家阶层。德鲁伊教的历史原型来自公元前3世纪到公元2世纪之间流行于凯尔特世界的古老宗教，仅有口传传统。根据古希腊和罗马作家的记载（公元前1世纪至公元4世纪），德鲁伊与吟游诗人、预言者共同构成高卢社会的'有学问的阶层'，他们歌颂首领的功绩、讽刺对手，并演奏类似里拉琴的乐器。德鲁伊作为自然现象的观察者和道德哲学家，在凯尔特社会中享有崇高的地位。尽管德鲁伊教在罗马帝国与基督教的双重打击下于公元2世纪前后消亡，但德鲁伊和吟游诗人在中世纪威尔士和爱尔兰的文本中仍然频繁出现。",
+    references: ["维基百科'Bard'词条", "Ross, A. Druids (1999)", "Cunliffe, B. Druids: A Very Short Introduction"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "猎人",
+    content: "狩猎是中世纪贵族最重要的娱乐活动之一，同时也是一种专业的职业。根据约公元1000年埃尔弗里克《对话录》（Aelfric's Colloquy）中的记载，一名中世纪猎人的自述是：'我是一名猎人……我在合适的地方放置我的网，并放狗追逐野生动物'。中世纪晚期最具影响力的狩猎著作是加斯顿·菲比斯（Gaston Phébus）于14世纪撰写的《狩猎之书》（Livre de chasse），该书详细记录了狩猎技巧、猎犬训练和猎物的习性。匈牙利王室宫廷中设有专门的猎手（Huntsman），1222年的《金玺诏书》（Golden Bull of 1222）也提及了王室猎手的存在。猎人在中世纪不仅是提供肉食的生产者，也是贵族社交和军事训练的重要参与者。",
+    references: ["Aelfric's Colloquy (c. 1000)", "Livre de chasse (Gaston Phébus, 14th c.)", "Kultur und Jagd: ein Birschgang durch die Geschichte"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/政治",
+    title: "皇家顾问",
+    content: "皇家顾问（Royal Advisor）是中世纪宫廷政治中的核心角色。国王的顾问通常由高级教士、大贵族和受过良好教育的学者担任。9世纪兰斯的辛克马尔大主教（Hincmar of Reims）在其政治著作中明确将主教描绘为理想的皇家顾问，认为教士应对国王的行为向上帝负责。中世纪晚期的英格兰出现了大量关于'君王之鉴'（Mirror for Princes）的文学作品，如托马斯·霍克利夫（Thomas Hoccleve）的《王子之治》（Regement of Princes），专门讨论如何向国王提供忠告。皇家顾问的职位既带来了巨大的政治影响力，也伴随着极大的风险——一旦失宠，顾问可能面临流放、监禁甚至处决的命运。",
+    references: ["Ferster, J. Fictions of Advice: The Literature and Politics of Counsel in Late Medieval England (1996)", "Hincmar of Reims, De ordine palatii"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/法律",
+    title: "审判官",
+    content: "审判官（Inquisitor）是中世纪教会专门负责调查和审判异端案件的官员。异端审判制度（Inquisition）在13世纪正式建立，主要由多明我会（Dominican Order）和方济各会（Franciscan Order）的修士担任。著名的审判官包括阿拉贡的尼古劳·埃梅里克（Nicolau Eymeric，1320-1399），他在1359年撰写了《审判官指南》（Directorium Inquisitorum），是异端审判程序的重要手册。亨利·查尔斯·李（Henry Charles Lea）在其经典著作《中世纪异端审判史》（A History of the Inquisition of the Middle Ages, 1887）中系统记述了这一制度。在实际操作中，主教和审判官通常合作进行异端案件的调查和判决。审判官拥有广泛的调查权和司法权，其职权范围覆盖异端、巫术和其他宗教犯罪。",
+    references: ["Lea, H.C. A History of the Inquisition of the Middle Ages (1887)", "Kelly, H.A. Inquisitions and Other Trial Procedures in the Medieval West (2001)", "Eymeric, N. Directorium Inquisitorum (1359)"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/军事",
+    title: "佣兵",
+    content: "佣兵（Mercenary）是中世纪战争中不可或缺的军事力量。佣兵通过提供军事服务换取报酬，不受封建义务的约束。14世纪下半叶，来自欧洲各国的佣兵组成了著名的'大佣兵团'（The Great Companies），他们有时为国王服务，有时独立行动。中世纪的佣兵身份认同是一个复杂的学术课题，相关研究集中在佣兵的自我认知、组织方式和社会地位等方面。佣兵在文艺复兴和近代早期欧洲仍然广泛存在。佣兵的兴起一方面反映了封建军队制度的局限性，另一方面也推动了军事技术和战术的发展。",
+    references: ["Fowler, K. Medieval Mercenaries (2001)", "France, J. (ed.) Mercenaries and Paid Men: The Mercenary Identity in the Middle Ages (2005)", "Janin, H. & Carlson, U. Mercenaries in Medieval and Renaissance Europe (2013)"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/军事",
+    title: "间谍",
+    content: "间谍（Spy）和情报活动在中世纪战争中扮演着重要角色。中世纪军事手册中明确规定了间谍的使用——让·德·布伊（Jean de Bueil，卒于1477年）和罗贝尔·德·巴尔萨克（Robert de Balsac，卒于1502年）的著作中都记载了间谍的运用。1478年的苏格兰史诗《华莱士》（Wallace）中描述了午夜派出两名间谍侦察城堡的情节。尤瓦尔·诺亚·赫拉利（Yuval Noah Harari）在《骑士时代的特殊行动，1100-1550》中指出，中世纪的间谍活动、暗杀小队和渗透行动在复杂性上可与现代战争相媲美。城市之间的谍报与反谍报活动在15世纪的勃艮第战争中尤为活跃。",
+    references: ["Harari, Y.N. Special Operations in the Age of Chivalry, 1100-1550 (2007)", "Walter, B. Urban Espionage and Counterespionage during the Burgundian Wars (1468-1477)"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "角斗士",
+    content: "角斗士（Gladiator）是古罗马时期最著名的职业战士。他们通常在大型圆形竞技场中进行生死决斗，以娱乐观众。角斗士的来源包括战俘、奴隶和自愿参战的自由人，他们经过专门的训练，使用各种武器和盔甲进行战斗。公元404年，修士泰莱马库斯（Telemachus）在罗马竞技场试图阻止一场角斗比赛时被观众投石杀死，这一事件促使皇帝霍诺留（Honorius）正式废除了罗马的角斗表演。虽然角斗士是古代而非中世纪的职业，但这一概念在后世奇幻设定中被广泛借用，成为竞技场战斗和奴隶战士的原型。",
+    references: ["Theodoret, Ecclesiastical History, Book V, Chap. 26", "Gladiators: The Real Story of the Ring (National Geographic, 2021)"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/组织",
+    title: "盗贼工会",
+    content: "盗贼工会（Thieves' Guild）虽更多是文学和游戏中的虚构概念，但其背后有着真实的历史原型。塞维利亚的犯罪组织是这一概念最著名的文学体现——塞万提斯（Miguel de Cervantes）的短篇小说《林科内特与科尔塔迪略》（Rinconete y Cortadillo，16世纪）描绘了一个组织严密、按中世纪行会模式运作的塞维利亚盗贼工会。中世纪欧洲确实存在各种形式的犯罪团伙和秘密结社，如波罗的海地区的'维克图亚兄弟'（Victual Brothers）海盗团伙。然而，与奇幻作品中普遍的'盗贼工会'设定不同，中世纪真实存在的行会（Guild）主要是合法的手工业和商业组织。一些历史行会（如'骑士行会'/Frith Guild）确实承担过追捕盗贼和维护治安的职能。",
+    references: ["Cervantes, M. Rinconete y Cortadillo (1613)", "Gross, C. The Gild Merchant", "Medieval Sourcebook: Documents Concerning the Origin of Guilds, 884-930"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "学者",
+    content: "学者（Scholar）在中世纪欧洲是一个与教会密切相关的职业群体。在中世纪，'clericus'（教士）与'有学问的人'几乎是同义词——一个能读会写的人与一个教士在身份上是重合的。中世纪的学者主要分布在修道院、座堂学校和大学中。著名的中世纪学者包括编年史家马修·帕里斯（Matthew Paris，约1200-1259），他被誉为'英格兰最伟大的中世纪史学家'；道明会学者博韦的樊尚（Vincent de Beauvais，约1194-1264）为法王路易九世编纂了《历史之镜》（Speculum Historiale），是一部从创世到13世纪的人类通史。学者的主要工作是抄写和注释古代文献、编纂百科全书、撰写编年史以及从事神学和哲学研究。",
+    references: ["Matthaei Parisiensis Chronica Majora", "Vincent de Beauvais, Speculum Historiale"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "炼金术士",
+    content: "炼金术士（Alchemist）是中世纪欧洲最神秘也最具传奇色彩的职业之一。炼金术融合了化学实验、神秘主义哲学和占星术，目标包括将贱金属转化为黄金、制造'贤者之石'以及配制万能药。著名的中世纪炼金术士包括方济各会修士约翰·德·鲁佩西萨（John of Rupescissa，约1310-1366），他坚信敌基督即将来临，撰写了《大智慧之光》（Liber lucis magisterii magni）以帮助未来的弟兄们重建基督教世界。大阿尔伯特（Albertus Magnus，约1200-1280）虽以经院哲学家闻名，但其炼金术著作在中世纪广泛流传。炼金术士通常拥有自己的实验室，配备蒸馏器、坩埚和各种药剂原料。",
+    references: ["Fabricius, J. Alchemy: The Medieval Alchemists and Their Royal Art (1994)", "John of Rupescissa, Liber lucis magisterii magni (14th c.)", "Newman, W.R. The Summa Perfectionis of Pseudo-Geber"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "药剂师",
+    content: "药剂师（Apothecary）是中世纪医疗体系中的重要职业，负责配制和销售药物。英格兰最早有记录的药剂师是约翰·勒·斯派塞（John le Spicer），他在1273年担任约克市长。14世纪的药剂师托马斯·瓦尔登（Thomas Walden）是另一位有记载的从业者。药剂师在拉丁语中被称为'apothecarius'，其店铺中陈列着各种药材（materia medica）、药水、油膏和浸膏，墙上常挂有作为还愿祭品的身体部位模型。药剂师行业在中世纪后期逐渐形成了自己的行会和组织，制定了行业规范。药剂师不仅要掌握药材的识别和配制技术，还需要了解基础医学知识。",
+    references: ["Rawcliffe, C. The Profits of Practice: The Wealth and Status of Medical Men in Later Medieval England", "Flood, B.P. Sources and Problems in the History of Drug Commerce in Late Medieval Europe (1975)", "Pictorial History of Ancient Pharmacy"]
+  },
+  {
+    category: "社会构成与职业",
+    subcategory: "社会/职业",
+    title: "信使",
+    content: "信使（Messenger）是中世纪信息传递系统的核心执行者。英格兰王室从约翰王（1199-1216）到爱德华三世（1327-1377）统治期间，建立了系统的信使服务体系。玛丽·希尔（Mary C. Hill）在其研究中从王室衣橱账目和国库账目中识别出了这一时期所有已知的信使——包括骑马信使和步行信使。信使的职责是传递王室文书、命令和情报，他们需要具备良好的体力和方向感，以及对路线的熟悉。信使在战时的作用尤为关键——军事情报的及时传递往往决定着战役的胜负。在奇幻设定中，信使常被描绘为穿梭于王国各处的快速骑手，是信息网络的关键节点。",
+    references: ["Hill, M.C. The King's Messengers, 1199-1377: A List of All Known Messengers, Mounted and Unmounted, Who Served John, Henry III, and the First Three Edwards (1994)"]
+  },
   // ========== 信仰与宇宙架构 ==========
   {
     category: "信仰与宇宙架构",
