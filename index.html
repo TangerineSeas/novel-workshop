@@ -683,6 +683,7 @@ function switchToolsTab(tab, btn) {
 }
 
 function createNewWork() {
+    document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
     document.getElementById('newWorkModal').classList.add('active');
     document.getElementById('nwTitle').value = '';
     document.getElementById('nwWorldviewSrc').value = 'new';
@@ -1159,6 +1160,7 @@ function toggleCustomRace() {
     if(race !== 'other') document.getElementById('cRaceCustom').value = '';
 }
 function openCharEditor(index) {
+    document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
     document.getElementById('charModal').classList.add('active');
     document.getElementById('cEditIndex').value = index;
     avatarData = null;
