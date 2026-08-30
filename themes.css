@@ -518,7 +518,6 @@
     content: "🔱 ";
 }
 
-[data-theme="deepsea"] .modal-close:hover,
 [data-theme="deepsea"] .cp-close:hover {
     color: #a7cfee;
     text-shadow: 0 0 8px rgba(167,207,238,0.6);
@@ -1092,11 +1091,6 @@
 [data-theme="pink"] .badge-important { background: #c96a4a; }
 [data-theme="pink"] .badge-minor { background: #9a8088; }
 
-[data-theme="pink"] .modal-content {
-    background: #fff5f7;
-    border: 1px solid #e0bcc4;
-    box-shadow: 0 0 30px rgba(160,50,80,0.2);
-}
 
 [data-theme="pink"] .entry-link {
     color: #b83a5a;
@@ -1647,12 +1641,6 @@
     font-size: 0.7em;
 }
 
-[data-theme="retrogreen"] .modal-content {
-    background: #f5f6f2;
-    border: 2px solid #767b5e;
-    box-shadow: 0 0 30px rgba(81,95,64,0.3);
-}
-
 [data-theme="retrogreen"] .badge-main { background: #b8352a; }
 [data-theme="retrogreen"] .badge-important { background: #b87a2a; }
 [data-theme="retrogreen"] .badge-minor { background: #8a8a80; }
@@ -1691,25 +1679,29 @@
     }
 }
 
-@media (max-width: 900px) {
-    .modal.active {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-    }
-    
-    .modal-content {
-        width: 100% !important;
-        max-width: 95vw !important;
-        max-height: 85vh !important;
-        overflow-y: auto !important;
-        margin: auto !important;
-    }
-    
-    .modal-close,
-    .cp-close {
-        font-size: 1.5rem !important;
-        padding: 8px !important;
-    }
+/* ========== 弹窗基础规则（全局统一） ========== */
+.modal {
+    display: none !important;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex !important;
+}
+
+.modal-content {
+    background: var(--bg2);
+    width: 92%;
+    max-width: 660px;
+    max-height: 88vh;
+    overflow-y: auto;
+    border-radius: 12px;
+    padding: 26px;
+    border: 1px solid var(--border);
+    margin: auto;
 }
