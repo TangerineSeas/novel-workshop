@@ -236,60 +236,42 @@
     line-height: 1.7;
     margin-top: 10px;
 }
-/* 修复Venn图文字被遮挡 */
+/* Venn图词圈修复 */
+.venn-wrapper {
+    position: relative;
+    align-items: stretch;
+}
+
 .venn-circle {
     z-index: 1;
+    padding: 15px;
+}
+
+.venn-circle.left {
+    z-index: 2;
+}
+
+.venn-circle.right {
+    z-index: 3;
 }
 
 .venn-overlap {
-    z-index: 2;
+    z-index: 4;
+    flex-shrink: 0;
     width: 60px;
     height: 60px;
-    font-size: 1em;
-    flex-shrink: 0;
+    font-size: 1.2em;
 }
 
+/* 确保词圈内文字不被中间遮挡 */
 .venn-circle ul {
-    max-height: 200px;
-    overflow-y: auto;
-    padding-right: 8px;
+    padding-top: 5px;
 }
 
 .venn-circle li {
-    word-break: break-word;
-    white-space: normal;
-    line-height: 1.4;
-    padding: 3px 6px;
-}
-
-/* 左侧圆给右内边距，右侧圆给左内边距，防止文字被中间遮挡 */
-.venn-circle.left ul {
-    padding-right: 30px;
-}
-
-.venn-circle.right ul {
-    padding-left: 30px;
-}
-
-/* 移动端Venn图堆叠显示 */
-@media (max-width: 600px) {
-    .venn-wrapper {
-        flex-direction: column;
-        gap: 5px;
-    }
-    .venn-circle.left {
-        margin-right: 0;
-    }
-    .venn-circle.right {
-        margin-left: 0;
-    }
-    .venn-circle.left ul {
-        padding-right: 0;
-    }
-    .venn-circle.right ul {
-        padding-left: 0;
-    }
-    .venn-overlap {
-        display: none;
-    }
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.75em;
+    padding: 4px 6px;
 }
