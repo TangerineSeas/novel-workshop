@@ -160,18 +160,17 @@
         magicContent.innerHTML = `
             <div class="magic-tools-container">
                 
-                <!-- ===== 工具一：意象Venn图 ===== -->
-                                <!-- ===== 工具一：意象Venn图 ===== -->
+                               <!-- ===== 工具一：意象Venn图 ===== -->
                 <div class="magic-tool-section">
                     <h3>🔮 意象Venn图（泛灵论魔法）</h3>
-                    <p class="magic-tool-desc">基于自然万物推导魔法属性。左侧填入自然性特征，右侧填入社会性含义，两者交叉生成魔法灵感。</p>
-                    <div class="venn-prototype-selector">
-                        <label style="font-size:.8em;color:var(--text2)">选择泛灵魔法原型：</label>
-                        <select id="venn-prototype-select" class="form-select" style="width:auto;min-width:200px;display:inline-block" onchange="loadVennPrototype(this.value)">
+                    <p class="magic-tool-desc">基于自然万物推导魔法属性。选择泛灵魔法原型，自动填充左右两侧词汇，交叉生成魔法灵感。</p>
+                    <div class="venn-prototype-selector" style="text-align:center;margin-bottom:12px">
+                        <label style="font-size:.85em;color:var(--text2)">选择泛灵魔法原型：</label>
+                        <select id="venn-prototype-select" class="form-select" style="width:auto;min-width:250px;display:inline-block" onchange="loadVennPrototype(this.value)">
                             <option value="">-- 选择原型 --</option>
                         </select>
                     </div>
-                    <div class="venn-prototype-info" id="venn-prototype-info" style="display:none;margin-bottom:12px;padding:10px;background:var(--bg);border:1px dashed var(--accent);border-radius:6px;font-size:.85em;line-height:1.6"></div>
+                    <div class="venn-prototype-info" id="venn-prototype-info" style="display:none;margin-bottom:12px;padding:12px;background:var(--bg);border:1px dashed var(--accent);border-radius:6px;font-size:.85em;line-height:1.6;max-height:120px;overflow-y:auto"></div>
                     <div class="venn-wrapper">
                         <div class="venn-circle left">
                             <h4>🌿 自然性</h4>
@@ -183,18 +182,11 @@
                             <ul id="venn-social-list"></ul>
                         </div>
                     </div>
-                    <div class="venn-input-row">
-                        <input id="venn-natural-input" placeholder="自然性词汇">
-                        <button class="btn btn-sm btn-primary" onclick="addVennWord('natural')">+ 添加</button>
-                        <input id="venn-social-input" placeholder="社会性词汇">
-                        <button class="btn btn-sm btn-primary" onclick="addVennWord('social')">+ 添加</button>
-                    </div>
                     <div class="btn-row" style="justify-content:center">
                         <button class="btn btn-sm btn-primary" onclick="generateVennInspiration()">🎲 随机组合推导</button>
                     </div>
-                    <div class="venn-result" id="venn-result">点击左右两侧词汇进行组合，或点击随机组合</div>
+                    <div class="venn-result" id="venn-result">选择原型后点击词汇组合，或点击随机组合</div>
                 </div>
-
                 <!-- ===== 工具二：不可能三角 ===== -->
                 <div class="magic-tool-section">
                     <h3>📐 不可能三角（唯能论魔法）</h3>
@@ -297,17 +289,7 @@
         infoDiv.innerHTML = `<strong>${proto.id}. ${proto.title}</strong><br>${proto.desc}`;
     };
 
-    window.addVennWord = function(type) {
-        const input = document.getElementById('venn-' + type + '-input');
-        const list = document.getElementById('venn-' + type + '-list');
-        const word = input.value.trim();
-        if(!word) return;
-        const li = document.createElement('li');
-        li.textContent = word;
-        li.onclick = function() { this.classList.toggle('selected'); };
-        list.appendChild(li);
-        input.value = '';
-    };
+        // 已移除自定义添加功能，词汇只能通过原型下拉框加载
 
     window.generateVennInspiration = function() {
         const naturalSelected = [...document.querySelectorAll('#venn-natural-list li.selected')].map(li => li.textContent);
