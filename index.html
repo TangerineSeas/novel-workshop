@@ -496,8 +496,7 @@ button{cursor:pointer}
 </div></div>
 </div>
 
-<div class="modal" id="charModal">
-    <div class="modal" id="charModal">
+<div class="modal" id="charModal" style="display:none !important; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;">
 <div class="modal-content">
 <div class="modal-header"><h3 style="color:var(--accent)">📝 人物档案</h3><button class="modal-close" onclick="closeCharEditor()">✕</button></div>
 <div class="form-group" style="text-align:center">
@@ -521,9 +520,8 @@ button{cursor:pointer}
 </div>
 </div>
 
-<div class="modal" id="newWorkModal">
-    <div class="modal" id="newWorkModal">
-<div class="modal-content">
+<div class="modal" id="newWorkModal" style="display:none !important; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;">
+<div class="modal-content" style="background:var(--bg2); width:92%; max-width:660px; max-height:88vh; overflow-y:auto; border-radius:12px; padding:26px; border:1px solid var(--border); margin:auto;">
 <div class="modal-header"><h3 style="color:var(--accent)">📕 创建新作品</h3><button class="modal-close" onclick="closeNewWorkModal()">✕</button></div>
 <div class="form-group"><label class="form-label">书名</label><input class="form-input" id="nwTitle"></div>
 <div class="form-group"><label class="form-label">世界观来源</label><select class="form-select" id="nwWorldviewSrc"><option value="new">全新世界观</option><option value="copy">复制已有世界观</option></select></div>
@@ -684,7 +682,9 @@ function switchToolsTab(tab, btn) {
 
 function createNewWork() {
     document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-    document.getElementById('newWorkModal').classList.add('active');
+   var modal = document.getElementById('newWorkModal');
+modal.classList.add('active');
+modal.style.display = 'flex';
     document.getElementById('nwTitle').value = '';
     document.getElementById('nwWorldviewSrc').value = 'new';
     document.getElementById('nwCopySelect').style.display = 'none';
@@ -692,7 +692,11 @@ function createNewWork() {
     works.forEach(w => { const o = document.createElement('option'); o.value = w.id; o.textContent = w.title; sel.appendChild(o); });
     document.getElementById('nwWorldviewSrc').onchange = function() { document.getElementById('nwCopySelect').style.display = this.value === 'copy' ? 'block' : 'none'; };
 }
-function closeNewWorkModal() { document.getElementById('newWorkModal').classList.remove('active');}
+function closeNewWorkModal() { 
+    var modal = document.getElementById('newWorkModal');
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+}
 function confirmCreateWork() {
     const title = document.getElementById('nwTitle').value.trim();
     if(!title) { showToast('请输入书名'); return; }
@@ -1161,7 +1165,9 @@ function toggleCustomRace() {
 }
 function openCharEditor(index) {
     document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-    document.getElementById('charModal').classList.add('active');
+    var modal = document.getElementById('charModal');
+modal.classList.add('active');
+modal.style.display = 'flex';
     document.getElementById('cEditIndex').value = index;
     avatarData = null;
     const w = currentWork();
@@ -1185,7 +1191,11 @@ function openCharEditor(index) {
         toggleCustomRace();
     }
 }
-function closeCharEditor() { document.getElementById('charModal').classList.remove('active');}
+function closeCharEditor() { 
+    var modal = document.getElementById('charModal');
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+}
 function previewAvatar() {
     const f = document.getElementById('avatarInput').files[0];
     if(!f) return;
@@ -1430,7 +1440,7 @@ function getEffectiveCollType() {
     const modal = document.createElement('div');
     modal.className = 'modal active';
     modal.innerHTML = `
-        <div class="modal-content">
+        <div class="modal-content" style="background:var(--bg2); width:92%; max-width:660px; max-height:88vh; overflow-y:auto; border-radius:12px; padding:26px; border:1px solid var(--border); margin:auto;">
             <div class="modal-header">
                 <h3 style="color:var(--accent)">${entry ? '✏️ 编辑词条' : '➕ 添加词条'}</h3>
                 <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
