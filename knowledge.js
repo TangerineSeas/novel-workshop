@@ -898,13 +898,6 @@ const KNOWLEDGE_DATA = [
   {
     category: "信仰与宇宙架构",
     subcategory: "信仰/宇宙",
-    title: "中世纪基督教宇宙观",
-    content: "中世纪基督教宇宙观是古希腊宇宙论与《创世记》叙事的综合产物。中世纪神学家致力于将亚里士多德的天体理论与圣经的创世故事统一起来。在这一宇宙图景中，地球位于宇宙中心，周围环绕着月球、水星、金星、太阳、火星、木星和土星等行星天层，最外层是恒星天。宇宙之外是至高天（Empyrean），即上帝和蒙福者的居所。这一综合体系在16至18世纪逐渐被无限宇宙和日心说等新观念所解构。",
-    references: ["Randles, W.G.L. The Unmaking of the Medieval Christian Cosmos, 1500-1760: From Solid Heavens to Boundless Aether. Ashgate, 1999."]
-  },
-  {
-    category: "信仰与宇宙架构",
-    subcategory: "信仰/宇宙",
     title: "至高天",
     content: "至高天（Empyrean Heaven）是中世纪基督教宇宙观中最高的一层天，位于所有物质天层之外。它被视为上帝、天使和蒙福者（已升入天堂的圣徒）的居所，也是所有获得救赎的灵魂的最终归宿。尽管至高天本质上是神学概念，中世纪宇宙论思想家仍试图依据圣经论述将其定位在天文学已知星体的"上方"，并描述其中的状况——如何让蒙福者能够运用其身体感官。至高天的概念最终随着旧宇宙观的瓦解而逐渐消逝。",
     references: ["Randles, W.G.L. The Unmaking of the Medieval Christian Cosmos, 1500-1760: From Solid Heavens to Boundless Aether. Ashgate, 1999."]
