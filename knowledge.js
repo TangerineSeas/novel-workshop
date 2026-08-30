@@ -879,7 +879,7 @@ const KNOWLEDGE_DATA = [
     subcategory: "社会/职业",
     title: "盗贼",
     content: "中世纪欧洲的盗贼和亡命之徒是一个复杂的社会群体，既有普通罪犯，也有因反抗领主压迫而被放逐的'法外之徒'。传奇人物罗宾汉便是中世纪盗贼传说中最典型的代表——他既是官方眼中的'盗贼'（thief）和'亡命之徒'（outlaw），也被民间视为劫富济贫的英雄。中世纪英格兰的史料记载了诸多盗贼团体，如莱斯特郡的福尔维尔家族（Folvilles of Ashby-Folville），他们在14世纪活跃于英格兰中部，从事抢劫、绑架和敲诈等活动。盗贼团体有时会形成松散的互助网络，在特定地区活动并享有当地民众的某种默许甚至保护。",
-    references: ["Keen, M. The Outlaws of Medieval Legend", "Stones, E.L.G. The Folvilles of Ashby-Folville"]
+    references: ["Keen, M. The Outlaws of Medieval Legend"]
   },
   {
     category: "社会构成与职业",
