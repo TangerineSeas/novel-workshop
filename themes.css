@@ -1690,3 +1690,28 @@
         font-size: 1.1em !important;
     }
 }
+
+/* 移动端弹窗修复 */
+@media (max-width: 900px) {
+    .modal {
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+        padding: 10px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    .modal.active {
+        display: flex !important;
+    }
+    
+    .modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        max-height: none !important;
+        border-radius: 10px !important;
+        position: relative !important;
+    }
+}
