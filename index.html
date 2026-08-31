@@ -1986,11 +1986,15 @@ function openTimelineModal(editIndex = -1, insertAfter = -1) {
     const w = currentWork(); if(!w) return;
     const timeline = w.globalTimeline || [];
     
+    // 删除已有时间线弹窗，避免重叠
+    document.querySelectorAll('.modal.active').forEach(m => m.remove());
+    
     // 创建弹窗
     const modal = document.createElement('div');
     modal.className = 'modal active';
+    modal.style.cssText = 'display:flex !important; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;';
     modal.innerHTML = `
-        <div class="modal-content">
+        <div class="modal-content" style="background:var(--bg2); width:92%; max-width:660px; max-height:80vh; overflow-y:auto; border-radius:12px; padding:26px; border:1px solid var(--border); margin:auto;">
             <div class="modal-header">
                 <h3 style="color:var(--accent)">${editIndex >= 0 ? '✏️ 编辑时间点' : '➕ 新增时间点'}</h3>
                 <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
