@@ -293,6 +293,7 @@ button{cursor:pointer}
 <button class="wv-tab active" onclick="switchWvTab('questionnaire',this)">📝 问卷</button>
 <button class="wv-tab" onclick="switchWvTab('collection',this)">📚 设定合集</button>
 <button class="wv-tab" onclick="switchWvTab('calendar',this)">📅 自定义日历</button>
+<button class="wv-tab" onclick="switchWvTab('outline',this)">🧠 大纲</button>
 </div>
 <div class="wv-content active" id="wv-questionnaire">
 <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="wvProgress"></div></div><div class="progress-text" id="wvProgressText">完成度：0%</div></div>
@@ -351,6 +352,14 @@ button{cursor:pointer}
 </div></div>
 </div>
 
+<div class="wv-content" id="wv-outline">
+    <div class="card">
+        <h3>🧠 故事大纲（思维导图）</h3>
+        <p class="dev-hint" style="margin-bottom:10px">点击节点展开/折叠，双击节点编辑文字，右键节点添加子节点</p>
+        <div id="outline-tree" class="outline-tree"></div>
+    </div>
+</div>
+
 <div class="page" id="page-characters">
 <div class="page-scroll"><div class="page-container">
 <h2 style="color:var(--accent);margin-bottom:12px;">👥 人物档案</h2>
@@ -373,6 +382,7 @@ button{cursor:pointer}
 </div>
 </div></div>
 </div>
+
 
 <div class="page" id="page-tools">
 <div class="page-scroll"><div class="page-container">
