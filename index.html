@@ -2150,7 +2150,7 @@ function openOutlineModal(targetId, mode = 'edit') {
     const modal = document.createElement('div');
     modal.className = 'modal active';
     
-    let title = '➕ 添加根节点';
+        let title = '➕ 添加根节点';
     let currentLabel = '';
     if(mode === 'edit' && targetId !== null) {
         title = '✏️ 编辑节点';
@@ -2161,6 +2161,8 @@ function openOutlineModal(targetId, mode = 'edit') {
     } else if(mode === 'sibling') {
         title = '➕ 添加同级节点';
     }
+    // 如果是根节点，强制 mode 为 'root'
+    if(targetId === null) mode = 'root';
     
     modal.innerHTML = `
         <div class="modal-content">
@@ -2189,9 +2191,11 @@ function saveOutlineNode(targetId, mode) {
     w.outline = w.outline || [];
     const newId = Date.now();
     
-    if(mode === 'edit') {
+      if(mode === 'edit') {
         const node = findOutlineNodeInArray(targetId, w.outline);
         if(node) node.label = label;
+    } else if(mode === 'root') {
+        w.outline.push({ id: newId, label: label, children: [] });
     } else if(mode === 'child') {
         const node = findOutlineNodeInArray(targetId, w.outline);
         if(node) {
