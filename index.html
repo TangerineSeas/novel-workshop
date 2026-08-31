@@ -1379,7 +1379,9 @@ function renderOutline() {
     const container = document.getElementById('outline-tree');
     if(!container) return;
     
-    w.outline = w.outline || { id: 'root', text: '故事大纲', children: [] };
+    if(!w.outline || Array.isArray(w.outline) || !w.outline.id) {
+        w.outline = { id: 'root', text: '故事大纲', children: [] };
+    }
     
     container.innerHTML = '';
     container.appendChild(renderOutlineNode(w.outline, true));
@@ -1387,7 +1389,9 @@ function renderOutline() {
 
 function addOutlineRootChild() {
     const w = currentWork(); if(!w) return;
-    w.outline = w.outline || { id: 'root', text: '故事大纲', children: [] };
+    if(!w.outline || Array.isArray(w.outline) || !w.outline.id) {
+        w.outline = { id: 'root', text: '故事大纲', children: [] };
+    }
     const childText = prompt('输入主节点名称：');
     if(childText && childText.trim()) {
         w.outline.children = w.outline.children || [];
