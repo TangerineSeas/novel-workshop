@@ -1800,3 +1800,96 @@
     max-height: 80vh !important;
     overflow-y: auto !important;
 }
+
+/* 大纲思维导图样式 */
+.outline-tree {
+    padding-left: 0;
+}
+.outline-node {
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 5px;
+}
+.outline-node::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+}
+.outline-node:last-child::before {
+    height: 15px;
+}
+.outline-node::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 15px;
+    width: 12px;
+    height: 2px;
+    background: var(--border);
+}
+.outline-node-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: 4px;
+    transition: .2s;
+}
+.outline-node-header:hover {
+    background: var(--bg3);
+}
+.outline-toggle {
+    width: 18px;
+    height: 18px;
+    font-size: .7em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform .2s;
+}
+.outline-toggle.collapsed {
+    transform: rotate(-90deg);
+}
+.outline-label {
+    font-size: .9em;
+    flex: 1;
+}
+.outline-children {
+    margin-left: 0;
+}
+.outline-children.collapsed {
+    display: none;
+}
+.outline-actions {
+    display: flex;
+    gap: 3px;
+    opacity: 0;
+    transition: opacity .2s;
+}
+.outline-node-header:hover .outline-actions {
+    opacity: 1;
+}
+.outline-actions button {
+    width: 20px;
+    height: 20px;
+    font-size: .65em;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.outline-actions button:hover {
+    background: var(--accent);
+    color: #fff;
+}
