@@ -1603,7 +1603,7 @@ function getEffectiveCollType() {
             <div class="dev-hint" style="margin-bottom:10px">引用类型：places(地名) / families(家族) / history(历史事件) / races(种族) / magic(魔法) / festivals(节日) / 自定义大类名</div>
             <div class="btn-row" style="justify-content:flex-end">
                 <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
-                <button class="btn btn-primary" onclick="saveCollectionEntry('${type}', ${entry ? 'true' : 'false'}')">保存</button>
+                <button class="btn btn-primary" onclick="saveCollectionEntry('${type}', '${entry ? 'true' : 'false'}')">保存</button>
             </div>
         </div>`;
     document.body.appendChild(modal);
