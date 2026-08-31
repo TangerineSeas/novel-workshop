@@ -2074,8 +2074,7 @@ function renderOutline() {
         return;
     }
     
-    container.innerHTML = '<div class="outline-tree">' + outline.map(node => renderOutlineNode(node, w.outline)).join('') + '</div>';
-    
+    container.innerHTML = '<div class="outline-tree">' + outline.map(node => renderOutlineNode(node)).join('') + '</div>';
     // 绑定操作
     container.querySelectorAll('[data-action]').forEach(btn => {
         btn.onclick = function(e) {
@@ -2102,13 +2101,10 @@ function renderOutline() {
     });
 }
 
-function renderOutlineNode(node, allNodes) {
+function renderOutlineNode(node) {
     const hasChildren = node.children && node.children.length > 0;
     const childrenHtml = hasChildren ? 
-        '<div class="outline-children">' + node.children.map(childId => {
-            const child = findOutlineNode(childId, allNodes);
-            return child ? renderOutlineNode(child, allNodes) : '';
-        }).join('') + '</div>' : '';
+        '<div class="outline-children">' + node.children.map(child => renderOutlineNode(child)).join('') + '</div>' : '';
     
     return `
         <div class="outline-node">
