@@ -237,37 +237,98 @@ button{cursor:pointer}
     font-size: .8em;
 }
 
-/* 时间线 */
-.timeline-node {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 15px;
-    cursor: pointer;
-    min-width: 80px;
+/* 时间线（竖轴） */
+.timeline-v-axis {
+    position: relative;
+    padding-left: 40px;
+    margin-left: 10px;
 }
-.timeline-dot {
-    width: 16px;
-    height: 16px;
+
+.timeline-v-axis::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: var(--border);
+}
+
+.timeline-v-axis::after {
+    content: "▼";
+    position: absolute;
+    left: 3px;
+    bottom: 0;
+    color: var(--accent);
+    font-size: .7em;
+}
+
+.timeline-v-node {
+    position: relative;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color .2s;
+}
+
+.timeline-v-node:hover {
+    border-color: var(--accent);
+}
+
+.timeline-v-node::before {
+    content: "";
+    position: absolute;
+    left: -37px;
+    top: 50%;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: var(--accent);
     border: 3px solid var(--bg2);
     box-shadow: 0 0 8px rgba(0,0,0,0.3);
-    margin-bottom: 5px;
+    transform: translateY(-50%);
 }
-.timeline-node-label {
+
+.timeline-v-time {
     font-size: .75em;
-    color: var(--text);
-    text-align: center;
-    max-width: 100px;
-    word-wrap: break-word;
+    color: var(--accent);
+    font-weight: bold;
+    margin-bottom: 4px;
 }
-.timeline-line {
+
+.timeline-v-desc {
+    font-size: .85em;
+    color: var(--text);
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.timeline-v-insert-btn {
     display: inline-block;
-    width: 30px;
-    height: 2px;
-    background: var(--border);
-    vertical-align: middle;
+    margin: 0 0 12px 40px;
+    padding: 2px 8px;
+    font-size: .65em;
+    color: var(--text2);
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .2s;
+}
+
+.timeline-v-insert-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.timeline-v-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--text2);
+    font-size: .85em;
 }
 </style>
 </head>
@@ -1883,57 +1944,108 @@ function collapseAllOutline() {
 
 // ========== 时间线功能 ==========
 
+// ========== 时间线功能（竖轴） ==========
 function renderTimeline() {
-    const container = document.getElementById('timelineContainer');
+    const container = document.getElementById('timelineVContainer');
     if(!container) return;
     const w = currentWork();
-    if(w && w.timeline) timelineData = w.timeline;
-    else timelineData = [];
+    const timeline = (w && w.timeline) || [];
     
     container.innerHTML = '';
-    timelineData.forEach((node, index) => {
-        if(index > 0) {
-            const line = document.createElement('span');
-            line.className = 'timeline-line';
-            container.appendChild(line);
-        }
-        const div = document.createElement('div');
-        div.className = 'timeline-node';
-        div.innerHTML = `<div class="timeline-dot"></div><div class="timeline-node-label">${node.text || '节点'}</div>`;
-        div.onclick = () => {
-            const newText = prompt('编辑节点文字：', node.text || '');
-            if(newText !== null) {
-                node.text = newText.trim();
-                renderTimeline();
-                saveTimeline();
-            }
-        };
-        div.ondblclick = () => {
-            if(confirm('删除此节点？')) {
-                timelineData.splice(index, 1);
-                renderTimeline();
-                saveTimeline();
-            }
-        };
-        container.appendChild(div);
-    });
-}
-
-function saveTimeline() {
-    const w = currentWork();
-    if(w) {
-        w.timeline = timelineData;
-        saveAll();
-        showToast('时间线已保存');
+    if(timeline.length === 0) {
+        container.innerHTML = '<div class="timeline-v-empty">暂无时间点，点击上方按钮添加</div>';
+        return;
     }
+    
+    const axisDiv = document.createElement('div');
+    axisDiv.className = 'timeline-v-axis';
+    
+    timeline.forEach((node, index) => {
+        const nodeDiv = document.createElement('div');
+        nodeDiv.className = 'timeline-v-node';
+        nodeDiv.innerHTML = `
+            <div class="timeline-v-time">${node.time || '未设定时间'}</div>
+            <div class="timeline-v-desc">${node.desc || '无描述'}</div>
+        `;
+        nodeDiv.onclick = () => openTimelineEditor(index);
+        axisDiv.appendChild(nodeDiv);
+        
+        // 插入按钮（最后一个节点后也显示）
+        const insertBtn = document.createElement('button');
+        insertBtn.className = 'timeline-v-insert-btn';
+        insertBtn.textContent = '+ 在此插入';
+        insertBtn.onclick = (e) => {
+            e.stopPropagation();
+            openTimelineEditor(null, index + 1);
+        };
+        axisDiv.appendChild(insertBtn);
+    });
+    
+    container.appendChild(axisDiv);
 }
 
-function addTimelineNode() {
-    const text = prompt('输入节点文字（如：故事的开始）：');
-    if(!text || !text.trim()) return;
-    timelineData.push({ text: text.trim() });
+function openTimelineEditor(editIndex, insertIndex) {
+    const w = currentWork(); if(!w) return;
+    let existingTime = '';
+    let existingDesc = '';
+    
+    if(editIndex !== undefined && editIndex !== null) {
+        const node = (w.timeline || [])[editIndex];
+        if(node) {
+            existingTime = node.time || '';
+            existingDesc = node.desc || '';
+        }
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.style.cssText = 'display:flex !important; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;';
+    modal.innerHTML = `
+        <div class="modal-content" style="background:var(--bg2); width:92%; max-width:600px; max-height:85vh; overflow-y:auto; border-radius:12px; padding:26px; border:1px solid var(--border); margin:auto;">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="color:var(--accent); margin:0;">${editIndex !== undefined && editIndex !== null ? '✏️ 编辑时间点' : '➕ 添加时间点'}</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()" style="background:none;border:none;color:var(--text);font-size:1.3em;cursor:pointer;">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">时间点</label>
+                <input class="form-input" id="tlModalTime" placeholder="例如：帝国历245年3月15日 / 事件发生前10天" value="${existingTime}" style="width:100%;padding:10px;">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述</label>
+                <textarea class="form-textarea" id="tlModalDesc" placeholder="详细描述这个时间点发生了什么..." style="min-height:150px;width:100%;padding:10px;resize:vertical;">${existingDesc}</textarea>
+            </div>
+            <div class="btn-row" style="justify-content:flex-end;gap:10px;">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveTimelineNode(${editIndex !== undefined && editIndex !== null ? editIndex : 'null'}, ${insertIndex !== undefined ? insertIndex : 'null'})">保存</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('tlModalTime').focus();
+}
+
+function saveTimelineNode(editIndex, insertIndex) {
+    const w = currentWork(); if(!w) return;
+    const time = document.getElementById('tlModalTime').value.trim();
+    const desc = document.getElementById('tlModalDesc').value.trim();
+    
+    if(!time && !desc) { alert('请填写时间点或描述'); return; }
+    
+    if(!w.timeline) w.timeline = [];
+    const node = { time: time, desc: desc };
+    
+    if(editIndex !== null && editIndex !== 'null') {
+        w.timeline[editIndex] = node;
+    } else if(insertIndex !== null && insertIndex !== 'null') {
+        w.timeline.splice(insertIndex, 0, node);
+    } else {
+        w.timeline.push(node);
+    }
+    
+    document.querySelector('.modal.active')?.remove();
     renderTimeline();
-    saveTimeline();
+    saveAll();
+    showToast('时间点已保存');
 }
     function calPrevYear() { calViewYear--; renderCalendar(); }
 function calNextYear() { calViewYear++; renderCalendar(); }
