@@ -1803,3 +1803,52 @@
     padding: 6px 12px !important;
     border-radius: 6px !important;
 }
+/* ========== 大纲样式（干净版） ========== */
+#wv-outline {
+    position: relative;
+    overflow: auto;
+}
+
+#outline-tree {
+    padding: 10px;
+}
+
+.outline-node {
+    margin-left: 20px;
+}
+
+.outline-node-content {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .2s;
+}
+
+.outline-node-content:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+.outline-node-children {
+    margin-left: 20px;
+    border-left: 1px dashed var(--border);
+    padding-left: 10px;
+}
+
+.outline-node-collapsed > .outline-node-children {
+    display: none;
+}
+
+.outline-node-collapsed > .outline-node-content::after {
+    content: " ▶";
+    font-size: .7em;
+}
+
+.outline-node-expanded > .outline-node-content::after {
+    content: " ▼";
+    font-size: .7em;
+}
