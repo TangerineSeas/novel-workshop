@@ -1379,6 +1379,7 @@ function switchWvTab(tab, btn) {
     if(tab === 'calendar') renderCalendar();
     if(tab === 'questionnaire') renderDynamicQuestionnaire();
        if(tab === 'timeline') renderTimeline();
+       if(tab === 'outline') renderOutline();
 }
 function renderDynamicQuestionnaire() {
     const w = currentWork();
@@ -2058,6 +2059,197 @@ function deleteTimelineEntry(index) {
     w.globalTimeline.splice(index, 1);
     document.querySelector('.modal.active')?.remove();
     renderTimeline();
+    saveAll();
+    showToast('已删除');
+}
+// ========== 大纲管理 ==========
+function renderOutline() {
+    const w = currentWork(); if(!w) return;
+    const container = document.getElementById('outlineContainer');
+    if(!container) return;
+    const outline = w.outline || [];
+    
+    if(outline.length === 0) {
+        container.innerHTML = '<p style="color:var(--text2);font-size:.9em;text-align:center;padding:20px">暂无大纲节点，点击上方添加根节点</p>';
+        return;
+    }
+    
+    container.innerHTML = '<div class="outline-tree">' + outline.map(node => renderOutlineNode(node, w.outline)).join('') + '</div>';
+    
+    // 绑定操作
+    container.querySelectorAll('[data-action]').forEach(btn => {
+        btn.onclick = function(e) {
+            e.stopPropagation();
+            const id = parseInt(this.dataset.id);
+            const action = this.dataset.action;
+            if(action === 'add-child') openOutlineModal(id, 'child');
+            else if(action === 'add-sibling') openOutlineModal(id, 'sibling');
+            else if(action === 'edit') openOutlineModal(id, 'edit');
+            else if(action === 'delete') deleteOutlineNode(id);
+        };
+    });
+    
+    // 绑定展开/收起
+    container.querySelectorAll('.outline-toggle').forEach(toggle => {
+        toggle.onclick = function(e) {
+            e.stopPropagation();
+            const childrenWrapper = this.closest('.outline-node').querySelector('.outline-children');
+            if(childrenWrapper) {
+                childrenWrapper.classList.toggle('collapsed');
+                this.classList.toggle('collapsed');
+            }
+        };
+    });
+}
+
+function renderOutlineNode(node, allNodes) {
+    const hasChildren = node.children && node.children.length > 0;
+    const childrenHtml = hasChildren ? 
+        '<div class="outline-children">' + node.children.map(childId => {
+            const child = findOutlineNode(childId, allNodes);
+            return child ? renderOutlineNode(child, allNodes) : '';
+        }).join('') + '</div>' : '';
+    
+    return `
+        <div class="outline-node">
+            <div class="outline-node-header">
+                ${hasChildren ? '<span class="outline-toggle">▼</span>' : '<span style="width:18px"></span>'}
+                <span class="outline-label" onclick="openOutlineModal(${node.id}, 'edit')">${node.label || '未命名'}</span>
+                <span class="outline-actions">
+                    <button data-action="add-child" data-id="${node.id}" title="添加子节点">+</button>
+                    <button data-action="add-sibling" data-id="${node.id}" title="添加同级节点">⤵</button>
+                    <button data-action="edit" data-id="${node.id}" title="编辑">✏️</button>
+                    <button data-action="delete" data-id="${node.id}" title="删除">✕</button>
+                </span>
+            </div>
+            ${childrenHtml}
+        </div>
+    `;
+}
+
+function findOutlineNode(id, nodes) {
+    for(const node of nodes) {
+        if(node.id === id) return node;
+        if(node.children) {
+            const found = findOutlineNode(id, node.children.map(cid => {
+                return findOutlineNode(cid, nodes);
+            }).find(Boolean) || nodes);
+            if(found && found.id === id) return found;
+        }
+    }
+    return null;
+}
+
+function findOutlineNodeInArray(id, arr) {
+    for(const node of arr) {
+        if(node.id === id) return node;
+    }
+    return null;
+}
+
+function openOutlineModal(targetId, mode = 'edit') {
+    const w = currentWork(); if(!w) return;
+    document.querySelectorAll('.modal.active').forEach(m => m.remove());
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    
+    let title = '➕ 添加根节点';
+    let currentLabel = '';
+    if(mode === 'edit' && targetId !== null) {
+        title = '✏️ 编辑节点';
+        const node = findOutlineNodeInArray(targetId, w.outline || []);
+        if(node) currentLabel = node.label || '';
+    } else if(mode === 'child') {
+        title = '➕ 添加子节点';
+    } else if(mode === 'sibling') {
+        title = '➕ 添加同级节点';
+    }
+    
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">${title}</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">节点名称</label>
+                <input class="form-input" id="outlineModalLabel" placeholder="例如：第一章 / 主角登场 / 大战爆发" value="${currentLabel}">
+            </div>
+            <div class="btn-row" style="justify-content:flex-end">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveOutlineNode(${targetId === null ? 'null' : targetId}, '${mode}')">保存</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('outlineModalLabel').focus();
+}
+
+function saveOutlineNode(targetId, mode) {
+    const w = currentWork(); if(!w) return;
+    const label = document.getElementById('outlineModalLabel').value.trim();
+    if(!label) { showToast('请输入节点名称'); return; }
+    
+    w.outline = w.outline || [];
+    const newId = Date.now();
+    
+    if(mode === 'edit') {
+        const node = findOutlineNodeInArray(targetId, w.outline);
+        if(node) node.label = label;
+    } else if(mode === 'child') {
+        const node = findOutlineNodeInArray(targetId, w.outline);
+        if(node) {
+            node.children = node.children || [];
+            node.children.push({ id: newId, label: label, children: [] });
+        }
+    } else if(mode === 'sibling') {
+        const parent = findParentOutlineNode(targetId, w.outline);
+        if(parent) {
+            const index = parent.children.findIndex(c => c.id === targetId);
+            parent.children.splice(index + 1, 0, { id: newId, label: label, children: [] });
+        } else {
+            const index = w.outline.findIndex(n => n.id === targetId);
+            w.outline.splice(index + 1, 0, { id: newId, label: label, children: [] });
+        }
+    } else {
+        w.outline.push({ id: newId, label: label, children: [] });
+    }
+    
+    document.querySelector('.modal.active')?.remove();
+    renderOutline();
+    saveAll();
+    showToast('已保存');
+}
+
+function findParentOutlineNode(id, arr, parent = null) {
+    for(const node of arr) {
+        if(node.id === id) return parent;
+        if(node.children) {
+            const found = findParentOutlineNode(id, node.children, node);
+            if(found) return found;
+        }
+    }
+    return null;
+}
+
+function deleteOutlineNode(id) {
+    const w = currentWork(); if(!w) return;
+    if(!confirm('确定删除此节点及其子节点？')) return;
+    
+    // 从根级别删除
+    w.outline = w.outline.filter(n => n.id !== id);
+    // 从子级别删除
+    function removeFromChildren(arr) {
+        arr.forEach(node => {
+            if(node.children) {
+                node.children = node.children.filter(c => c.id !== id);
+                removeFromChildren(node.children);
+            }
+        });
+    }
+    removeFromChildren(w.outline);
+    
+    renderOutline();
     saveAll();
     showToast('已删除');
 }
