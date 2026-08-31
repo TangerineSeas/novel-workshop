@@ -2137,12 +2137,15 @@ function findOutlineNode(id, nodes) {
 }
 
 function findOutlineNodeInArray(id, arr) {
-    for(const node of arr) {
-        if(node.id === id) return node;
+    for (const node of arr) {
+        if (node.id === id) return node;
+        if (node.children && node.children.length > 0) {
+            const found = findOutlineNodeInArray(id, node.children);
+            if (found) return found;
+        }
     }
     return null;
 }
-
 function openOutlineModal(targetId, mode = 'edit') {
     const w = currentWork(); if(!w) return;
     document.querySelectorAll('.modal.active').forEach(m => m.remove());
@@ -2222,11 +2225,11 @@ function saveOutlineNode(targetId, mode) {
 }
 
 function findParentOutlineNode(id, arr, parent = null) {
-    for(const node of arr) {
-        if(node.id === id) return parent;
-        if(node.children) {
+    for (const node of arr) {
+        if (node.id === id) return parent;
+        if (node.children && node.children.length > 0) {
             const found = findParentOutlineNode(id, node.children, node);
-            if(found) return found;
+            if (found) return found;
         }
     }
     return null;
