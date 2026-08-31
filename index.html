@@ -290,10 +290,11 @@ button{cursor:pointer}
 <h2 style="color:var(--accent);margin-bottom:4px;">🌍 世界观构建</h2>
 <p style="color:var(--text2);font-size:.8em;margin-bottom:16px;">当前作品：<span id="wvWorkName" style="color:var(--accent);font-weight:bold"></span></p>
 <div class="wv-tabs">
-<button class="wv-tab active" onclick="switchWvTab('questionnaire',this)">📝 问卷</button>
-<button class="wv-tab" onclick="switchWvTab('collection',this)">📚 设定合集</button>
-<button class="wv-tab" onclick="switchWvTab('calendar',this)">📅 自定义日历</button>
-<button class="wv-tab" onclick="switchWvTab('outline',this)">🧠 大纲</button>
+    <button class="wv-tab active" onclick="switchWvTab('questionnaire',this)">📝 问卷</button>
+    <button class="wv-tab" onclick="switchWvTab('collection',this)">📚 设定合集</button>
+    <button class="wv-tab" onclick="switchWvTab('calendar',this)">📅 自定义日历</button>
+    <button class="wv-tab" onclick="switchWvTab('outline',this)">🧠 大纲</button>
+    <button class="wv-tab" onclick="switchWvTab('timeline',this)">🕐 时间线</button>
 </div>
 <div class="wv-content active" id="wv-questionnaire">
 <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="wvProgress"></div></div><div class="progress-text" id="wvProgressText">完成度：0%</div></div>
@@ -348,22 +349,33 @@ button{cursor:pointer}
 </div>
 <div class="calendar-grid" id="calendarGrid"></div>
 </div>
+<!-- 大纲 -->
+<div class="wv-content" id="wv-outline">
+    <div class="card">
+        <h3>🧠 作品大纲（思维导图）</h3>
+        <div class="btn-row" style="margin-bottom:10px">
+            <button class="btn btn-sm btn-primary" onclick="addOutlineNode(null)">+ 添加根节点</button>
+            <button class="btn btn-sm btn-secondary" onclick="expandAllOutline()">展开全部</button>
+            <button class="btn btn-sm btn-secondary" onclick="collapseAllOutline()">折叠全部</button>
+        </div>
+        <div id="outlineContainer" style="max-height:500px;overflow-y:auto"></div>
+    </div>
+</div>
+
+<!-- 时间线 -->
+<div class="wv-content" id="wv-timeline">
+    <div class="card">
+        <h3>🕐 作品时间线</h3>
+        <div class="btn-row" style="margin-bottom:10px">
+            <button class="btn btn-sm btn-primary" onclick="addTimelineNode()">+ 添加节点</button>
+        </div>
+        <div id="timelineContainer" style="overflow-x:auto;padding-bottom:15px"></div>
+    </div>
+</div>
 </div>
 </div></div>
 </div>
 
-<div class="wv-content" id="wv-outline">
-    <div class="card">
-        <h3>🧠 故事大纲（思维导图）</h3>
-        <div class="btn-row" style="margin-bottom:12px">
-            <button class="btn btn-sm btn-primary" onclick="addOutlineRootChild()">+ 添加主节点</button>
-            <button class="btn btn-sm btn-secondary" onclick="expandAllOutline()">全部展开</button>
-            <button class="btn btn-sm btn-secondary" onclick="collapseAllOutline()">全部折叠</button>
-        </div>
-        <p class="dev-hint" style="margin-bottom:10px">右键任意节点添加子节点｜双击编辑节点文字｜单击展开/折叠</p>
-        <div id="outline-tree" class="outline-tree"></div>
-    </div>
-</div>
 <div class="page" id="page-characters">
 <div class="page-scroll"><div class="page-container">
 <h2 style="color:var(--accent);margin-bottom:12px;">👥 人物档案</h2>
@@ -386,7 +398,6 @@ button{cursor:pointer}
 </div>
 </div></div>
 </div>
-
 
 <div class="page" id="page-tools">
 <div class="page-scroll"><div class="page-container">
@@ -725,14 +736,13 @@ function confirmCreateWork() {
         const from = works.find(w => w.id === fromId);
         if(from) worldviewData = JSON.parse(JSON.stringify(from.worldview));
     }
-       const work = {
+    const work = {
         id: Date.now(), title,
         worldview: worldviewData,
         characters: [],
         chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }],
         collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] },
         calendarData: { eraName:'', weekDays:7, months:[], festivals:[] },
-        outline: { id: 'root', text: '故事大纲', children: [] },
         editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' },
         writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString()
     };
@@ -1370,126 +1380,6 @@ function switchWvTab(tab, btn) {
     if(tab === 'collection') renderCollection();
     if(tab === 'calendar') renderCalendar();
     if(tab === 'questionnaire') renderDynamicQuestionnaire();
-    if(tab === 'outline') {
-        setTimeout(function() {
-            renderOutline();
-        }, 100);
-    }
-}
-// ========== 大纲思维导图 ==========
-
-function renderOutline() {
-    const w = currentWork(); if(!w) return;
-    const container = document.getElementById('outline-tree');
-    if(!container) return;
-    
-    if(!w.outline || Array.isArray(w.outline) || !w.outline.id) {
-        w.outline = { id: 'root', text: '故事大纲', children: [] };
-    }
-    
-        container.innerHTML = '';
-    container.style.position = 'relative';
-    container.style.zIndex = '1';
-    container.appendChild(renderOutlineNode(w.outline, true));
-    container.style.display = 'block';
-    document.getElementById('wv-outline').style.display = 'block';
-}
-
-function addOutlineRootChild() {
-    const w = currentWork(); if(!w) return;
-    if(!w.outline || Array.isArray(w.outline) || !w.outline.id) {
-        w.outline = { id: 'root', text: '故事大纲', children: [] };
-    }
-    const childText = prompt('输入主节点名称：');
-    if(childText && childText.trim()) {
-        w.outline.children = w.outline.children || [];
-        w.outline.children.push({
-            id: 'outline_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-            text: childText.trim(),
-            children: []
-        });
-        renderOutline();
-        saveAll();
-    }
-}
-
-function expandAllOutline() {
-    const container = document.getElementById('outline-tree');
-    if(!container) return;
-    container.querySelectorAll('.outline-node').forEach(n => {
-        n.classList.remove('outline-node-collapsed');
-        n.classList.add('outline-node-expanded');
-    });
-}
-
-function collapseAllOutline() {
-    const container = document.getElementById('outline-tree');
-    if(!container) return;
-    container.querySelectorAll('.outline-node').forEach(n => {
-        n.classList.add('outline-node-collapsed');
-        n.classList.remove('outline-node-expanded');
-    });
-}
-
-function renderOutlineNode(node, isRoot) {
-    const div = document.createElement('div');
-    div.className = 'outline-node';
-    if(!isRoot) div.classList.add('outline-node-expanded');
-    div.dataset.nodeId = node.id;
-    
-    const content = document.createElement('div');
-    content.className = 'outline-node-content';
-    content.textContent = node.text;
-    
-    // 点击展开/折叠
-    content.onclick = function(e) {
-        e.stopPropagation();
-        const nodeDiv = this.parentElement;
-        nodeDiv.classList.toggle('outline-node-collapsed');
-        nodeDiv.classList.toggle('outline-node-expanded');
-    };
-    
-    // 双击编辑
-    content.ondblclick = function(e) {
-        e.stopPropagation();
-        const newText = prompt('编辑节点文字：', node.text);
-        if(newText && newText.trim()) {
-            node.text = newText.trim();
-            renderOutline();
-            saveAll();
-        }
-    };
-    
-    // 右键添加子节点
-    content.oncontextmenu = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const childText = prompt('输入子节点名称：');
-        if(childText && childText.trim()) {
-            node.children = node.children || [];
-            node.children.push({
-                id: 'outline_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
-                text: childText.trim(),
-                children: []
-            });
-            renderOutline();
-            saveAll();
-        }
-    };
-    
-    div.appendChild(content);
-    
-    if(node.children && node.children.length > 0) {
-        div.classList.add('outline-node-expanded');
-        const childrenDiv = document.createElement('div');
-        childrenDiv.className = 'outline-node-children';
-        node.children.forEach(child => {
-            childrenDiv.appendChild(renderOutlineNode(child));
-        });
-        div.appendChild(childrenDiv);
-    }
-    
-    return div;
 }
 function renderDynamicQuestionnaire() {
     const w = currentWork();
