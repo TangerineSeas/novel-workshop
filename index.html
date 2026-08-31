@@ -1615,18 +1615,37 @@ function saveCollectionEntry(type, isEdit) {
     const name = document.getElementById('collModalName').value.trim();
     const desc = document.getElementById('collModalDesc').value.trim();
     if(!name) { showToast('请输入名称'); return; }
-    const entries = w.collectionEntries[type] || [];
+    
+    if(!w.collectionEntries[type]) w.collectionEntries[type] = [];
+    const entries = w.collectionEntries[type];
+    
     if(isEdit === 'true') {
+        // 编辑模式：按名称找到原条目更新描述
         const idx = entries.findIndex(e => e.name === name);
-        if(idx >= 0) entries[idx].desc = desc;
+        if(idx >= 0) {
+            entries[idx].desc = desc;
+        } else {
+            // 如果找不到（可能改了名称），直接添加
+            entries.push({ name, desc });
+        }
     } else {
         entries.push({ name, desc });
     }
-    w.collectionEntries[type] = entries;
+    
     document.querySelector('.modal.active')?.remove();
     renderCollection();
     saveAll();
     showToast('已保存');
+}
+function deleteCollectionEntry(type, name) {
+    const w = currentWork(); if(!w) return;
+    if(!confirm(`确定删除词条「${name}」？`)) return;
+    const entries = w.collectionEntries[type] || [];
+    w.collectionEntries[type] = entries.filter(e => e.name !== name);
+    document.querySelector('.modal.active')?.remove();
+    renderCollection();
+    saveAll();
+    showToast('已删除');
 }
 let calViewMonth = 0;
 let calViewYear = new Date().getFullYear();
@@ -2024,10 +2043,10 @@ function openTimelineModal(editIndex = -1, insertAfter = -1) {
                 <label class="form-label">描述</label>
                 <textarea class="form-textarea" id="timelineModalDesc" style="min-height:150px" placeholder="输入事件描述...">${editIndex >= 0 ? timeline[editIndex].desc || '' : ''}</textarea>
             </div>
-            <div class="btn-row" style="justify-content:flex-end">
-                ${editIndex >= 0 ? `<button class="btn btn-danger" onclick="deleteTimelineEntry(${editIndex})">删除</button>` : ''}
+                      <div class="btn-row" style="justify-content:flex-end">
+                ${entry ? `<button class="btn btn-danger" onclick="deleteCollectionEntry('${type}', '${entry.name.replace(/'/g, "\\'")}')">删除</button>` : ''}
                 <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
-                <button class="btn btn-primary" onclick="saveTimelineEntry(${editIndex}, ${insertAfter})">保存</button>
+                <button class="btn btn-primary" onclick="saveCollectionEntry('${type}', ${entry ? 'true' : 'false'}')">保存</button>
             </div>
         </div>`;
     document.body.appendChild(modal);
