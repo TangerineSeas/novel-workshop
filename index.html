@@ -1816,8 +1816,13 @@ function renderOutline() {
     const container = document.getElementById('outlineContainer');
     if(!container) return;
     const w = currentWork();
-    if(w && w.outline) outlineData = w.outline;
-    else outlineData = [];
+    // 确保 outline 是数组
+    let outline = [];
+    if(w && Array.isArray(w.outline)) {
+        outline = w.outline;
+    } else if(w) {
+        w.outline = [];
+    }
     
     function renderNode(node, depth) {
         const div = document.createElement('div');
@@ -1829,7 +1834,7 @@ function renderOutline() {
         
         const toggle = document.createElement('span');
         toggle.className = 'outline-toggle';
-        toggle.textContent = node.children && node.children.length > 0 ? '▼' : '▶';
+        toggle.textContent = (node.children && node.children.length > 0) ? '▼' : '▶';
         toggle.onclick = (e) => {
             e.stopPropagation();
             const childrenDiv = header.parentElement.querySelector('.outline-node-children');
@@ -1845,7 +1850,7 @@ function renderOutline() {
         text.style.flex = '1';
         text.ondblclick = () => {
             const newText = prompt('编辑节点文字：', node.text || '');
-            if(newText !== null) {
+            if(newText !== null && newText.trim()) {
                 node.text = newText.trim();
                 renderOutline();
                 saveOutline();
@@ -1874,9 +1879,11 @@ function renderOutline() {
         del.className = 'outline-delete';
         del.onclick = (e) => {
             e.stopPropagation();
-            deleteNodeById(outlineData, node);
-            renderOutline();
-            saveOutline();
+            // 从父节点删除
+            if(deleteNodeById(outline, node)) {
+                renderOutline();
+                saveOutline();
+            }
         };
         header.appendChild(del);
         
@@ -1896,37 +1903,44 @@ function renderOutline() {
         for(let i = 0; i < nodes.length; i++) {
             if(nodes[i] === target) {
                 nodes.splice(i, 1);
-                return;
+                return true;
             }
-            if(nodes[i].children) deleteNodeById(nodes[i].children, target);
+            if(nodes[i].children && deleteNodeById(nodes[i].children, target)) {
+                return true;
+            }
         }
+        return false;
     }
     
     container.innerHTML = '';
-    if(outlineData.length === 0) {
+    if(outline.length === 0) {
         container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无大纲，点击「添加根节点」开始创建</p>';
     } else {
-        outlineData.forEach(node => container.appendChild(renderNode(node, 0)));
+        outline.forEach(node => container.appendChild(renderNode(node, 0)));
     }
 }
 
 function saveOutline() {
     const w = currentWork();
     if(w) {
-        w.outline = outlineData;
+        if(!Array.isArray(w.outline)) w.outline = [];
         saveAll();
         showToast('大纲已保存');
     }
 }
 
 function addOutlineNode(parentNode) {
+    const w = currentWork(); if(!w) return;
     const text = prompt('输入节点文字：');
     if(!text || !text.trim()) return;
+    
+    if(!Array.isArray(w.outline)) w.outline = [];
+    
     if(parentNode) {
         if(!parentNode.children) parentNode.children = [];
         parentNode.children.push({ text: text.trim(), children: [] });
     } else {
-        outlineData.push({ text: text.trim(), children: [] });
+        w.outline.push({ text: text.trim(), children: [] });
     }
     renderOutline();
     saveOutline();
