@@ -1705,3 +1705,51 @@
     border: 1px solid var(--border);
     margin: auto;
 }
+
+/* ========== 大纲思维导图样式 ========== */
+.outline-tree {
+    padding: 10px;
+    overflow-x: auto;
+}
+
+.outline-node {
+    margin-left: 20px;
+    position: relative;
+}
+
+.outline-node-content {
+    padding: 6px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-block;
+    user-select: none;
+    transition: all .2s;
+    font-size: .9em;
+}
+
+.outline-node-content:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+.outline-node-children {
+    margin-left: 20px;
+    border-left: 1px dashed var(--border);
+    padding-left: 10px;
+}
+
+.outline-node-collapsed > .outline-node-children {
+    display: none;
+}
+
+.outline-node-collapsed > .outline-node-content::after {
+    content: " ▶";
+    font-size: .7em;
+}
+
+.outline-node-expanded > .outline-node-content::after {
+    content: " ▼";
+    font-size: .7em;
+}
