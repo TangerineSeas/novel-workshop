@@ -264,7 +264,11 @@ button{cursor:pointer}
 <label>行距</label><select id="lineHeight" onchange="updateStyle()"><option value="1.5">紧凑</option><option value="1.8" selected>标准</option><option value="2.0">宽松</option><option value="2.5">很宽</option></select>
 <label>字距</label><select id="letterSpacing" onchange="updateStyle()"><option value="0px" selected>标准</option><option value="1px">加宽</option><option value="2px">很宽</option><option value="-0.5px">紧凑</option></select>
 <label>稿纸</label><select id="paperBg" onchange="updateStyle()"><option value="default" selected>默认</option><option value="parchment">羊皮纸</option><option value="lined">横线</option><option value="grid">网格</option></select>
-<span style="flex:1"></span>
+<button class="btn btn-secondary btn-sm" onclick="copyCurrentChapter()">📋 复制</button>
+<button class="btn btn-secondary btn-sm" onclick="formatCurrentChapter()">🎨 排版</button>
+<button class="btn btn-secondary btn-sm" onclick="searchInWork()">🔍 搜索</button>
+<button class="btn btn-secondary btn-sm" onclick="replaceInWork()">🔄 替换</button>
+   <span style="flex:1"></span>
 <button class="upload-btn-small" onclick="document.getElementById('customBgInput').click()">🖼️ 背景</button>
 <input type="file" id="customBgInput" accept="image/*" style="display:none" onchange="importCustomBg(event)">
 <button class="upload-btn-small" onclick="document.getElementById('customFontInput').click()">✍️ 字体</button>
@@ -837,6 +841,119 @@ function updateTimerDisplay() {
     const m = String(Math.floor((timerSeconds%3600)/60)).padStart(2,'0');
     const s = String(timerSeconds%60).padStart(2,'0');
     document.getElementById('timerDisplay').textContent = h + ':' + m + ':' + s;
+}
+   // ========== 写作工具 ==========
+
+// 一键复制当前章节
+function copyCurrentChapter() {
+    const content = document.getElementById('editor').value;
+    if(!content) { showToast('没有内容可复制'); return; }
+    navigator.clipboard.writeText(content).then(() => {
+        showToast('已复制到剪贴板');
+    }).catch(() => {
+        // 降级方案
+        const textarea = document.createElement('textarea');
+        textarea.value = content;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('已复制到剪贴板');
+    });
+}
+
+// 一键排版
+function formatCurrentChapter() {
+    const editor = document.getElementById('editor');
+    let text = editor.value;
+    if(!text.trim()) { showToast('没有内容可排版'); return; }
+    
+    // 统一标点
+    text = text.replace(/[，。；：！？]/g, function(m) {
+        const map = { '，': '，', '。': '。', '；': '；', '：': '：', '！': '！', '？': '？' };
+        return map[m] || m;
+    });
+    
+    // 段落间空一行（将单个换行替换为双换行）
+    text = text.replace(/\n(?!\n)/g, '\n\n');
+    
+    // 清理多余空行（超过2个换行压缩为2个）
+    text = text.replace(/\n{3,}/g, '\n\n');
+    
+    editor.value = text;
+    updateWordCount();
+    saveAll();
+    showToast('排版完成');
+}
+
+// 全文搜索
+function searchInWork() {
+    const w = currentWork(); if(!w) return;
+    const keyword = prompt('请输入搜索关键词：');
+    if(!keyword || !keyword.trim()) return;
+    
+    const results = [];
+    w.chapters.forEach(ch => {
+        const content = ch.content || '';
+        let index = content.indexOf(keyword);
+        while(index !== -1) {
+            results.push({ chapter: ch, position: index, context: content.slice(Math.max(0, index - 15), index + keyword.length + 15) });
+            index = content.indexOf(keyword, index + keyword.length);
+        }
+    });
+    
+    if(results.length === 0) {
+        alert(`未找到「${keyword}」`);
+        return;
+    }
+    
+    let msg = `找到 ${results.length} 处「${keyword}」：\n\n`;
+    results.slice(0, 20).forEach((r, i) => {
+        msg += `${i + 1}. 「${r.chapter.name}」：...${r.context}...\n`;
+    });
+    if(results.length > 20) msg += `\n...还有 ${results.length - 20} 处`;
+    
+    alert(msg);
+}
+
+// 全文替换
+function replaceInWork() {
+    const w = currentWork(); if(!w) return;
+    const wordA = prompt('请输入要替换的词：');
+    if(!wordA || !wordA.trim()) return;
+    
+    // 统计出现次数
+    let count = 0;
+    w.chapters.forEach(ch => {
+        const content = ch.content || '';
+        count += content.split(wordA).length - 1;
+    });
+    
+    if(count === 0) {
+        alert(`未找到「${wordA}」`);
+        return;
+    }
+    
+    if(!confirm(`找到 ${count} 处「${wordA}」，是否继续？`)) return;
+    
+    const wordB = prompt('请输入替换为：');
+    if(wordB === null) return;
+    
+    w.chapters.forEach(ch => {
+        if(ch.content) {
+            ch.content = ch.content.split(wordA).join(wordB);
+            ch.wordCount = ch.content.length;
+        }
+    });
+    
+    // 更新当前编辑器
+    const currentCh = w.chapters.find(c => c.id === w.currentChapterId);
+    if(currentCh) document.getElementById('editor').value = currentCh.content || '';
+    
+    updateWordCount();
+    renderChapters();
+    saveAll();
+    showToast(`已替换 ${count} 处`);
 }
 function exportNovel() { const w = currentWork(); if(w) exportWork(w.id); }
 function exportWork(id) {
