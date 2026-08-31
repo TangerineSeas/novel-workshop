@@ -1387,7 +1387,9 @@ function renderOutline() {
         w.outline = { id: 'root', text: '故事大纲', children: [] };
     }
     
-       container.innerHTML = '';
+        container.innerHTML = '';
+    container.style.position = 'relative';
+    container.style.zIndex = '1';
     container.appendChild(renderOutlineNode(w.outline, true));
     container.style.display = 'block';
     document.getElementById('wv-outline').style.display = 'block';
