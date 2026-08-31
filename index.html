@@ -1383,8 +1383,10 @@ function renderOutline() {
         w.outline = { id: 'root', text: '故事大纲', children: [] };
     }
     
-    container.innerHTML = '';
+       container.innerHTML = '';
     container.appendChild(renderOutlineNode(w.outline, true));
+    container.style.display = 'block';
+    document.getElementById('wv-outline').style.display = 'block';
 }
 
 function addOutlineRootChild() {
