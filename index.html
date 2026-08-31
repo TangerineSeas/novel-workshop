@@ -328,10 +328,9 @@ button{cursor:pointer}
     <div class="card">
         <h3>🧠 大纲思维导图</h3>
         <div class="btn-row" style="margin-bottom:10px">
-            <button class="btn btn-sm btn-primary" onclick="addOutlineNode()">+ 添加根节点</button>
-            <button class="btn btn-sm btn-secondary" onclick="renderOutline()">🔄 刷新</button>
+            <button class="btn btn-sm btn-primary" onclick="addOutlineRoot()">+ 新建根节点</button>
         </div>
-        <div id="outlineContainer" style="overflow-x:auto;padding:15px;background:var(--bg);border-radius:8px;min-height:300px"></div>
+        <div id="outlineContainer" style="padding:10px;background:var(--bg);border-radius:8px;min-height:200px"></div>
     </div>
 </div>
 <div class="card"><h3>📅 历法设置</h3>
@@ -1651,22 +1650,32 @@ document.getElementById('calYearInput').value = calViewYear;
         grid.appendChild(d);
     }
 }
-   // ========== 大纲思维导图 ==========
-function addOutlineNode() {
+   // ========== 大纲思维导图（重写版） ==========
+function addOutlineRoot() {
     const w = currentWork(); if(!w) return;
-    w.outline = w.outline || [];
+    if(!w.outline) w.outline = [];
     const text = prompt('请输入节点名称：');
     if(!text || !text.trim()) return;
-    w.outline.push({ id: Date.now(), text: text.trim(), children: [], parentId: null });
+    w.outline.push({ id: Date.now(), text: text.trim(), children: [] });
     saveAll();
     renderOutline();
 }
 
-function addOutlineChild(parentId) {
+function addOutlineChildNode(parentId) {
     const w = currentWork(); if(!w) return;
     const text = prompt('请输入子节点名称：');
     if(!text || !text.trim()) return;
-    w.outline.push({ id: Date.now(), text: text.trim(), children: [], parentId: parentId });
+    const findAndAdd = (nodes) => {
+        for(let node of nodes) {
+            if(node.id === parentId) {
+                node.children.push({ id: Date.now(), text: text.trim(), children: [] });
+                return true;
+            }
+            if(findAndAdd(node.children)) return true;
+        }
+        return false;
+    };
+    findAndAdd(w.outline);
     saveAll();
     renderOutline();
 }
@@ -1674,37 +1683,63 @@ function addOutlineChild(parentId) {
 function deleteOutlineNode(nodeId) {
     const w = currentWork(); if(!w) return;
     if(!confirm('删除此节点及其所有子节点？')) return;
-    const deleteRecursive = (id) => {
-        w.outline = w.outline.filter(n => n.id !== id);
-        w.outline.forEach(n => {
-            if(n.parentId === id) deleteRecursive(n.id);
+    const deleteRecursive = (nodes) => {
+        return nodes.filter(n => n.id !== nodeId).map(n => {
+            n.children = deleteRecursive(n.children);
+            return n;
         });
     };
-    deleteRecursive(nodeId);
+    w.outline = deleteRecursive(w.outline);
     saveAll();
     renderOutline();
 }
 
 function editOutlineNode(nodeId) {
     const w = currentWork(); if(!w) return;
-    const node = w.outline.find(n => n.id === nodeId);
-    if(!node) return;
-    const text = prompt('修改节点名称：', node.text);
-    if(text && text.trim()) {
-        node.text = text.trim();
-        saveAll();
-        renderOutline();
-    }
+    const findAndEdit = (nodes) => {
+        for(let node of nodes) {
+            if(node.id === nodeId) {
+                const text = prompt('修改节点名称：', node.text);
+                if(text && text.trim()) node.text = text.trim();
+                return true;
+            }
+            if(findAndEdit(node.children)) return true;
+        }
+        return false;
+    };
+    findAndEdit(w.outline);
+    saveAll();
+    renderOutline();
 }
 
 function renderOutline() {
     const w = currentWork();
     const container = document.getElementById('outlineContainer');
+    if(!container) { console.error('outlineContainer not found'); return; }
     container.innerHTML = '';
+    
     if(!w || !w.outline || w.outline.length === 0) {
-        container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无大纲，点击"添加根节点"开始</p>';
+        container.innerHTML = '<p style="color:var(--text2);font-size:.85em;text-align:center;padding:20px">暂无大纲，点击上方按钮开始</p>';
         return;
     }
+    
+    function renderNode(node, depth) {
+        const div = document.createElement('div');
+        div.style.cssText = 'margin-bottom:6px;padding-left:' + (depth * 20) + 'px';
+        div.innerHTML = `
+            <div style="display:flex;align-items:center;gap:5px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;flex-wrap:wrap">
+                <span style="font-weight:bold;color:var(--accent);flex:1;min-width:80px">${node.text}</span>
+                <button class="btn btn-secondary btn-sm" onclick="addOutlineChildNode(${node.id})">+子节点</button>
+                <button class="btn btn-secondary btn-sm" onclick="editOutlineNode(${node.id})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteOutlineNode(${node.id})">✕</button>
+            </div>
+        `;
+        container.appendChild(div);
+        if(node.children) node.children.forEach(child => renderNode(child, depth + 1));
+    }
+    
+    w.outline.forEach(root => renderNode(root, 0));
+}
     
     const roots = w.outline.filter(n => n.parentId === null);
     
