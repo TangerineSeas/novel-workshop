@@ -201,135 +201,6 @@ button{cursor:pointer}
 @media(min-width:901px){.mobile-nav-overlay{display:none!important}}
         .cal-day.has-note{border-color:var(--accent)}
 .note-dot{font-size:.7em;margin-top:2px}
-/* 大纲思维导图 */
-.outline-node {
-    margin-left: 20px;
-    border-left: 2px solid var(--border);
-    padding-left: 10px;
-    position: relative;
-}
-.outline-node-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 4px;
-    font-size: .9em;
-}
-.outline-node-header:hover {
-    border-color: var(--accent);
-}
-.outline-node-children {
-    margin-left: 15px;
-}
-.outline-toggle {
-    font-size: .7em;
-    color: var(--text2);
-    cursor: pointer;
-}
-.outline-delete {
-    color: var(--danger);
-    cursor: pointer;
-    font-size: .8em;
-}
-
-/* 时间线（竖轴） */
-.timeline-v-axis {
-    position: relative;
-    padding-left: 40px;
-    margin-left: 10px;
-}
-
-.timeline-v-axis::before {
-    content: "";
-    position: absolute;
-    left: 8px;
-    top: 5px;
-    bottom: 5px;
-    width: 2px;
-    background: var(--border);
-}
-
-.timeline-v-axis::after {
-    content: "▼";
-    position: absolute;
-    left: 3px;
-    bottom: 0;
-    color: var(--accent);
-    font-size: .7em;
-}
-
-.timeline-v-node {
-    position: relative;
-    margin-bottom: 12px;
-    padding: 10px 12px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: border-color .2s;
-}
-
-.timeline-v-node:hover {
-    border-color: var(--accent);
-}
-
-.timeline-v-node::before {
-    content: "";
-    position: absolute;
-    left: -37px;
-    top: 50%;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 3px solid var(--bg2);
-    box-shadow: 0 0 8px rgba(0,0,0,0.3);
-    transform: translateY(-50%);
-}
-
-.timeline-v-time {
-    font-size: .75em;
-    color: var(--accent);
-    font-weight: bold;
-    margin-bottom: 4px;
-}
-
-.timeline-v-desc {
-    font-size: .85em;
-    color: var(--text);
-    line-height: 1.6;
-    white-space: pre-wrap;
-}
-
-.timeline-v-insert-btn {
-    display: inline-block;
-    margin: 0 0 12px 40px;
-    padding: 2px 8px;
-    font-size: .65em;
-    color: var(--text2);
-    background: transparent;
-    border: 1px dashed var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all .2s;
-}
-
-.timeline-v-insert-btn:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-}
-
-.timeline-v-empty {
-    padding: 20px;
-    text-align: center;
-    color: var(--text2);
-    font-size: .85em;
-}
 </style>
 </head>
 <body>
@@ -419,11 +290,9 @@ button{cursor:pointer}
 <h2 style="color:var(--accent);margin-bottom:4px;">🌍 世界观构建</h2>
 <p style="color:var(--text2);font-size:.8em;margin-bottom:16px;">当前作品：<span id="wvWorkName" style="color:var(--accent);font-weight:bold"></span></p>
 <div class="wv-tabs">
-    <button class="wv-tab active" onclick="switchWvTab('questionnaire',this)">📝 问卷</button>
-    <button class="wv-tab" onclick="switchWvTab('collection',this)">📚 设定合集</button>
-    <button class="wv-tab" onclick="switchWvTab('calendar',this)">📅 自定义日历</button>
-    <button class="wv-tab" onclick="switchWvTab('outline',this)">🧠 大纲</button>
-    <button class="wv-tab" onclick="switchWvTab('timeline',this)">🕐 时间线</button>
+<button class="wv-tab active" onclick="switchWvTab('questionnaire',this)">📝 问卷</button>
+<button class="wv-tab" onclick="switchWvTab('collection',this)">📚 设定合集</button>
+<button class="wv-tab" onclick="switchWvTab('calendar',this)">📅 自定义日历</button>
 </div>
 <div class="wv-content active" id="wv-questionnaire">
 <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="wvProgress"></div></div><div class="progress-text" id="wvProgressText">完成度：0%</div></div>
@@ -479,29 +348,7 @@ button{cursor:pointer}
 <div class="calendar-grid" id="calendarGrid"></div>
 </div>
 </div>
-<!-- 大纲 -->
-<div class="wv-content" id="wv-outline">
-    <div class="card">
-        <h3>🧠 作品大纲（思维导图）</h3>
-        <div class="btn-row" style="margin-bottom:10px">
-            <button class="btn btn-sm btn-primary" onclick="addOutlineNode(null)">+ 添加根节点</button>
-            <button class="btn btn-sm btn-secondary" onclick="expandAllOutline()">展开全部</button>
-            <button class="btn btn-sm btn-secondary" onclick="collapseAllOutline()">折叠全部</button>
-        </div>
-        <div id="outlineContainer" style="max-height:500px;overflow-y:auto"></div>
-    </div>
-</div>
-
-<!-- 时间线 -->
-<!-- 时间线 -->
-<div class="wv-content" id="wv-timeline">
-    <div class="card">
-        <h3>🕐 作品时间线</h3>
-        <div class="btn-row" style="margin-bottom:10px">
-            <button class="btn btn-sm btn-primary" onclick="openTimelineEditor()">+ 添加时间点</button>
-        </div>
-        <div id="timelineVContainer"></div>
-    </div>
+</div></div>
 </div>
 
 <div class="page" id="page-characters">
@@ -691,8 +538,6 @@ button{cursor:pointer}
 <script>
 // ========== 全局状态 ==========
 let works = [];
-let outlineData = [];
-let timelineData = [];
 let currentWorkId = null;
 let avatarData = null;
 let saveTimer;
@@ -866,7 +711,7 @@ function confirmCreateWork() {
         const from = works.find(w => w.id === fromId);
         if(from) worldviewData = JSON.parse(JSON.stringify(from.worldview));
     }
-        const work = {
+    const work = {
         id: Date.now(), title,
         worldview: worldviewData,
         characters: [],
@@ -874,8 +719,6 @@ function confirmCreateWork() {
         collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] },
         calendarData: { eraName:'', weekDays:7, months:[], festivals:[] },
         editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' },
-        outline: [],
-        timeline: [],
         writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString()
     };
     works.push(work); currentWorkId = work.id;
@@ -1505,25 +1348,13 @@ function saveCharacter() {
     saveAll(); showToast('人物已保存');
 }
 function switchWvTab(tab, btn) {
-    // 切换标签按钮的激活状态
     document.querySelectorAll('.wv-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    // 隐藏所有内容区
     document.querySelectorAll('.wv-content').forEach(c => c.classList.remove('active'));
-    // 显示目标内容区
-    const target = document.getElementById('wv-' + tab);
-    if (target) target.classList.add('active');
-    
-    // 用 try-catch 调用对应的渲染函数，避免因渲染错误影响显示
-    try {
-        if(tab === 'collection') renderCollection();
-        else if(tab === 'calendar') renderCalendar();
-        else if(tab === 'questionnaire') renderDynamicQuestionnaire();
-        else if(tab === 'outline') renderOutline();
-        else if(tab === 'timeline') renderTimeline();
-    } catch(e) {
-        console.error('渲染标签内容时出错:', tab, e);
-    }
+    document.getElementById('wv-' + tab).classList.add('active');
+    if(tab === 'collection') renderCollection();
+    if(tab === 'calendar') renderCalendar();
+    if(tab === 'questionnaire') renderDynamicQuestionnaire();
 }
 function renderDynamicQuestionnaire() {
     const w = currentWork();
@@ -1810,243 +1641,6 @@ document.getElementById('calYearInput').value = calViewYear;
 }
 function calPrevMonth() { calViewMonth--; renderCalendar(); }
 function calNextMonth() { calViewMonth++; renderCalendar(); }
-// ========== 大纲功能 ==========
-
-function renderOutline() {
-    const container = document.getElementById('outlineContainer');
-    if(!container) return;
-    const w = currentWork();
-    if(w && w.outline) outlineData = w.outline;
-    else outlineData = [];
-    
-    function renderNode(node, depth) {
-        const div = document.createElement('div');
-        div.className = 'outline-node';
-        div.style.marginLeft = depth * 20 + 'px';
-        
-        const header = document.createElement('div');
-        header.className = 'outline-node-header';
-        
-        const toggle = document.createElement('span');
-        toggle.className = 'outline-toggle';
-        toggle.textContent = node.children && node.children.length > 0 ? '▼' : '▶';
-        toggle.onclick = (e) => {
-            e.stopPropagation();
-            const childrenDiv = header.parentElement.querySelector('.outline-node-children');
-            if(childrenDiv) {
-                childrenDiv.style.display = childrenDiv.style.display === 'none' ? 'block' : 'none';
-                toggle.textContent = childrenDiv.style.display === 'none' ? '▶' : '▼';
-            }
-        };
-        header.appendChild(toggle);
-        
-        const text = document.createElement('span');
-        text.textContent = node.text || '未命名节点';
-        text.style.flex = '1';
-        text.ondblclick = () => {
-            const newText = prompt('编辑节点文字：', node.text || '');
-            if(newText !== null) {
-                node.text = newText.trim();
-                renderOutline();
-                saveOutline();
-            }
-        };
-        header.appendChild(text);
-        
-        const addChild = document.createElement('span');
-        addChild.textContent = '+子';
-        addChild.style.fontSize = '.7em';
-        addChild.style.color = 'var(--text2)';
-        addChild.onclick = (e) => {
-            e.stopPropagation();
-            const childText = prompt('输入子节点文字：');
-            if(childText && childText.trim()) {
-                if(!node.children) node.children = [];
-                node.children.push({ text: childText.trim(), children: [] });
-                renderOutline();
-                saveOutline();
-            }
-        };
-        header.appendChild(addChild);
-        
-        const del = document.createElement('span');
-        del.textContent = '✕';
-        del.className = 'outline-delete';
-        del.onclick = (e) => {
-            e.stopPropagation();
-            deleteNodeById(outlineData, node);
-            renderOutline();
-            saveOutline();
-        };
-        header.appendChild(del);
-        
-        div.appendChild(header);
-        
-        if(node.children && node.children.length > 0) {
-            const childrenDiv = document.createElement('div');
-            childrenDiv.className = 'outline-node-children';
-            node.children.forEach(child => childrenDiv.appendChild(renderNode(child, depth + 1)));
-            div.appendChild(childrenDiv);
-        }
-        
-        return div;
-    }
-    
-    function deleteNodeById(nodes, target) {
-        for(let i = 0; i < nodes.length; i++) {
-            if(nodes[i] === target) {
-                nodes.splice(i, 1);
-                return;
-            }
-            if(nodes[i].children) deleteNodeById(nodes[i].children, target);
-        }
-    }
-    
-    container.innerHTML = '';
-    if(outlineData.length === 0) {
-        container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无大纲，点击「添加根节点」开始创建</p>';
-    } else {
-        outlineData.forEach(node => container.appendChild(renderNode(node, 0)));
-    }
-}
-
-function saveOutline() {
-    const w = currentWork();
-    if(w) {
-        w.outline = outlineData;
-        saveAll();
-        showToast('大纲已保存');
-    }
-}
-
-function addOutlineNode(parentNode) {
-    const text = prompt('输入节点文字：');
-    if(!text || !text.trim()) return;
-    if(parentNode) {
-        if(!parentNode.children) parentNode.children = [];
-        parentNode.children.push({ text: text.trim(), children: [] });
-    } else {
-        outlineData.push({ text: text.trim(), children: [] });
-    }
-    renderOutline();
-    saveOutline();
-}
-
-function expandAllOutline() {
-    document.querySelectorAll('.outline-node-children').forEach(el => el.style.display = 'block');
-    document.querySelectorAll('.outline-toggle').forEach(el => el.textContent = '▼');
-}
-
-function collapseAllOutline() {
-    document.querySelectorAll('.outline-node-children').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.outline-toggle').forEach(el => el.textContent = '▶');
-}
-
-// ========== 时间线功能 ==========
-
-// ========== 时间线功能（竖轴） ==========
-function renderTimeline() {
-    const container = document.getElementById('timelineVContainer');
-    if(!container) return;
-    const w = currentWork();
-    const timeline = (w && w.timeline) || [];
-    
-    container.innerHTML = '';
-    if(timeline.length === 0) {
-        container.innerHTML = '<div class="timeline-v-empty">暂无时间点，点击上方按钮添加</div>';
-        return;
-    }
-    
-    const axisDiv = document.createElement('div');
-    axisDiv.className = 'timeline-v-axis';
-    
-    timeline.forEach((node, index) => {
-        const nodeDiv = document.createElement('div');
-        nodeDiv.className = 'timeline-v-node';
-        nodeDiv.innerHTML = `
-            <div class="timeline-v-time">${node.time || '未设定时间'}</div>
-            <div class="timeline-v-desc">${node.desc || '无描述'}</div>
-        `;
-        nodeDiv.onclick = () => openTimelineEditor(index);
-        axisDiv.appendChild(nodeDiv);
-        
-        // 插入按钮（最后一个节点后也显示）
-        const insertBtn = document.createElement('button');
-        insertBtn.className = 'timeline-v-insert-btn';
-        insertBtn.textContent = '+ 在此插入';
-        insertBtn.onclick = (e) => {
-            e.stopPropagation();
-            openTimelineEditor(null, index + 1);
-        };
-        axisDiv.appendChild(insertBtn);
-    });
-    
-    container.appendChild(axisDiv);
-}
-
-function openTimelineEditor(editIndex, insertIndex) {
-    const w = currentWork(); if(!w) return;
-    let existingTime = '';
-    let existingDesc = '';
-    
-    if(editIndex !== undefined && editIndex !== null) {
-        const node = (w.timeline || [])[editIndex];
-        if(node) {
-            existingTime = node.time || '';
-            existingDesc = node.desc || '';
-        }
-    }
-    
-    const modal = document.createElement('div');
-    modal.className = 'modal active';
-    modal.style.cssText = 'display:flex !important; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;';
-    modal.innerHTML = `
-        <div class="modal-content" style="background:var(--bg2); width:92%; max-width:600px; max-height:85vh; overflow-y:auto; border-radius:12px; padding:26px; border:1px solid var(--border); margin:auto;">
-            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h3 style="color:var(--accent); margin:0;">${editIndex !== undefined && editIndex !== null ? '✏️ 编辑时间点' : '➕ 添加时间点'}</h3>
-                <button class="modal-close" onclick="this.closest('.modal').remove()" style="background:none;border:none;color:var(--text);font-size:1.3em;cursor:pointer;">✕</button>
-            </div>
-            <div class="form-group">
-                <label class="form-label">时间点</label>
-                <input class="form-input" id="tlModalTime" placeholder="例如：帝国历245年3月15日 / 事件发生前10天" value="${existingTime}" style="width:100%;padding:10px;">
-            </div>
-            <div class="form-group">
-                <label class="form-label">描述</label>
-                <textarea class="form-textarea" id="tlModalDesc" placeholder="详细描述这个时间点发生了什么..." style="min-height:150px;width:100%;padding:10px;resize:vertical;">${existingDesc}</textarea>
-            </div>
-            <div class="btn-row" style="justify-content:flex-end;gap:10px;">
-                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
-                <button class="btn btn-primary" onclick="saveTimelineNode(${editIndex !== undefined && editIndex !== null ? editIndex : 'null'}, ${insertIndex !== undefined ? insertIndex : 'null'})">保存</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    document.getElementById('tlModalTime').focus();
-}
-
-function saveTimelineNode(editIndex, insertIndex) {
-    const w = currentWork(); if(!w) return;
-    const time = document.getElementById('tlModalTime').value.trim();
-    const desc = document.getElementById('tlModalDesc').value.trim();
-    
-    if(!time && !desc) { alert('请填写时间点或描述'); return; }
-    
-    if(!w.timeline) w.timeline = [];
-    const node = { time: time, desc: desc };
-    
-    if(editIndex !== null && editIndex !== 'null') {
-        w.timeline[editIndex] = node;
-    } else if(insertIndex !== null && insertIndex !== 'null') {
-        w.timeline.splice(insertIndex, 0, node);
-    } else {
-        w.timeline.push(node);
-    }
-    
-    document.querySelector('.modal.active')?.remove();
-    renderTimeline();
-    saveAll();
-    showToast('时间点已保存');
-}
     function calPrevYear() { calViewYear--; renderCalendar(); }
 function calNextYear() { calViewYear++; renderCalendar(); }
     function calJumpToYear() {
@@ -2388,10 +1982,7 @@ async function init() {
     if(devData.customBackgrounds.length === 0 && savedDev.customBackgrounds) devData.customBackgrounds = savedDev.customBackgrounds;
     if(devData.customFonts.length === 0 && savedDev.customFonts) devData.customFonts = savedDev.customFonts;
     if(works.length === 0) {
-        const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' },
-outline: [],
-timeline: [],
-writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString() };
+        const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString() };
         works.push(sample); currentWorkId = sample.id;
     }
     const w = currentWork();
