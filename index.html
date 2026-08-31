@@ -1751,7 +1751,6 @@ document.getElementById('calYearInput').value = calViewYear;
 function calPrevMonth() { calViewMonth--; renderCalendar(); }
 function calNextMonth() { calViewMonth++; renderCalendar(); }
 // ========== 大纲功能 ==========
-let outlineData = []; // 存储大纲树
 
 function renderOutline() {
     const container = document.getElementById('outlineContainer');
@@ -1884,7 +1883,6 @@ function collapseAllOutline() {
 }
 
 // ========== 时间线功能 ==========
-let timelineData = [];
 
 function renderTimeline() {
     const container = document.getElementById('timelineContainer');
