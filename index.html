@@ -1505,8 +1505,13 @@ function showWorldviewDoc() {
     const groups = {};
     allQuestions.forEach(q => { if(!groups[q.category]) groups[q.category] = []; groups[q.category].push(q); });
     Object.entries(groups).forEach(([cat, qs]) => {
-        html += `<h4 style="color:var(--accent);margin:10px 0 5px">${cat}</h4>`;
-        qs.forEach(q => { html += `<p><strong>${q.text}：</strong>${w.worldview?.[q.id] || '未设定'}</p>`; });
+        html += `<h4 style="color:var(--accent);margin:15px 0 8px">${cat}</h4>`;
+        qs.forEach(q => {
+            const answer = w.worldview?.[q.id] || '未设定';
+            // 将答案中的换行符转换为 <br>，确保段落分行
+            const answerHtml = answer.replace(/\n/g, '<br>');
+            html += `<p style="margin-bottom:6px"><strong>${q.text}：</strong>${answerHtml}</p>`;
+        });
     });
     document.getElementById('wvDocContent').innerHTML = html;
     document.getElementById('wvDoc').style.display = 'block';
