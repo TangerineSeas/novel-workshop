@@ -355,11 +355,15 @@ button{cursor:pointer}
 <div class="wv-content" id="wv-outline">
     <div class="card">
         <h3>🧠 故事大纲（思维导图）</h3>
-        <p class="dev-hint" style="margin-bottom:10px">点击节点展开/折叠，双击节点编辑文字，右键节点添加子节点</p>
+        <div class="btn-row" style="margin-bottom:12px">
+            <button class="btn btn-sm btn-primary" onclick="addOutlineRootChild()">+ 添加主节点</button>
+            <button class="btn btn-sm btn-secondary" onclick="expandAllOutline()">全部展开</button>
+            <button class="btn btn-sm btn-secondary" onclick="collapseAllOutline()">全部折叠</button>
+        </div>
+        <p class="dev-hint" style="margin-bottom:10px">右键任意节点添加子节点｜双击编辑节点文字｜单击展开/折叠</p>
         <div id="outline-tree" class="outline-tree"></div>
     </div>
 </div>
-
 <div class="page" id="page-characters">
 <div class="page-scroll"><div class="page-container">
 <h2 style="color:var(--accent);margin-bottom:12px;">👥 人物档案</h2>
@@ -1378,12 +1382,47 @@ function renderOutline() {
     w.outline = w.outline || { id: 'root', text: '故事大纲', children: [] };
     
     container.innerHTML = '';
-    container.appendChild(renderOutlineNode(w.outline));
+    container.appendChild(renderOutlineNode(w.outline, true));
 }
 
-function renderOutlineNode(node) {
+function addOutlineRootChild() {
+    const w = currentWork(); if(!w) return;
+    w.outline = w.outline || { id: 'root', text: '故事大纲', children: [] };
+    const childText = prompt('输入主节点名称：');
+    if(childText && childText.trim()) {
+        w.outline.children = w.outline.children || [];
+        w.outline.children.push({
+            id: 'outline_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+            text: childText.trim(),
+            children: []
+        });
+        renderOutline();
+        saveAll();
+    }
+}
+
+function expandAllOutline() {
+    const container = document.getElementById('outline-tree');
+    if(!container) return;
+    container.querySelectorAll('.outline-node').forEach(n => {
+        n.classList.remove('outline-node-collapsed');
+        n.classList.add('outline-node-expanded');
+    });
+}
+
+function collapseAllOutline() {
+    const container = document.getElementById('outline-tree');
+    if(!container) return;
+    container.querySelectorAll('.outline-node').forEach(n => {
+        n.classList.add('outline-node-collapsed');
+        n.classList.remove('outline-node-expanded');
+    });
+}
+
+function renderOutlineNode(node, isRoot) {
     const div = document.createElement('div');
     div.className = 'outline-node';
+    if(!isRoot) div.classList.add('outline-node-expanded');
     div.dataset.nodeId = node.id;
     
     const content = document.createElement('div');
