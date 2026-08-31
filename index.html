@@ -598,7 +598,7 @@ function goPage(page) {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
     if(page === 'home') renderHome();
     if(page === 'writing') { renderChapters(); renderSidebarChars(); updateWordCount(); updateTimerDisplay(); }
-    if(page === 'worldview') { loadWorldview(); renderCollection(); renderCalendar(); }
+    if(page === 'worldview') { loadWorldview(); renderCollection(); renderCalendar(); renderTimeline(); }
     if(page === 'characters') { renderCharGrid(); updateFamilyFilters(); drawRelationGraph(); }
     if(page === 'tools') { renderNameResults(); renderKnowledgeBase(); }
     if(page === 'dev') { renderDevQuestionList(); renderDevNameList(); renderDevKbList(); }
@@ -1365,6 +1365,7 @@ function switchWvTab(tab, btn) {
     if(tab === 'collection') renderCollection();
     if(tab === 'calendar') renderCalendar();
     if(tab === 'questionnaire') renderDynamicQuestionnaire();
+       if(tab === 'timeline') renderTimeline();
 }
 function renderDynamicQuestionnaire() {
     const w = currentWork();
@@ -1950,6 +1951,101 @@ document.addEventListener('keydown', e => {
     if(e.ctrlKey && e.key === 's') { e.preventDefault(); saveAll(); showToast('已保存'); }
     if(e.ctrlKey && e.shiftKey && e.key === 'D') { e.preventDefault(); devUnlocked = true; document.getElementById('devNavBtn').style.display = 'block'; goPage('dev'); showToast('🔓 开发者模式'); }
 });
+// ========== 时间线管理 ==========
+function renderTimeline() {
+    const w = currentWork(); if(!w) return;
+    const container = document.getElementById('timelineContainer');
+    if(!container) return;
+    const timeline = w.globalTimeline || [];
+    
+    if(timeline.length === 0) {
+        container.innerHTML = '<p style="color:var(--text2);font-size:.9em;text-align:center;padding:20px">暂无时间点，点击上方新增时间点</p>';
+        return;
+    }
+    
+    // 按时间排序（简单字符串排序）
+    timeline.sort((a,b) => (a.time || '').localeCompare(b.time || ''));
+    
+    let html = '<div class="timeline-vertical">';
+    timeline.forEach((entry, index) => {
+        html += `
+            <div class="timeline-node">
+                <div class="timeline-time">${entry.time || '未设定时间'}</div>
+                <div class="timeline-desc" onclick="openTimelineModal(${index})">${entry.desc || '无描述'}</div>
+            </div>
+            <div class="timeline-insert">
+                <button title="在此处插入时间点" onclick="openTimelineModal(-1, ${index})">+</button>
+            </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function openTimelineModal(editIndex = -1, insertAfter = -1) {
+    const w = currentWork(); if(!w) return;
+    const timeline = w.globalTimeline || [];
+    
+    // 创建弹窗
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">${editIndex >= 0 ? '✏️ 编辑时间点' : '➕ 新增时间点'}</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">时间</label>
+                <input class="form-input" id="timelineModalTime" placeholder="例如：帝国历245年 / 第三章之后" value="${editIndex >= 0 ? timeline[editIndex].time || '' : ''}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述</label>
+                <textarea class="form-textarea" id="timelineModalDesc" style="min-height:150px" placeholder="输入事件描述...">${editIndex >= 0 ? timeline[editIndex].desc || '' : ''}</textarea>
+            </div>
+            <div class="btn-row" style="justify-content:flex-end">
+                ${editIndex >= 0 ? `<button class="btn btn-danger" onclick="deleteTimelineEntry(${editIndex})">删除</button>` : ''}
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveTimelineEntry(${editIndex}, ${insertAfter})">保存</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('timelineModalTime').focus();
+}
+
+function saveTimelineEntry(editIndex, insertAfter) {
+    const w = currentWork(); if(!w) return;
+    const time = document.getElementById('timelineModalTime').value.trim();
+    const desc = document.getElementById('timelineModalDesc').value.trim();
+    if(!time && !desc) { showToast('请至少填写时间或描述'); return; }
+    
+    const entry = { time, desc };
+    const timeline = w.globalTimeline || [];
+    
+    if(editIndex >= 0) {
+        timeline[editIndex] = entry;
+    } else if(insertAfter >= 0) {
+        timeline.splice(insertAfter + 1, 0, entry);
+    } else {
+        timeline.push(entry);
+    }
+    
+    w.globalTimeline = timeline;
+    document.querySelector('.modal.active')?.remove();
+    renderTimeline();
+    saveAll();
+    showToast('时间点已保存');
+}
+
+function deleteTimelineEntry(index) {
+    const w = currentWork(); if(!w) return;
+    if(!confirm('确定删除此时间点？')) return;
+    w.globalTimeline.splice(index, 1);
+    document.querySelector('.modal.active')?.remove();
+    renderTimeline();
+    saveAll();
+    showToast('已删除');
+}
 async function init() {
     // 生成或获取用户ID
     currentUserId = localStorage.getItem('novelUserId');
