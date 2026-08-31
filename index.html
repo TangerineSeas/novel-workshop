@@ -1365,7 +1365,7 @@ function switchWvTab(tab, btn) {
     document.getElementById('wv-' + tab).classList.add('active');
     if(tab === 'collection') renderCollection();
     if(tab === 'calendar') renderCalendar();
-       if(tab === 'outline') renderOutline();
+    if(tab === 'outline') renderOutline();
     if(tab === 'questionnaire') renderDynamicQuestionnaire();
 }
 function renderDynamicQuestionnaire() {
@@ -2072,7 +2072,11 @@ async function init() {
         const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, outline: [],editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString() };
         works.push(sample); currentWorkId = sample.id;
     }
-    const w = currentWork();
+       // 确保所有作品都有outline字段
+    works.forEach(work => {
+        if(!work.outline) work.outline = [];
+    });
+   const w = currentWork();
     if(w && w.editorSettings) {
         const s = w.editorSettings;
         fontFamily.value = s.fontFamily || "'Georgia',serif";
