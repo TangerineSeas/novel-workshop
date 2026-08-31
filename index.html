@@ -1370,7 +1370,11 @@ function switchWvTab(tab, btn) {
     if(tab === 'collection') renderCollection();
     if(tab === 'calendar') renderCalendar();
     if(tab === 'questionnaire') renderDynamicQuestionnaire();
-    if(tab === 'outline') renderOutline();
+    if(tab === 'outline') {
+        setTimeout(function() {
+            renderOutline();
+        }, 100);
+    }
 }
 // ========== 大纲思维导图 ==========
 
