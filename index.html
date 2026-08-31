@@ -721,13 +721,14 @@ function confirmCreateWork() {
         const from = works.find(w => w.id === fromId);
         if(from) worldviewData = JSON.parse(JSON.stringify(from.worldview));
     }
-    const work = {
+       const work = {
         id: Date.now(), title,
         worldview: worldviewData,
         characters: [],
         chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }],
         collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] },
         calendarData: { eraName:'', weekDays:7, months:[], festivals:[] },
+        outline: { id: 'root', text: '故事大纲', children: [] },
         editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' },
         writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString()
     };
@@ -1365,6 +1366,79 @@ function switchWvTab(tab, btn) {
     if(tab === 'collection') renderCollection();
     if(tab === 'calendar') renderCalendar();
     if(tab === 'questionnaire') renderDynamicQuestionnaire();
+    if(tab === 'outline') renderOutline();
+}
+// ========== 大纲思维导图 ==========
+
+function renderOutline() {
+    const w = currentWork(); if(!w) return;
+    const container = document.getElementById('outline-tree');
+    if(!container) return;
+    
+    w.outline = w.outline || { id: 'root', text: '故事大纲', children: [] };
+    
+    container.innerHTML = '';
+    container.appendChild(renderOutlineNode(w.outline));
+}
+
+function renderOutlineNode(node) {
+    const div = document.createElement('div');
+    div.className = 'outline-node';
+    div.dataset.nodeId = node.id;
+    
+    const content = document.createElement('div');
+    content.className = 'outline-node-content';
+    content.textContent = node.text;
+    
+    // 点击展开/折叠
+    content.onclick = function(e) {
+        e.stopPropagation();
+        const nodeDiv = this.parentElement;
+        nodeDiv.classList.toggle('outline-node-collapsed');
+        nodeDiv.classList.toggle('outline-node-expanded');
+    };
+    
+    // 双击编辑
+    content.ondblclick = function(e) {
+        e.stopPropagation();
+        const newText = prompt('编辑节点文字：', node.text);
+        if(newText && newText.trim()) {
+            node.text = newText.trim();
+            renderOutline();
+            saveAll();
+        }
+    };
+    
+    // 右键添加子节点
+    content.oncontextmenu = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const childText = prompt('输入子节点名称：');
+        if(childText && childText.trim()) {
+            node.children = node.children || [];
+            node.children.push({
+                id: 'outline_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+                text: childText.trim(),
+                children: []
+            });
+            renderOutline();
+            saveAll();
+        }
+    };
+    
+    div.appendChild(content);
+    
+    if(node.children && node.children.length > 0) {
+        div.classList.add('outline-node-expanded');
+        const childrenDiv = document.createElement('div');
+        childrenDiv.className = 'outline-node-children';
+        node.children.forEach(child => {
+            childrenDiv.appendChild(renderOutlineNode(child));
+        });
+        div.appendChild(childrenDiv);
+    }
+    
+    return div;
 }
 function renderDynamicQuestionnaire() {
     const w = currentWork();
