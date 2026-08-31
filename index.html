@@ -294,6 +294,7 @@ button{cursor:pointer}
     <button class="wv-tab" onclick="switchWvTab('collection',this)">📚 设定合集</button>
     <button class="wv-tab" onclick="switchWvTab('calendar',this)">📅 自定义日历</button>
     <button class="wv-tab" onclick="switchWvTab('timeline',this)">📜 时间线</button>
+    <button class="wv-tab" onclick="switchWvTab('outline',this)">🗂️ 大纲</button>
 </div>
 <div class="wv-content active" id="wv-questionnaire">
 <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="wvProgress"></div></div><div class="progress-text" id="wvProgressText">完成度：0%</div></div>
@@ -358,6 +359,15 @@ button{cursor:pointer}
         </div>
     </div>
     <div id="timelineContainer" style="max-width:700px;margin:0 auto"></div>
+</div>
+<div class="wv-content" id="wv-outline">
+    <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <h3>🗂️ 故事大纲</h3>
+            <button class="btn btn-primary btn-sm" onclick="openOutlineModal(null)">+ 添加根节点</button>
+        </div>
+    </div>
+    <div id="outlineContainer" style="max-width:800px;margin:0 auto"></div>
 </div>
 </div>
 
@@ -728,7 +738,7 @@ function confirmCreateWork() {
         characters: [],
         chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }],
         collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] },
-        calendarData: { eraName:'', weekDays:7, months:[], festivals:[] ,globalTimeline: [],},
+        calendarData: { eraName:'', weekDays:7, months:[], festivals:[] ,globalTimeline: [],outline: [],},
         editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' },
         writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString()
     };
