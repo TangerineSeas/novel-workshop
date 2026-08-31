@@ -417,6 +417,7 @@ button{cursor:pointer}
 </div>
 <div class="calendar-grid" id="calendarGrid"></div>
 </div>
+</div>
 <!-- 大纲 -->
 <div class="wv-content" id="wv-outline">
     <div class="card">
@@ -439,7 +440,6 @@ button{cursor:pointer}
         </div>
         <div id="timelineContainer" style="overflow-x:auto;padding-bottom:15px"></div>
     </div>
-</div>
 </div>
 </div></div>
 </div>
@@ -1443,15 +1443,25 @@ function saveCharacter() {
     saveAll(); showToast('人物已保存');
 }
 function switchWvTab(tab, btn) {
+    // 切换标签按钮的激活状态
     document.querySelectorAll('.wv-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    // 隐藏所有内容区
     document.querySelectorAll('.wv-content').forEach(c => c.classList.remove('active'));
-    document.getElementById('wv-' + tab).classList.add('active');
-    if(tab === 'collection') renderCollection();
-    if(tab === 'calendar') renderCalendar();
-    if(tab === 'questionnaire') renderDynamicQuestionnaire();
-    if(tab === 'outline') renderOutline();
-    if(tab === 'timeline') renderTimeline();
+    // 显示目标内容区
+    const target = document.getElementById('wv-' + tab);
+    if (target) target.classList.add('active');
+    
+    // 用 try-catch 调用对应的渲染函数，避免因渲染错误影响显示
+    try {
+        if(tab === 'collection') renderCollection();
+        else if(tab === 'calendar') renderCalendar();
+        else if(tab === 'questionnaire') renderDynamicQuestionnaire();
+        else if(tab === 'outline') renderOutline();
+        else if(tab === 'timeline') renderTimeline();
+    } catch(e) {
+        console.error('渲染标签内容时出错:', tab, e);
+    }
 }
 function renderDynamicQuestionnaire() {
     const w = currentWork();
