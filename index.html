@@ -293,6 +293,7 @@ button{cursor:pointer}
 <button class="wv-tab active" onclick="switchWvTab('questionnaire',this)">📝 问卷</button>
 <button class="wv-tab" onclick="switchWvTab('collection',this)">📚 设定合集</button>
 <button class="wv-tab" onclick="switchWvTab('calendar',this)">📅 自定义日历</button>
+   <button class="wv-tab" onclick="switchWvTab('outline',this)">🧠 大纲</button>
 </div>
 <div class="wv-content active" id="wv-questionnaire">
 <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="wvProgress"></div></div><div class="progress-text" id="wvProgressText">完成度：0%</div></div>
@@ -323,6 +324,16 @@ button{cursor:pointer}
 <p style="font-size:.7em;color:var(--text2);margin-top:8px">💡 描述中使用 [[类型:名称]] 创建引用链接</p>
 </div>
 <div class="wv-content" id="wv-calendar">
+   <div class="wv-content" id="wv-outline">
+    <div class="card">
+        <h3>🧠 大纲思维导图</h3>
+        <div class="btn-row" style="margin-bottom:10px">
+            <button class="btn btn-sm btn-primary" onclick="addOutlineNode()">+ 添加根节点</button>
+            <button class="btn btn-sm btn-secondary" onclick="renderOutline()">🔄 刷新</button>
+        </div>
+        <div id="outlineContainer" style="overflow-x:auto;padding:15px;background:var(--bg);border-radius:8px;min-height:300px"></div>
+    </div>
+</div>
 <div class="card"><h3>📅 历法设置</h3>
 <div class="form-group"><label class="form-label">纪元名称</label><input class="form-input" id="calEraName" placeholder="例如：帝国历"></div>
 <div class="form-group"><label class="form-label">每周天数</label><select class="form-select" id="calWeekDays"><option value="7">7天</option><option value="5">5天</option><option value="6">6天</option><option value="8">8天</option><option value="10">10天</option></select></div>
@@ -1354,6 +1365,7 @@ function switchWvTab(tab, btn) {
     document.getElementById('wv-' + tab).classList.add('active');
     if(tab === 'collection') renderCollection();
     if(tab === 'calendar') renderCalendar();
+       if(tab === 'outline') renderOutline();
     if(tab === 'questionnaire') renderDynamicQuestionnaire();
 }
 function renderDynamicQuestionnaire() {
@@ -1638,6 +1650,81 @@ document.getElementById('calYearInput').value = calViewYear;
         d.onclick = () => openCalendarNote(dateKey, note);
         grid.appendChild(d);
     }
+}
+   // ========== 大纲思维导图 ==========
+function addOutlineNode() {
+    const w = currentWork(); if(!w) return;
+    w.outline = w.outline || [];
+    const text = prompt('请输入节点名称：');
+    if(!text || !text.trim()) return;
+    w.outline.push({ id: Date.now(), text: text.trim(), children: [], parentId: null });
+    saveAll();
+    renderOutline();
+}
+
+function addOutlineChild(parentId) {
+    const w = currentWork(); if(!w) return;
+    const text = prompt('请输入子节点名称：');
+    if(!text || !text.trim()) return;
+    w.outline.push({ id: Date.now(), text: text.trim(), children: [], parentId: parentId });
+    saveAll();
+    renderOutline();
+}
+
+function deleteOutlineNode(nodeId) {
+    const w = currentWork(); if(!w) return;
+    if(!confirm('删除此节点及其所有子节点？')) return;
+    const deleteRecursive = (id) => {
+        w.outline = w.outline.filter(n => n.id !== id);
+        w.outline.forEach(n => {
+            if(n.parentId === id) deleteRecursive(n.id);
+        });
+    };
+    deleteRecursive(nodeId);
+    saveAll();
+    renderOutline();
+}
+
+function editOutlineNode(nodeId) {
+    const w = currentWork(); if(!w) return;
+    const node = w.outline.find(n => n.id === nodeId);
+    if(!node) return;
+    const text = prompt('修改节点名称：', node.text);
+    if(text && text.trim()) {
+        node.text = text.trim();
+        saveAll();
+        renderOutline();
+    }
+}
+
+function renderOutline() {
+    const w = currentWork();
+    const container = document.getElementById('outlineContainer');
+    container.innerHTML = '';
+    if(!w || !w.outline || w.outline.length === 0) {
+        container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无大纲，点击"添加根节点"开始</p>';
+        return;
+    }
+    
+    const roots = w.outline.filter(n => n.parentId === null);
+    
+    function renderNode(node, depth) {
+        const nodeDiv = document.createElement('div');
+        nodeDiv.style.cssText = 'margin-bottom:8px;padding-left:' + (depth * 25) + 'px;position:relative';
+        nodeDiv.innerHTML = `
+            <div style="display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 10px">
+                <span style="font-weight:bold;color:var(--accent)">${node.text}</span>
+                <button class="btn btn-secondary btn-sm" onclick="addOutlineChild(${node.id})">+</button>
+                <button class="btn btn-secondary btn-sm" onclick="editOutlineNode(${node.id})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteOutlineNode(${node.id})">✕</button>
+            </div>
+        `;
+        container.appendChild(nodeDiv);
+        const children = w.outline.filter(n => n.parentId === node.id);
+        children.forEach(child => renderNode(child, depth + 1));
+    }
+    
+    roots.forEach(root => renderNode(root, 0));
 }
 function calPrevMonth() { calViewMonth--; renderCalendar(); }
 function calNextMonth() { calViewMonth++; renderCalendar(); }
@@ -1982,7 +2069,7 @@ async function init() {
     if(devData.customBackgrounds.length === 0 && savedDev.customBackgrounds) devData.customBackgrounds = savedDev.customBackgrounds;
     if(devData.customFonts.length === 0 && savedDev.customFonts) devData.customFonts = savedDev.customFonts;
     if(works.length === 0) {
-        const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString() };
+        const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, outline: [],editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString() };
         works.push(sample); currentWorkId = sample.id;
     }
     const w = currentWork();
