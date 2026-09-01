@@ -1881,6 +1881,20 @@ function getAllKnowledge() {
     return [...publicData, ...localData];
 }
 function renderKnowledgeBase() {
+       // 更新分类下拉框
+    const kbCatSel = document.getElementById('kbCategoryFilter');
+    if(kbCatSel) {
+        const currentVal = kbCatSel.value;
+        kbCatSel.innerHTML = '<option value="">全部分类</option>';
+        const categories = [...new Set(getAllKnowledge().map(k => k.category).filter(c => c))];
+        categories.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c;
+            kbCatSel.appendChild(opt);
+        });
+        kbCatSel.value = currentVal;
+    }
     const container = document.getElementById('kbResults'); container.innerHTML = '';
     const catFilter = document.getElementById('kbCategoryFilter').value;
     const q = document.getElementById('kbSearch').value.toLowerCase().trim();
