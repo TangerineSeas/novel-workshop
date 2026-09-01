@@ -539,9 +539,19 @@ button{cursor:pointer}
 <div class="form-group"><label class="form-label">身份/职业</label><input class="form-input" id="cRole" placeholder="主教、佣兵、商人..."></div>
 <div class="form-group"><label class="form-label">人物设定</label><textarea class="form-textarea" id="cDesc"></textarea></div>
 <div class="form-group"><label class="form-label">时间线</label><div id="cTimeline"></div><button class="btn btn-secondary btn-sm" onclick="addTimelineEntry()" style="margin-top:5px">+ 时间线事件</button></div>
-<div class="form-group"><label class="form-label">人物关系（格式：人物名:关系描述，每行一个）</label><textarea class="form-textarea" id="cRelations" placeholder="例如：&#10;艾莉丝:哥哥&#10;卡尔:上司&#10;主教大人:导师"></textarea></div>
+<div class="form-group">
+    <label class="form-label">人物关系（格式：人物名:关系描述，每行一个）</label>
+    <textarea class="form-textarea" id="cRelations" placeholder="例如：&#10;艾莉丝:哥哥&#10;卡尔:上司&#10;主教大人:导师"></textarea>
+    <p style="font-size:.75em;color:var(--danger);margin-top:4px;">⚠️ 必须使用<b>英文冒号</b> `:` 分隔人名和关系描述，否则关系图谱不会显示连线。</p>
+</div>
 <input type="hidden" id="cEditIndex" value="-1">
-<div class="btn-row" style="justify-content:flex-end"><button class="btn btn-secondary" onclick="closeCharEditor()">取消</button><button class="btn btn-primary" onclick="saveCharacter()">保存</button></div>
+<div class="btn-row" style="justify-content:space-between">
+    <button class="btn btn-danger" onclick="deleteCharacter()">🗑️ 删除人物</button>
+    <div>
+        <button class="btn btn-secondary" onclick="closeCharEditor()">取消</button>
+        <button class="btn btn-primary" onclick="saveCharacter()">保存</button>
+    </div>
+</div>
 </div>
 </div>
 
@@ -1415,6 +1425,23 @@ function saveCharacter() {
     if(index >= 0) w.characters[index] = ch; else w.characters.push(ch);
     closeCharEditor(); renderCharGrid(); renderSidebarChars(); updateFamilyFilters();
     saveAll(); showToast('人物已保存');
+}
+function deleteCharacter() {
+    const w = currentWork(); if(!w) return;
+    const index = parseInt(document.getElementById('cEditIndex').value);
+    if(index < 0 || !w.characters[index]) {
+        showToast('未选择要删除的人物');
+        return;
+    }
+    const charName = w.characters[index].name || '未命名';
+    if(!confirm(`确定要删除「${charName}」吗？此操作不可恢复！`)) return;
+    w.characters.splice(index, 1);
+    closeCharEditor();
+    renderCharGrid();
+    renderSidebarChars();
+    updateFamilyFilters();
+    saveAll();
+    showToast('人物已删除');
 }
 function switchWvTab(tab, btn) {
     document.querySelectorAll('.wv-tab').forEach(b => b.classList.remove('active'));
