@@ -1239,11 +1239,23 @@ function updateFamilyFilters() {
         const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; relSel.appendChild(o);
     });
 }
-function parseRelations(filterFamily) {
+function parseRelations(filterFamily, filterPerson) {
     const w = currentWork();
     if(!w) return { nodes: [], edges: [] };
     let chars = w.characters;
     if(filterFamily) chars = chars.filter(c => c.family === filterFamily);
+    if(filterPerson) {
+        // 选中某个人时，只显示该人物及其有直接关系的角色
+        const personId = parseInt(filterPerson);
+        const person = chars.find(c => c.id === personId);
+        if(!person) return { nodes: [], edges: [] };
+        const relatedNames = new Set();
+        (person.relations || '').split('\n').forEach(line => {
+            const idx = line.indexOf(':');
+            if(idx > 0) relatedNames.add(line.slice(0, idx).trim());
+        });
+        chars = chars.filter(c => c.id === personId || relatedNames.has(c.name));
+    }
     if(chars.length === 0) return { nodes: [], edges: [] };
     const nodes = chars.map((c, i) => ({ id: c.id, name: c.name, importance: c.importance, family: c.family, index: i }));
     const edges = [];
@@ -1278,8 +1290,20 @@ function drawRelationGraph() {
     const W = canvas.width / dpr, H = 380;
     ctx.clearRect(0, 0, W, H);
 
-    const filterFamily = document.getElementById('relationFilter').value;
-    const { nodes, edges } = parseRelations(filterFamily);
+       const filterValue = document.getElementById('relationFilter').value;
+    let filterFamily = '';
+    let filterPerson = '';
+    // 判断筛选值是家族还是人物
+    const w = currentWork();
+    if(w) {
+        const person = w.characters.find(c => c.id == filterValue);
+        if(person) {
+            filterPerson = filterValue; // 是人物ID
+        } else if(filterValue) {
+            filterFamily = filterValue; // 是家族名
+        }
+    }
+    const { nodes, edges } = parseRelations(filterFamily, filterPerson);
     if(nodes.length === 0) {
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text2').trim() || '#999';
         ctx.font = '14px Georgia';
