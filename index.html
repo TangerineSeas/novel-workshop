@@ -423,11 +423,16 @@ button{cursor:pointer}
 </div>
 </div>
 <div class="tools-content" id="tools-books">
-<div class="card"><h3>📖 导入书籍到知识库</h3>
-<p style="font-size:.8em;color:var(--text2);margin-bottom:12px">上传txt书籍文件，整本书作为一个知识条目</p>
-<input type="file" id="bookTxtInput" accept=".txt" style="display:none" onchange="importBookTxt(event)">
-<button class="btn btn-primary btn-sm" onclick="document.getElementById('bookTxtInput').click()">📤 上传txt书籍</button>
-</div>
+    <div class="card">
+        <h3>📖 导入书籍到知识库</h3>
+        <p style="font-size:.8em;color:var(--text2);margin-bottom:12px">上传txt书籍文件，整本书作为一个知识条目（仅自己可见）</p>
+        <input type="file" id="bookTxtInput" accept=".txt" style="display:none" onchange="importBookTxt(event)">
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('bookTxtInput').click()">📤 上传txt书籍</button>
+    </div>
+    <div class="card">
+        <h3>📚 已上传书籍</h3>
+        <div id="uploadedBooksList" class="entry-list"></div>
+    </div>
 </div>
 </div></div>
 </div>
@@ -621,7 +626,7 @@ function goPage(page) {
     if(page === 'writing') { renderChapters(); renderSidebarChars(); updateWordCount(); updateTimerDisplay(); }
     if(page === 'worldview') { loadWorldview(); renderCollection(); renderCalendar(); renderTimeline(); }
     if(page === 'characters') { renderCharGrid(); updateFamilyFilters(); drawRelationGraph(); }
-    if(page === 'tools') { renderNameResults(); renderKnowledgeBase(); }
+    if(page === 'tools') { renderNameResults(); renderKnowledgeBase(); renderUploadedBooks(); }
     if(page === 'dev') { renderDevQuestionList(); renderDevNameList(); renderDevKbList(); }
 }
 
@@ -713,6 +718,7 @@ function switchToolsTab(tab, btn) {
     document.getElementById('tools-' + tab).classList.add('active');
     if(tab === 'names') renderNameResults();
     if(tab === 'knowledge') renderKnowledgeBase();
+    if(tab === 'books') renderUploadedBooks();
 }
 
 function createNewWork() {
@@ -1882,11 +1888,51 @@ function renderKnowledgeBase() {
     if(catFilter) filtered = filtered.filter(k => k.category === catFilter);
     if(q) filtered = filtered.filter(k => (k.title||'').toLowerCase().includes(q) || (k.content||'').toLowerCase().includes(q) || (k.subcategory||'').toLowerCase().includes(q));
     if(filtered.length === 0) { container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无知识条目</p>'; return; }
-    filtered.forEach(k => {
-        const d = document.createElement('div'); d.className = 'entry-item';
-        d.innerHTML = `<div class="entry-name">${k.title} <span style="font-size:.75em;color:var(--text2)">[${k.category || '未分类'}/${k.subcategory || '未分类'}]</span></div><div class="entry-desc">${(k.content || '').slice(0, 200)}${(k.content || '').length > 200 ? '...' : ''}${k.references && k.references.length > 0 ? `<br><strong>参考文献：</strong>${k.references.join('；')}` : ''}</div>`;
+
+    filtered.forEach((k, indexInFiltered) => {
+        const d = document.createElement('div');
+        d.className = 'entry-item';
+        d.style.cursor = 'pointer';
+        const isLocal = devData.knowledge.includes(k);
+        d.innerHTML = `
+            <div class="entry-name">${k.title} <span style="font-size:.75em;color:var(--text2)">[${k.category || '未分类'}/${k.subcategory || '未分类'}]</span></div>
+            <div class="entry-desc">${(k.content || '').slice(0,200)}${(k.content || '').length > 200 ? '...' : ''}</div>
+            ${k.references && k.references.length > 0 ? `<div class="entry-desc" style="font-size:.7em;color:var(--text2)">参考文献：${k.references.join('；')}</div>` : ''}
+            ${isLocal ? `<button class="entry-delete-btn" onclick="event.stopPropagation(); deleteKnowledgeLocal('${k.title.replace(/'/g, "\\'")}')" style="margin-top:5px;font-size:.75em;background:var(--danger);color:#fff;border:none;border-radius:4px;padding:3px 8px;cursor:pointer;">删除</button>` : ''}
+        `;
+        d.onclick = () => viewKnowledgeDetail(k);
         container.appendChild(d);
     });
+}
+
+// 查看知识详情弹窗
+function viewKnowledgeDetail(entry) {
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="background:var(--bg2); width:92%; max-width:800px; max-height:85vh; overflow-y:auto; border-radius:12px; padding:26px; border:1px solid var(--border); margin:auto;">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">${entry.title || '无标题'}</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div style="font-size:.8em;color:var(--text2);margin-bottom:10px">${entry.category || '未分类'} / ${entry.subcategory || '未分类'}</div>
+            <div style="white-space:pre-wrap;font-size:.9em;line-height:1.8;color:var(--text)">${entry.content || '无内容'}</div>
+            ${entry.references && entry.references.length > 0 ? `<div style="margin-top:15px;padding-top:10px;border-top:1px solid var(--border);font-size:.8em;color:var(--text2)"><strong>参考文献：</strong>${entry.references.join('；')}</div>` : ''}
+        </div>`;
+    document.body.appendChild(modal);
+}
+
+// 删除本地知识条目（通过标题查找）
+function deleteKnowledgeLocal(title) {
+    const index = devData.knowledge.findIndex(k => k.title === title);
+    if(index >= 0) {
+        if(!confirm(`确定删除「${title}」吗？`)) return;
+        devData.knowledge.splice(index, 1);
+        saveAll();
+        renderKnowledgeBase();
+        renderUploadedBooks();
+        showToast('已删除');
+    }
 }
 function importCustomBg(event) {
     const file = event.target.files[0];
@@ -1945,8 +1991,38 @@ function importBookTxt(event) {
         });
         saveAll(); showToast(`书籍「${bookName}」已导入知识库`);
         renderKnowledgeBase();
+        renderUploadedBooks();
     };
     reader.readAsText(file, 'utf-8');
+}
+function renderUploadedBooks() {
+    const container = document.getElementById('uploadedBooksList');
+    if(!container) return;
+    const books = devData.knowledge || [];
+    if(books.length === 0) {
+        container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无上传书籍</p>';
+        return;
+    }
+    container.innerHTML = '';
+    books.forEach((book, index) => {
+        const d = document.createElement('div');
+        d.className = 'entry-item';
+        d.innerHTML = `
+            <div class="entry-name">${book.title || '未命名书籍'} <span style="font-size:.75em;color:var(--text2)">[${book.category || '未分类'}/${book.subcategory || '未分类'}]</span></div>
+            <div class="entry-desc">${(book.content || '').slice(0,100)}${(book.content || '').length > 100 ? '...' : ''}</div>
+            <button class="entry-delete-btn" onclick="deleteUploadedBook(${index})" style="margin-top:5px;font-size:.75em;background:var(--danger);color:#fff;border:none;border-radius:4px;padding:3px 8px;cursor:pointer;">删除</button>
+        `;
+        container.appendChild(d);
+    });
+}
+
+function deleteUploadedBook(index) {
+    if(!confirm('确定删除这本书吗？')) return;
+    devData.knowledge.splice(index, 1);
+    saveAll();
+    renderUploadedBooks();
+    renderKnowledgeBase(); // 刷新知识库列表
+    showToast('已删除');
 }
 function toggleCustomCatInput() {
     const cat = document.getElementById('devQCategory').value;
