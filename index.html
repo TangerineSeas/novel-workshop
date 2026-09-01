@@ -274,6 +274,7 @@ button{cursor:pointer}
 <button class="upload-btn-small" onclick="document.getElementById('customFontInput').click()">✍️ 字体</button>
 <input type="file" id="customFontInput" accept=".ttf,.otf,.woff,.woff2" style="display:none" onchange="importCustomFont(event)">
 <button class="btn btn-secondary btn-sm" onclick="toggleTimer()" id="timerBtn">⏱ 开始计时</button>
+<button class="btn btn-primary btn-sm" onclick="manualSave()">💾 手动保存</button>
 <span class="timer-display" id="timerDisplay">00:00:00</span>
 <span style="font-size:.72em;color:var(--text2)">字数：<span id="wordCount">0</span></span>
 </div>
@@ -1074,7 +1075,7 @@ function updateWordCount() {
         w.lastModified = Date.now();
     }
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => { saveAll(); showToast('已自动保存'); }, 2000);
+    saveTimer = setTimeout(() => { saveAll(); showToast('已自动保存'); }, 10000);
 }
 function showToast(msg) {
     const t = document.getElementById('saveToast');
@@ -1099,6 +1100,10 @@ async function saveAll() {
     } catch(e) {
         console.error('Supabase save failed:', e);
     }
+}
+function manualSave() {
+    saveAll();
+    showToast('已手动保存');
 }
 function addChapter() {
     const w = currentWork(); if(!w) return;
