@@ -2262,3 +2262,9 @@
     font-style: italic;
     color: rgba(132,32,51,0.4);
 }
+.entry-delete-btn {
+    transition: all .2s;
+}
+.entry-delete-btn:hover {
+    opacity: 0.8;
+}
