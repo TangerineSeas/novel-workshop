@@ -1261,41 +1261,86 @@ function drawRelationGraph() {
     ctx.scale(dpr, dpr);
     const W = canvas.width / dpr, H = 380;
     ctx.clearRect(0, 0, W, H);
+
     const filterFamily = document.getElementById('relationFilter').value;
     const { nodes, edges } = parseRelations(filterFamily);
     if(nodes.length === 0) {
         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text2').trim() || '#999';
-        ctx.font = '14px Georgia'; ctx.textAlign = 'center';
+        ctx.font = '14px Georgia';
+        ctx.textAlign = 'center';
         ctx.fillText('暂无人物数据', W/2, H/2);
         return;
     }
+
+    // 环状布局
     const cx = W/2, cy = H/2;
-    const radius = Math.min(W, H) / 2 - 60;
+    const radius = Math.min(W, H) / 2 - 80;
     const positions = {};
     nodes.forEach((n, i) => {
-        const angle = (i / Math.max(nodes.length,1)) * 2 * Math.PI - Math.PI/2;
+        const angle = (i / Math.max(nodes.length, 1)) * 2 * Math.PI - Math.PI/2;
         positions[n.id] = { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
     });
+
+    // 绘制连线
     edges.forEach(e => {
         const p1 = positions[e.a], p2 = positions[e.b];
         if(!p1 || !p2) return;
-        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
-        ctx.strokeStyle = 'rgba(150,150,180,0.5)'; ctx.lineWidth = 1.2; ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = 'rgba(150,150,180,0.6)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
         if(e.label) {
             const mx = (p1.x + p2.x)/2, my = (p1.y + p2.y)/2;
-            ctx.fillStyle = 'rgba(200,200,220,0.7)'; ctx.font = '10px Georgia'; ctx.textAlign = 'center';
-            ctx.fillText(e.label, mx, my - 3);
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#000';
+            ctx.font = '10px Georgia';
+            ctx.textAlign = 'center';
+            ctx.fillText(e.label, mx, my - 4);
         }
     });
+
+    // 绘制节点
     nodes.forEach(n => {
         const p = positions[n.id];
         const colors = { main:'#e74c3c', important:'#f39c12', minor:'#95a5a6', extra:'#95a5a6' };
-        ctx.beginPath(); ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
-        ctx.fillStyle = colors[n.importance] || '#95a5a6'; ctx.fill();
-        ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Georgia'; ctx.textAlign = 'center';
-        ctx.fillText(n.name.length > 5 ? n.name.slice(0,5)+'…' : n.name, p.x, p.y + 3);
+        const nodeColor = colors[n.importance] || '#95a5a6';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 22, 0, 2*Math.PI);
+        ctx.fillStyle = nodeColor;
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 名字显示在节点下方，支持换行
+        const nameLines = wrapText(ctx, n.name, 12, 80);
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#fff';
+        ctx.font = '12px Georgia';
+        ctx.textAlign = 'center';
+        nameLines.forEach((line, idx) => {
+            ctx.fillText(line, p.x, p.y + 32 + idx * 14);
+        });
     });
+}
+
+// 文本换行辅助函数
+function wrapText(ctx, text, fontSize, maxWidth) {
+    ctx.font = fontSize + 'px Georgia';
+    const words = text.split('');
+    const lines = [];
+    let currentLine = '';
+    for (let i = 0; i < words.length; i++) {
+        const testLine = currentLine + words[i];
+        if (ctx.measureText(testLine).width > maxWidth && currentLine.length > 0) {
+            lines.push(currentLine);
+            currentLine = words[i];
+        } else {
+            currentLine = testLine;
+        }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
 }
 function toggleCustomRace() {
     const race = document.getElementById('cRace').value;
