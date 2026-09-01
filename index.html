@@ -308,6 +308,7 @@ button{cursor:pointer}
 <div class="wv-content" id="wv-collection">
 <div class="btn-row" style="margin-bottom:12px">
 <select class="form-select" id="collType" style="width:auto;min-width:110px" onchange="toggleCustomCollType()">
+    <option value="all">全部词条</option>
     <option value="places">地名</option>
     <option value="families">家族</option>
     <option value="history">历史事件</option>
@@ -1555,23 +1556,75 @@ function jumpToEntry(type, name) {
 function renderCollection() {
     const w = currentWork(); if(!w) return;
     const type = getEffectiveCollType();
-if(!type) return;
+    if(!type) return;
     const q = collSearch.value.toLowerCase().trim();
-    const list = document.getElementById('collList'); list.innerHTML = '';
-    const entries = (w.collectionEntries[type] || []).filter(e => !q || e.name.toLowerCase().includes(q) || (e.desc||'').toLowerCase().includes(q));
-    if(entries.length === 0) { list.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无词条</p>'; return; }
-    entries.forEach(e => {
-        const d = document.createElement('div'); d.className = 'entry-item';
-        d.innerHTML = `<div class="entry-name">${e.name}</div><div class="entry-desc">${parseRefs(e.desc || '无描述')}</div>`;
-        d.onclick = () => openCollectionModal(e, type, null);
+    const list = document.getElementById('collList'); 
+    list.innerHTML = '';
+
+    // 构建要显示的词条数组（每个元素包含 type, name, desc）
+    let allEntries = [];
+    if(type === 'all') {
+        // 合并所有大类
+        for (const category in w.collectionEntries) {
+            const entries = w.collectionEntries[category] || [];
+            entries.forEach(e => {
+                allEntries.push({ type: category, name: e.name, desc: e.desc || '' });
+            });
+        }
+    } else {
+        const entries = (w.collectionEntries[type] || []);
+        entries.forEach(e => {
+            allEntries.push({ type: type, name: e.name, desc: e.desc || '' });
+        });
+    }
+
+    // 搜索过滤
+    if(q) {
+        allEntries = allEntries.filter(e => 
+            e.name.toLowerCase().includes(q) || e.desc.toLowerCase().includes(q)
+        );
+    }
+
+    if(allEntries.length === 0) {
+        list.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无词条</p>';
+        return;
+    }
+
+    allEntries.forEach(e => {
+        const d = document.createElement('div');
+        d.className = 'entry-item';
+        d.innerHTML = `
+            <div class="entry-name">${e.name}</div>
+            <div class="entry-desc">${parseRefs(e.desc || '无描述')}</div>
+            <button class="entry-delete-btn" onclick="event.stopPropagation(); deleteCollectionEntry('${e.type}', '${e.name.replace(/'/g, "\\'")}')" style="margin-top:5px;font-size:.75em;background:var(--danger);color:#fff;border:none;border-radius:4px;padding:3px 8px;cursor:pointer;">删除</button>
+        `;
+        // 点击条目编辑时传入实际大类名
+        d.onclick = () => openCollectionModal({name: e.name, desc: e.desc}, e.type, null);
         list.appendChild(d);
     });
 }
-    function toggleCustomCollType() {
+   function deleteCollectionEntry(type, name) {
+    const w = currentWork(); if(!w) return;
+    if(!confirm(`确定删除词条「${name}」吗？`)) return;
+    const entries = w.collectionEntries[type];
+    if(!entries) return;
+    const idx = entries.findIndex(e => e.name === name);
+    if(idx >= 0) {
+        entries.splice(idx, 1);
+        saveAll();
+        renderCollection();
+        showToast('词条已删除');
+    }
+}
+   function toggleCustomCollType() {
     const type = collType.value;
     document.getElementById('collCustomType').style.display = type === 'custom' ? 'inline-block' : 'none';
+    // 当不是自定义类型时，清空搜索并重新渲染
     if(type !== 'custom') {
         collSearch.value = '';
+        renderCollection();
+    } else {
+        // 自定义类型时也可能需要渲染（但通常用户还没输入）
         renderCollection();
     }
 }
