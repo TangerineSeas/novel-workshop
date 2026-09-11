@@ -552,6 +552,11 @@ button{cursor:pointer}
     <p style="font-size:.75em;color:var(--danger);margin-top:4px;">⚠️ 必须使用<b>英文冒号</b> `:` 分隔人名和关系描述，否则关系图谱不会显示连线。</p>
 </div>
 <input type="hidden" id="cEditIndex" value="-1">
+<div class="form-group" style="border-top:1px solid var(--border);padding-top:15px;margin-top:15px">
+    <label class="form-label">🧠 性格标签</label>
+    <div id="personalityTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
+    <button class="btn btn-secondary btn-sm" onclick="openPersonalityPanel()">📋 性格问卷</button>
+</div>
 <div class="btn-row" style="justify-content:space-between">
     <button class="btn btn-danger" onclick="deleteCharacter()">🗑️ 删除人物</button>
     <div>
@@ -1422,6 +1427,7 @@ modal.style.display = 'flex';
         addTimelineEntry();
         toggleCustomRace();
     }
+       renderPersonalityTags();
 }
 function closeCharEditor() { 
     var modal = document.getElementById('charModal');
@@ -1442,6 +1448,123 @@ function addTimelineEntry(time='', event='') {
     d.className = 'timeline-entry';
     d.innerHTML = `<input class="tl-time" placeholder="时间" value="${time}"><input class="tl-event" placeholder="事件" value="${event}"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">✕</button>`;
     c.appendChild(d);
+}
+// ========== 性格问卷 ==========
+let currentCharPersonality = {};
+
+function openPersonalityPanel() {
+    // 从当前编辑的人物中读取已有标签
+    const index = parseInt(document.getElementById('cEditIndex').value);
+    const w = currentWork();
+    let personality = {};
+    if(index >= 0 && w && w.characters[index]) {
+        personality = w.characters[index].personality || {};
+    }
+    currentCharPersonality = { ...personality };
+    
+    // 创建面板
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:700px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">📋 性格问卷</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div id="personalityPanelContent"></div>
+            <div class="btn-row" style="justify-content:flex-end;margin-top:15px">
+                <button class="btn btn-primary" onclick="savePersonality()">保存到人设</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    renderPersonalityPanel();
+}
+
+function renderPersonalityPanel() {
+    const container = document.getElementById('personalityPanelContent');
+    if(!container) return;
+    if(typeof QUESTIONNAIRES === 'undefined') {
+        container.innerHTML = '<p style="color:var(--danger)">问卷数据未加载</p>';
+        return;
+    }
+    
+    let html = '';
+    QUESTIONNAIRES.forEach(q => {
+        const current = currentCharPersonality[q.id];
+        html += `
+            <div class="card" style="margin-bottom:12px">
+                <h4 style="color:var(--accent);margin-bottom:6px;font-size:.95em">${q.name}</h4>
+                <p style="font-size:.78em;color:var(--text2);margin-bottom:10px">${q.description}</p>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+        `;
+        if(q.options.length === 0) {
+            html += `<p style="font-size:.8em;color:var(--text2)">暂无选项</p>`;
+        } else {
+            q.options.forEach(opt => {
+                const isSelected = current === opt.value;
+                html += `
+                    <button 
+                        class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}" 
+                        style="font-size:.75em"
+                        title="${opt.desc || ''}"
+                        onclick="selectPersonalityOption('${q.id}', '${opt.value.replace(/'/g, "\\'")}')"
+                    >${opt.label}</button>
+                `;
+            });
+        }
+        html += `</div></div>`;
+    });
+    container.innerHTML = html;
+}
+
+function selectPersonalityOption(qid, value) {
+    if(currentCharPersonality[qid] === value) {
+        delete currentCharPersonality[qid];
+    } else {
+        currentCharPersonality[qid] = value;
+    }
+    renderPersonalityPanel();
+}
+
+function savePersonality() {
+    const index = parseInt(document.getElementById('cEditIndex').value);
+    const w = currentWork();
+    if(index >= 0 && w && w.characters[index]) {
+        w.characters[index].personality = { ...currentCharPersonality };
+        saveAll();
+        renderPersonalityTags();
+        showToast('性格标签已保存');
+    }
+    document.querySelector('.modal.active')?.remove();
+}
+
+function renderPersonalityTags() {
+    const container = document.getElementById('personalityTags');
+    if(!container) return;
+    const index = parseInt(document.getElementById('cEditIndex').value);
+    const w = currentWork();
+    let personality = {};
+    if(index >= 0 && w && w.characters[index]) {
+        personality = w.characters[index].personality || {};
+    }
+    const tags = Object.entries(personality).map(([k, v]) => {
+        const q = (typeof QUESTIONNAIRES !== 'undefined') ? QUESTIONNAIRES.find(x => x.id === k) : null;
+        const qName = q ? q.name : k;
+        return `<span class="badge badge-minor" title="${qName}" style="font-size:.75em;padding:4px 8px">${v} <span style="cursor:pointer;margin-left:4px" onclick="removePersonalityTag('${k}')">✕</span></span>`;
+    }).join('');
+    container.innerHTML = tags || '<span style="font-size:.8em;color:var(--text2)">暂无性格标签</span>';
+}
+
+function removePersonalityTag(key) {
+    const index = parseInt(document.getElementById('cEditIndex').value);
+    const w = currentWork();
+    if(index >= 0 && w && w.characters[index]) {
+        if(w.characters[index].personality) {
+            delete w.characters[index].personality[key];
+            saveAll();
+            renderPersonalityTags();
+        }
+    }
 }
 function saveCharacter() {
     const w = currentWork(); if(!w) return;
