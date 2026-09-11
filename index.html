@@ -1614,15 +1614,15 @@ function savePersonality() {
     if(index >= 0 && w && w.characters[index]) {
         w.characters[index].personality = { ...currentCharPersonality };
         saveAll();
-        renderPersonalityTags();
         showToast('性格标签已保存');
     }
-    // 关闭的是问卷面板，而不是人物弹窗
+    // 关闭问卷面板（动态创建的）
     const panels = document.querySelectorAll('.modal.active');
     panels.forEach(p => {
-        // 只关闭问卷面板（它是动态创建的，没有 id）
         if(!p.id) p.remove();
     });
+    // 重新渲染人设编辑弹窗里的标签
+    renderPersonalityTags();
 }
 
 function renderPersonalityTags() {
@@ -1641,7 +1641,6 @@ function renderPersonalityTags() {
     }).join('');
     container.innerHTML = tags || '<span style="font-size:.8em;color:var(--text2)">暂无性格标签</span>';
 }
-
 function removePersonalityTag(key) {
     const index = parseInt(document.getElementById('cEditIndex').value);
     const w = currentWork();
