@@ -1488,6 +1488,12 @@ function renderPersonalityPanel() {
         return;
     }
     
+    // 如果正在答题，显示题目
+    if(window.currentQuiz && window.currentQuiz.qid) {
+        renderQuizQuestions(window.currentQuiz.qid);
+        return;
+    }
+    
     let html = '';
     QUESTIONNAIRES.forEach(q => {
         const current = currentCharPersonality[q.id];
@@ -1495,25 +1501,95 @@ function renderPersonalityPanel() {
             <div class="card" style="margin-bottom:12px">
                 <h4 style="color:var(--accent);margin-bottom:6px;font-size:.95em">${q.name}</h4>
                 <p style="font-size:.78em;color:var(--text2);margin-bottom:10px">${q.description}</p>
+                ${current ? `<div style="margin-bottom:8px;font-size:.85em"><strong>当前：</strong><span class="badge badge-minor">${current}</span></div>` : ''}
                 <div style="display:flex;flex-wrap:wrap;gap:6px">
+                    <button class="btn btn-primary btn-sm" style="font-size:.75em" onclick="startQuiz('${q.id}')">✏️ 开始答题</button>
+                    <button class="btn btn-secondary btn-sm" style="font-size:.75em" onclick="showDirectOptions('${q.id}')">🎯 直接选标签</button>
+                </div>
+            </div>
         `;
-        if(q.options.length === 0) {
-            html += `<p style="font-size:.8em;color:var(--text2)">暂无选项</p>`;
-        } else {
-            q.options.forEach(opt => {
-                const isSelected = current === opt.value;
-                html += `
-                    <button 
-                        class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}" 
-                        style="font-size:.75em"
-                        title="${opt.desc || ''}"
-                        onclick="selectPersonalityOption('${q.id}', '${opt.value.replace(/'/g, "\\'")}')"
-                    >${opt.label}</button>
-                `;
-            });
-        }
+    });
+    container.innerHTML = html;
+}
+
+function startQuiz(qid) {
+    const q = QUESTIONNAIRES.find(x => x.id === qid);
+    if(!q) return;
+    window.currentQuiz = { qid: qid, answers: {}, currentIndex: 0 };
+    renderQuizQuestions(qid);
+}
+
+function renderQuizQuestions(qid) {
+    const q = QUESTIONNAIRES.find(x => x.id === qid);
+    const container = document.getElementById('personalityPanelContent');
+    if(!q) return;
+    
+    const answers = window.currentQuiz.answers;
+    const answeredCount = Object.keys(answers).length;
+    const total = q.questions.length;
+    
+    let html = `<div style="margin-bottom:12px"><strong>${q.name}</strong> <span style="font-size:.8em;color:var(--text2)">（已答 ${answeredCount}/${total}）</span></div>`;
+    
+    q.questions.forEach((question, qi) => {
+        const selected = answers[qi];
+        html += `<div style="margin-bottom:14px;padding:10px;background:var(--bg);border-radius:6px">
+            <div style="font-size:.85em;margin-bottom:8px;font-weight:bold">${qi+1}. ${question.q}</div>
+            <div style="display:flex;flex-direction:column;gap:5px">`;
+        question.options.forEach((opt, oi) => {
+            const isSelected = selected === oi;
+            html += `<button class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}" style="text-align:left;font-size:.78em" onclick="answerQuiz(${qi},${oi})">${opt.label}</button>`;
+        });
         html += `</div></div>`;
     });
+    
+    html += `<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button class="btn btn-secondary btn-sm" onclick="window.currentQuiz=null;renderPersonalityPanel()">返回</button>
+        <button class="btn btn-primary btn-sm" onclick="finishQuiz()" ${answeredCount < total ? 'disabled' : ''}>完成并生成标签</button>
+    </div>`;
+    container.innerHTML = html;
+}
+
+function answerQuiz(qi, oi) {
+    window.currentQuiz.answers[qi] = oi;
+    renderQuizQuestions(window.currentQuiz.qid);
+}
+
+function finishQuiz() {
+    const qid = window.currentQuiz.qid;
+    const q = QUESTIONNAIRES.find(x => x.id === qid);
+    const scores = {};
+    q.questions.forEach((question, qi) => {
+        const oi = window.currentQuiz.answers[qi];
+        if(oi === undefined) return;
+        const opt = question.options[oi];
+        if(opt.scores) {
+            for(const key in opt.scores) {
+                scores[key] = (scores[key] || 0) + opt.scores[key];
+            }
+        }
+    });
+    
+    const result = q.calculate(scores);
+    currentCharPersonality[qid] = result;
+    window.currentQuiz = null;
+    renderPersonalityPanel();
+    showToast(`结果：${result}`);
+}
+
+function showDirectOptions(qid) {
+    const q = QUESTIONNAIRES.find(x => x.id === qid);
+    if(!q) return;
+    // 切换为显示选项按钮
+    const container = document.getElementById('personalityPanelContent');
+    const current = currentCharPersonality[qid];
+    let html = `<div style="margin-bottom:12px"><strong>${q.name}</strong> — 直接选择结果</div>`;
+    html += `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">`;
+    q.options.forEach(opt => {
+        const isSelected = current === opt.value;
+        html += `<button class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}" style="font-size:.75em" title="${opt.desc || ''}" onclick="selectPersonalityOption('${q.id}', '${opt.value.replace(/'/g, "\\'")}')">${opt.label}</button>`;
+    });
+    html += `</div>`;
+    html += `<button class="btn btn-secondary btn-sm" onclick="renderPersonalityPanel()">返回</button>`;
     container.innerHTML = html;
 }
 
