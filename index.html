@@ -1579,20 +1579,18 @@ function finishQuiz() {
 function showDirectOptions(qid) {
     const q = QUESTIONNAIRES.find(x => x.id === qid);
     if(!q) return;
-    // 切换为显示选项按钮
     const container = document.getElementById('personalityPanelContent');
-    const current = currentCharPersonality[qid];
+    const current = currentCharPersonality[qid] || '';
     let html = `<div style="margin-bottom:12px"><strong>${q.name}</strong> — 直接选择结果</div>`;
     html += `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">`;
     q.options.forEach(opt => {
         const isSelected = current === opt.value;
-        html += `<button class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}" style="font-size:.75em" title="${opt.desc || ''}" onclick="selectPersonalityOption('${q.id}', '${opt.value.replace(/'/g, "\\'")}')">${opt.label}</button>`;
+        html += `<button class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}" style="font-size:.75em" title="${(opt.desc || '').replace(/"/g, '&quot;')}" onclick="selectPersonalityOption('${q.id}', '${opt.value.replace(/'/g, "\\'")}')">${opt.label}</button>`;
     });
     html += `</div>`;
     html += `<button class="btn btn-secondary btn-sm" onclick="renderPersonalityPanel()">返回</button>`;
     container.innerHTML = html;
 }
-
 function selectPersonalityOption(qid, value) {
     if(currentCharPersonality[qid] === value) {
         delete currentCharPersonality[qid];
