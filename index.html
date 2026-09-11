@@ -1581,34 +1581,17 @@ function showDirectOptions(qid) {
     const container = document.getElementById('personalityPanelContent');
     const current = currentCharPersonality[qid] || '';
     
-    // 收集所有可能的结果（从 calculate 函数或 questions 中提取）
-    let allOptions = [];
-    
-    if(q.options && q.options.length > 0) {
-        allOptions = q.options;
-    } else if(q.questions) {
-        // 从题目中提取所有选项作为快捷方式
-        const seen = new Set();
-        q.questions.forEach(question => {
-            question.options.forEach(opt => {
-                if(!seen.has(opt.label)) {
-                    seen.add(opt.label);
-                    allOptions.push({ label: opt.label, value: opt.label, desc: '' });
-                }
-            });
-        });
-    }
-    
-    if(allOptions.length === 0) {
-        container.innerHTML = '<p style="color:var(--text2);font-size:.85em">该问卷暂不支持直接选择，请使用「开始答题」。</p><button class="btn btn-secondary btn-sm" onclick="renderPersonalityPanel()">返回</button>';
+    const results = q.results || [];
+    if(results.length === 0) {
+        container.innerHTML = '<p style="color:var(--text2);font-size:.85em">该问卷暂不支持直接选择。</p><button class="btn btn-secondary btn-sm" onclick="renderPersonalityPanel()">返回</button>';
         return;
     }
     
     let html = `<div style="margin-bottom:12px"><strong>${q.name}</strong> — 直接选择结果</div>`;
     html += `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">`;
-    allOptions.forEach(opt => {
-        const isSelected = current === opt.value;
-        html += `<button class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}" style="font-size:.75em" onclick="selectPersonalityOption('${q.id}', '${opt.value.replace(/'/g, "\\'")}')">${opt.label}</button>`;
+    results.forEach(r => {
+        const isSelected = current === r;
+        html += `<button class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}" style="font-size:.75em" onclick="selectPersonalityOption('${q.id}', '${r.replace(/'/g, "\\'")}')">${r}</button>`;
     });
     html += `</div>`;
     html += `<button class="btn btn-secondary btn-sm" onclick="renderPersonalityPanel()">返回</button>`;
