@@ -528,7 +528,7 @@ button{cursor:pointer}
 </div></div>
 </div>
 
-<div class="modal" id="charModal" style="display:none !important; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;">
+<div class="modal" id="charModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;">
 <div class="modal-content">
 <div class="modal-header"><h3 style="color:var(--accent)">📝 人物档案</h3><button class="modal-close" onclick="closeCharEditor()">✕</button></div>
 <div class="form-group" style="text-align:center">
@@ -567,7 +567,7 @@ button{cursor:pointer}
 </div>
 </div>
 
-<div class="modal" id="newWorkModal" style="display:none !important; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;">
+<div class="modal" id="newWorkModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center;">
 <div class="modal-content" style="background:var(--bg2); width:92%; max-width:660px; max-height:88vh; overflow-y:auto; border-radius:12px; padding:26px; border:1px solid var(--border); margin:auto;">
 <div class="modal-header"><h3 style="color:var(--accent)">📕 创建新作品</h3><button class="modal-close" onclick="closeNewWorkModal()">✕</button></div>
 <div class="form-group"><label class="form-label">书名</label><input class="form-input" id="nwTitle"></div>
@@ -1400,8 +1400,11 @@ function toggleCustomRace() {
 }
 
 function openCharEditor(index) {
-    document.querySelectorAll('.modal.active').forEach(m => m.remove());
     document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+    const modal = document.getElementById('charModal');
+    if(!modal) { showToast('人物弹窗不存在'); return; }
+    modal.style.display = 'flex';
+    modal.classList.add('active');
     var modal = document.getElementById('charModal');
 modal.classList.add('active');
 modal.style.display = 'flex';
@@ -1431,8 +1434,10 @@ modal.style.display = 'flex';
 }
 function closeCharEditor() { 
     var modal = document.getElementById('charModal');
-    modal.classList.remove('active');
-    modal.style.display = 'none';
+    if(modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+    }
 }
 function previewAvatar() {
     const f = document.getElementById('avatarInput').files[0];
