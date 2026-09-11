@@ -1430,10 +1430,10 @@ function openCharEditor(index) {
     renderPersonalityTags();
 }
 function closeCharEditor() { 
-       const charModalEl = document.getElementById('charModal');
-    if(!charModalEl) { showToast('人物弹窗不存在'); return; }
-    charModalEl.style.display = 'flex';
-    charModalEl.classList.add('active');
+    const charModalEl = document.getElementById('charModal');
+    if(charModalEl) {
+        charModalEl.classList.remove('active');
+        charModalEl.style.display = 'none';
     }
 }
 function previewAvatar() {
