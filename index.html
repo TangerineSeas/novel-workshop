@@ -1433,10 +1433,10 @@ modal.style.display = 'flex';
        renderPersonalityTags();
 }
 function closeCharEditor() { 
-    var modal = document.getElementById('charModal');
-    if(modal) {
-        modal.classList.remove('active');
-        modal.style.display = 'none';
+       const charModalEl = document.getElementById('charModal');
+    if(!charModalEl) { showToast('人物弹窗不存在'); return; }
+    charModalEl.style.display = 'flex';
+    charModalEl.classList.add('active');
     }
 }
 function previewAvatar() {
