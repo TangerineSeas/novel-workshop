@@ -7,6 +7,7 @@ const QUESTIONNAIRES = [
     id: 'dnd',
     name: 'DND 九宫格阵营',
     description: '基于道德与秩序的双轴，共9题情境判断。',
+    results: ['守序善良','中立善良','混乱善良','守序中立','绝对中立','混乱中立','守序邪恶','中立邪恶','混乱邪恶'],
     type: 'quiz',
     questions: [
       { q: '当你在路上看到有人被欺凌，你会：', options: [
@@ -86,6 +87,7 @@ const QUESTIONNAIRES = [
     id: 'mbti',
     name: 'MBTI 十六型人格',
     description: '基于四个维度的倾向性判断。',
+    results: ['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP','ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'],
     type: 'quiz',
     questions: [
       { q: '在聚会中，你通常：', options: [
@@ -151,6 +153,7 @@ const QUESTIONNAIRES = [
     id: 'enneagram',
     name: '九型人格',
     description: '基于九种核心动机与恐惧。',
+    results: ['1号完美主义者','2号助人者','3号成就者','4号个人主义者','5号探索者','6号忠诚者','7号热情者','8号挑战者','9号和平者'],
     type: 'quiz',
     questions: [
       { q: '你最害怕的是：', options: [
@@ -213,6 +216,7 @@ const QUESTIONNAIRES = [
     id: 'bigfive',
     name: '大五人格（OCEAN）',
     description: '基于五个维度的倾向性。',
+    results: ['高开放性','低开放性','高尽责性','低尽责性','高外向性','低外向性','高宜人性','低宜人性','高情绪波动','情绪稳定'],
     type: 'quiz',
     questions: [
       { q: '我喜欢尝试新事物和探索未知。', options: [
