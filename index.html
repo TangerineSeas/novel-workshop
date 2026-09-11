@@ -1609,22 +1609,54 @@ function selectPersonalityOption(qid, value) {
 }
 
 function savePersonality() {
-    const index = parseInt(document.getElementById('cEditIndex').value);
-    const w = currentWork();
-    if(index >= 0 && w && w.characters[index]) {
+    let index = parseInt(document.getElementById('cEditIndex').value);
+    const w = currentWork(); if(!w) return;
+    
+    // 如果人物还没保存，先创建人物
+    if(index < 0) {
+        const name = document.getElementById('cName').value.trim();
+        if(!name) { showToast('请先填写人物姓名'); return; }
+        const timeline = [];
+        document.querySelectorAll('#cTimeline > div').forEach(d => {
+            const inputs = d.querySelectorAll('input');
+            if(inputs[0].value || inputs[1].value) timeline.push({ time: inputs[0].value, event: inputs[1].value });
+        });
+        const newChar = {
+            id: Date.now(),
+            name: name,
+            family: document.getElementById('cFamily').value,
+            importance: document.getElementById('cImportance').value,
+            birth: document.getElementById('cBirth').value,
+            race: document.getElementById('cRace').value,
+            raceCustom: document.getElementById('cRace').value === 'other' ? document.getElementById('cRaceCustom').value : '',
+            role: document.getElementById('cRole').value,
+            description: document.getElementById('cDesc').value,
+            relations: document.getElementById('cRelations').value,
+            avatar: avatarData,
+            timeline: timeline,
+            personality: { ...currentCharPersonality }
+        };
+        w.characters.push(newChar);
+        index = w.characters.length - 1;
+        document.getElementById('cEditIndex').value = index;
+        saveAll();
+        renderCharGrid();
+        renderSidebarChars();
+        updateFamilyFilters();
+        showToast('人物和性格标签已保存');
+    } else {
         w.characters[index].personality = { ...currentCharPersonality };
         saveAll();
         showToast('性格标签已保存');
     }
-    // 关闭问卷面板（动态创建的）
-    const panels = document.querySelectorAll('.modal.active');
-    panels.forEach(p => {
+    
+    // 关闭问卷面板
+    document.querySelectorAll('.modal.active').forEach(p => {
         if(!p.id) p.remove();
     });
-    // 重新渲染人设编辑弹窗里的标签
+    
     renderPersonalityTags();
 }
-
 function renderPersonalityTags() {
     const container = document.getElementById('personalityTags');
     if(!container) return;
