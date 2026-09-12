@@ -240,7 +240,13 @@ button{cursor:pointer}
     <div id="chapterList"></div>
     <button class="sb-add" onclick="addChapter()">+ 新建章节</button>
 </div>
-<div class="sb-section"><div class="sb-title">👥 本章出场</div><div id="sidebarChars"></div><button class="sb-add" onclick="goPage('characters')">+ 管理人设</button></div>
+<div class="sb-section">
+    <div class="sb-title" style="display:flex;justify-content:space-between;align-items:center">
+        <span>👥 本章出场</span>
+        <button onclick="openChapterCharsManager()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:1em;padding:0" title="管理出场人物">⚙️</button>
+    </div>
+    <div id="sidebarChars"></div>
+</div>
 <div class="sb-section"><div class="sb-title">🔧 快捷工具</div>
 <div class="sb-item" onclick="goPage('tools')"><div class="sb-item-title">姓氏生成器</div><div class="sb-item-desc">贵族/平民姓氏</div></div>
 <div class="sb-item" onclick="goPage('tools')"><div class="sb-item-title">知识库</div><div class="sb-item-desc">西方文化参考</div></div>
@@ -1114,7 +1120,7 @@ function manualSave() {
 function addChapter() {
     const w = currentWork(); if(!w) return;
     const name = prompt('章节名称：'); if(!name) return;
-    const ch = { id: Date.now(), name, content:'', wordCount:0 };
+    const ch = { id: Date.now(), name, content:'', wordCount:0, characters: [] };
     w.chapters.push(ch); w.currentChapterId = ch.id;
     document.getElementById('editor').value = '';
     renderChapters(); updateWordCount(); saveAll();
@@ -1179,16 +1185,108 @@ function getBadge(imp) {
 }
 function renderSidebarChars() {
     const w = currentWork();
-    const el = document.getElementById('sidebarChars'); el.innerHTML = '';
-    if(!w || w.characters.length === 0) { el.innerHTML = '<p style="font-size:.75em;color:var(--text2)">暂无人物</p>'; return; }
-    const mains = w.characters.filter(c => c.importance === 'main' || c.importance === 'important');
-    (mains.length > 0 ? mains : w.characters.slice(0,3)).forEach(c => {
+    const el = document.getElementById('sidebarChars'); 
+    if(!el) return;
+    el.innerHTML = '';
+    if(!w || w.characters.length === 0) { 
+        el.innerHTML = '<p style="font-size:.75em;color:var(--text2)">暂无人物</p>'; 
+        return; 
+    }
+    
+    // 获取当前章节的出场人物
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    let chapterCharIds = ch && ch.characters ? ch.characters : [];
+    
+    // 如果章节没有指定出场人物，默认显示主角+重要配角
+    if(chapterCharIds.length === 0) {
+        chapterCharIds = w.characters
+            .filter(c => c.importance === 'main' || c.importance === 'important')
+            .map(c => c.id);
+    }
+    
+    const displayChars = w.characters.filter(c => chapterCharIds.includes(c.id));
+    
+    if(displayChars.length === 0) {
+        el.innerHTML = '<p style="font-size:.75em;color:var(--text2)">点击⚙️管理出场人物</p>';
+        return;
+    }
+    
+    displayChars.forEach(c => {
         const d = document.createElement('div');
         d.className = 'sb-item';
         d.innerHTML = `<div class="sb-item-title">${c.name} ${getBadge(c.importance)}</div><div class="sb-item-desc">${c.raceCustom || c.race || ''} ${c.role ? '· '+c.role : ''}</div>`;
         d.onclick = () => showCharPanel(c.id);
         el.appendChild(d);
     });
+}
+function openChapterCharsManager() {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    if(!ch) { showToast('请先创建章节'); return; }
+    
+    // 初始化章节的出场人物数组
+    if(!ch.characters) ch.characters = [];
+    
+    // 如果为空，默认包含主角+重要配角
+    if(ch.characters.length === 0) {
+        ch.characters = w.characters
+            .filter(c => c.importance === 'main' || c.importance === 'important')
+            .map(c => c.id);
+    }
+    
+    if(w.characters.length === 0) {
+        showToast('还没有人物，请先创建人设');
+        return;
+    }
+    
+    // 创建面板
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:500px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">👥 管理本章出场人物</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <p style="font-size:.8em;color:var(--text2);margin-bottom:12px">勾选本章节中出场的人物，它们会显示在侧边栏。</p>
+            <div id="chapterCharsList" style="display:flex;flex-direction:column;gap:6px;max-height:400px;overflow-y:auto"></div>
+            <div class="btn-row" style="justify-content:flex-end;margin-top:15px">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveChapterChars()">保存</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    
+    // 渲染人物列表
+    const list = document.getElementById('chapterCharsList');
+    w.characters.forEach(c => {
+        const isChecked = ch.characters.includes(c.id);
+        const item = document.createElement('label');
+        item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.85em';
+        item.innerHTML = `
+            <input type="checkbox" value="${c.id}" ${isChecked ? 'checked' : ''}>
+            <span style="flex:1">${c.name} ${getBadge(c.importance)}</span>
+            <span style="color:var(--text2);font-size:.8em">${c.role || ''}</span>
+        `;
+        list.appendChild(item);
+    });
+}
+
+function saveChapterChars() {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    if(!ch) return;
+    
+    const checkedIds = [];
+    document.querySelectorAll('#chapterCharsList input[type="checkbox"]:checked').forEach(cb => {
+        checkedIds.push(parseInt(cb.value));
+    });
+    
+    ch.characters = checkedIds;
+    saveAll();
+    renderSidebarChars();
+    document.querySelector('.modal.active')?.remove();
+    showToast('出场人物已更新');
 }
 function showCharPanel(id) {
     const w = currentWork(); if(!w) return;
@@ -2800,7 +2898,7 @@ async function init() {
     if(devData.customBackgrounds.length === 0 && savedDev.customBackgrounds) devData.customBackgrounds = savedDev.customBackgrounds;
     if(devData.customFonts.length === 0 && savedDev.customFonts) devData.customFonts = savedDev.customFonts;
     if(works.length === 0) {
-        const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString() };
+        const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0, characters: [] }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString() };
         works.push(sample); currentWorkId = sample.id;
     }
     const w = currentWork();
