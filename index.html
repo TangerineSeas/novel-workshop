@@ -1135,26 +1135,101 @@ function switchChapter(id) {
 }
 function renderChapters() {
     const w = currentWork();
-    const el = document.getElementById('chapterList'); el.innerHTML = '';
+    const el = document.getElementById('chapterList'); 
+    if(!el) return;
+    el.innerHTML = '';
     const titleDisplay = document.getElementById('workTitleDisplay');
     if(!w) return;
     
-    // 显示作品名称
     if(titleDisplay) {
         titleDisplay.textContent = '📖 ' + w.title;
         titleDisplay.onclick = () => renameWork();
     }
     
-    w.chapters.forEach(ch => {
+    w.chapters.forEach((ch, index) => {
         const d = document.createElement('div');
         d.className = 'sb-item' + (ch.id === w.currentChapterId ? ' active' : '');
+        d.draggable = true;
+        d.dataset.chapterId = ch.id;
+        d.dataset.index = index;
         d.innerHTML = `<div class="sb-item-title">${ch.name}</div><div class="sb-item-desc">${ch.wordCount||0} 字</div>`;
         d.onclick = () => switchChapter(ch.id);
         d.ondblclick = () => renameChapter(ch.id);
+        
+        // 拖拽事件
+        d.ondragstart = handleDragStart;
+        d.ondragover = handleDragOver;
+        d.ondrop = handleDrop;
+        d.ondragend = handleDragEnd;
+        d.ondragleave = handleDragLeave;
+        
         el.appendChild(d);
     });
 }
 
+// ========== 章节拖拽排序 ==========
+let draggedChapterIndex = null;
+
+function handleDragStart(e) {
+    draggedChapterIndex = parseInt(this.dataset.index);
+    this.style.opacity = '0.4';
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    this.style.borderTop = '2px solid var(--accent)';
+    return false;
+}
+
+function handleDragLeave(e) {
+    this.style.borderTop = '';
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.style.borderTop = '';
+    
+    const targetIndex = parseInt(this.dataset.index);
+    if(draggedChapterIndex === null || draggedChapterIndex === targetIndex) return;
+    
+    const w = currentWork(); if(!w) return;
+    
+    // 移动章节
+    const movedChapter = w.chapters.splice(draggedChapterIndex, 1)[0];
+    w.chapters.splice(targetIndex, 0, movedChapter);
+    
+    // 自动重命名为"第N章"
+    renumberChapters();
+    
+    saveAll();
+    renderChapters();
+    showToast('章节顺序已更新');
+}
+
+function handleDragEnd(e) {
+    this.style.opacity = '';
+    draggedChapterIndex = null;
+    // 清理所有章节的边框样式
+    document.querySelectorAll('.sb-item').forEach(el => el.style.borderTop = '');
+}
+
+// 自动重命名所有章节为第N章
+function renumberChapters() {
+    const w = currentWork(); if(!w) return;
+    w.chapters.forEach((ch, index) => {
+        // 只重命名形如"第X章"或"第X章：xxx"的章节
+        const match = ch.name.match(/^第[一二三四五六七八九十百千零\d]+章(.*)$/);
+        if(match) {
+            const rest = match[1]; // 保留后面的标题
+            ch.name = '第' + (index + 1) + '章' + rest;
+        } else {
+            // 如果不是"第X章"格式，保留原名
+        }
+    });
+}
 function renameWork() {
     const w = currentWork(); if(!w) return;
     const name = prompt('修改作品名称：', w.title);
