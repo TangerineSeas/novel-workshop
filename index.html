@@ -636,7 +636,18 @@ function goPage(page) {
     document.getElementById('page-' + page).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
     if(page === 'home') renderHome();
-    if(page === 'writing') { renderChapters(); renderSidebarChars(); updateWordCount(); updateTimerDisplay(); }
+       if(page === 'writing') { 
+        renderChapters(); 
+        renderSidebarChars(); 
+        updateWordCount(); 
+        timerSeconds = 0;  // ← 加这一行
+        updateTimerDisplay();
+        // 进入写作页自动开始计时
+        if(!timerRunning) startTimer();
+    } else {
+        // 离开写作页自动停止
+        if(timerRunning) pauseTimer();
+    }
     if(page === 'worldview') { loadWorldview(); renderCollection(); renderCalendar(); renderTimeline(); }
     if(page === 'characters') { renderCharGrid(); updateFamilyFilters(); drawRelationGraph(); }
     if(page === 'tools') { renderNameResults(); renderKnowledgeBase(); renderUploadedBooks(); }
@@ -851,22 +862,38 @@ function formatDuration(sec) {
 }
 function toggleTimer() {
     if(timerRunning) {
-        timerRunning = false;
-        clearInterval(timerInterval);
-        document.getElementById('timerBtn').textContent = '⏱ 继续计时';
-        recordTimingSession();
+        pauseTimer();
     } else {
-        timerRunning = true;
-        timerStartTime = new Date();
-        document.getElementById('timerBtn').textContent = '⏸ 暂停';
-        timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000);
+        startTimer();
     }
+}
+
+function startTimer() {
+    timerRunning = true;
+    timerStartTime = new Date();
+    document.getElementById('timerBtn').textContent = '⏸ 暂停';
+    if(timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => { 
+        timerSeconds++; 
+        updateTimerDisplay(); 
+    }, 1000);
+}
+
+function pauseTimer() {
+    if(!timerRunning) return;
+    timerRunning = false;
+    clearInterval(timerInterval);
+    timerInterval = null;
+    document.getElementById('timerBtn').textContent = '⏱ 继续';
+    recordTimingSession();
+    timerStartTime = null;
 }
 function recordTimingSession() {
     if(!timerStartTime) return;
     const now = new Date();
     const durationSec = Math.floor((now - timerStartTime) / 1000);
     if(durationSec <= 0) return;
+    
     const startDate = new Date(timerStartTime);
     let current = new Date(startDate);
     while(current < now) {
@@ -882,9 +909,6 @@ function recordTimingSession() {
         }
         current = new Date(segEnd.getTime() + 1000);
     }
-    timerSeconds = 0;
-    updateTimerDisplay();
-    timerStartTime = null;
     saveAll();
 }
 function updateTimerDisplay() {
@@ -3011,6 +3035,12 @@ async function init() {
 window.addEventListener('load', () => { 
     loadSavedTheme();
     init(); 
+});
+// 页面关闭/刷新时自动暂停计时并记录
+window.addEventListener('beforeunload', function() {
+    if(timerRunning) {
+        pauseTimer();
+    }
 });
     function toggleMobileMenu() {
     let overlay = document.getElementById('mobileNavOverlay');
