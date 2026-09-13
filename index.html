@@ -250,7 +250,7 @@ button{cursor:pointer}
 <div class="sb-section"><div class="sb-title">🔧 快捷工具</div>
 <div class="sb-item" onclick="goPage('tools')"><div class="sb-item-title">姓氏生成器</div><div class="sb-item-desc">贵族/平民姓氏</div></div>
 <div class="sb-item" onclick="goPage('tools')"><div class="sb-item-title">知识库</div><div class="sb-item-desc">西方文化参考</div></div>
-<div class="sb-item" onclick="exportNovel()"><div class="sb-item-title">📤 导出作品</div><div class="sb-item-desc">下载为txt</div></div>
+<div class="sb-item" onclick="openExportMenu(currentWorkId)"><div class="sb-item-title">📤 导出作品</div><div class="sb-item-desc">TXT / Markdown / HTML</div></div>
 </div>
 </aside>
 <main class="writing-main">
@@ -819,7 +819,7 @@ function renderHome() {
         const charCount = w.characters.length;
         const lastMod = w.lastModified ? new Date(w.lastModified).toLocaleDateString('zh-CN') : '未开始';
         card.innerHTML = `<div class="work-card-title">${w.title}</div><div class="work-card-meta">${totalWords} 字 · ${charCount} 人物 · ${lastMod}</div>
-        <div class="work-card-actions"><button onclick="event.stopPropagation();openWork(${w.id})">继续</button><button onclick="event.stopPropagation();exportWork(${w.id})">导出</button><button onclick="event.stopPropagation();deleteWork(${w.id})">删除</button></div>`;
+        <div class="work-card-actions"><button onclick="event.stopPropagation();openWork(${w.id})">继续</button><button onclick="event.stopPropagation();openExportMenu(${w.id})">导出</button><button onclick="event.stopPropagation();deleteWork(${w.id})">删除</button></div>`;
         card.onclick = () => openWork(w.id);
         grid.appendChild(card);
     });
@@ -3031,6 +3031,146 @@ async function init() {
         if(e.target && e.target.id && e.target.id.startsWith('wv_')) updateWvProgress();
     });
     saveAll();
+}
+// ========== 多格式导出 ==========
+function openExportMenu(workId) {
+    const w = works.find(x => x.id === workId);
+    if(!w) return;
+    
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:480px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">📤 导出《${w.title}》</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">导出范围</label>
+                <select class="form-select" id="exportScope">
+                    <option value="all">整个作品（所有章节）</option>
+                    <option value="current">当前章节</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">导出格式</label>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                    <button class="btn btn-secondary" onclick="doExport('${workId}', 'txt')">📄 TXT（纯文本）</button>
+                    <button class="btn btn-secondary" onclick="doExport('${workId}', 'md')">📝 Markdown</button>
+                    <button class="btn btn-secondary" onclick="doExport('${workId}', 'html')">🌐 HTML（带样式）</button>
+                </div>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+}
+
+function doExport(workId, format) {
+    const w = works.find(x => x.id === workId);
+    if(!w) return;
+    const scope = document.getElementById('exportScope').value;
+    let chapters = w.chapters;
+    if(scope === 'current') {
+        const currentCh = w.chapters.find(c => c.id === (w.currentChapterId || w.chapters[0].id));
+        chapters = currentCh ? [currentCh] : [];
+    }
+    
+    if(format === 'txt') exportAsTxt(w, chapters);
+    else if(format === 'md') exportAsMarkdown(w, chapters);
+    else if(format === 'html') exportAsHtml(w, chapters);
+    
+    document.querySelector('.modal.active')?.remove();
+}
+
+// ===== TXT 导出 =====
+function exportAsTxt(w, chapters) {
+    let text = `《${w.title}》\n导出时间：${new Date().toLocaleString('zh-CN')}\n${'='.repeat(40)}\n\n`;
+    chapters.forEach(ch => { 
+        text += `【${ch.name}】\n${ch.content || ''}\n\n${'-'.repeat(30)}\n\n`; 
+    });
+    downloadFile(text, w.title + '.txt', 'text/plain');
+    showToast('TXT 导出成功');
+}
+
+// ===== Markdown 导出 =====
+function exportAsMarkdown(w, chapters) {
+    let md = `# ${w.title}\n\n> 导出时间：${new Date().toLocaleString('zh-CN')}\n\n`;
+    chapters.forEach(ch => {
+        md += `## ${ch.name}\n\n${ch.content || ''}\n\n---\n\n`;
+    });
+    downloadFile(md, w.title + '.md', 'text/markdown');
+    showToast('Markdown 导出成功');
+}
+
+// ===== HTML 导出 =====
+function exportAsHtml(w, chapters) {
+    const settings = w.editorSettings || {};
+    const fontFamily = settings.fontFamily || "'Georgia', serif";
+    const fontSize = settings.fontSize || '16px';
+    const lineHeight = settings.lineHeight || '1.8';
+    const letterSpacing = settings.letterSpacing || '0.5px';
+    const fontColor = settings.fontColor || '#333';
+    
+    let chaptersHtml = '';
+    chapters.forEach(ch => {
+        const content = (ch.content || '').split('\n').map(line => line ? `<p>${escapeHtml(line)}</p>` : '<br>').join('');
+        chaptersHtml += `
+            <section class="chapter">
+                <h2>${escapeHtml(ch.name)}</h2>
+                ${content}
+            </section>`;
+    });
+    
+    const html = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>${escapeHtml(w.title)}</title>
+<style>
+    body {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 40px 50px;
+        background: #faf8f3;
+        color: ${fontColor};
+        font-family: ${fontFamily};
+        font-size: ${fontSize};
+        line-height: ${lineHeight};
+        letter-spacing: ${letterSpacing};
+    }
+    h1 { text-align: center; color: #5a4a3a; margin-bottom: 10px; border-bottom: 2px solid #d4c5a8; padding-bottom: 15px; }
+    h2 { color: #6a5a4a; margin-top: 40px; border-left: 4px solid #c9a83f; padding-left: 15px; }
+    .meta { text-align: center; color: #999; font-size: .85em; margin-bottom: 40px; }
+    .chapter { margin-bottom: 60px; }
+    p { text-indent: 2em; margin: 8px 0; }
+    hr { border: none; border-top: 1px dashed #d4c5a8; margin: 40px 0; }
+</style>
+</head>
+<body>
+    <h1>${escapeHtml(w.title)}</h1>
+    <div class="meta">导出时间：${new Date().toLocaleString('zh-CN')}</div>
+    ${chaptersHtml}
+</body>
+</html>`;
+    downloadFile(html, w.title + '.html', 'text/html');
+    showToast('HTML 导出成功');
+}
+
+// ===== 工具函数 =====
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType + ';charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function escapeHtml(text) {
+    if(!text) return '';
+    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 window.addEventListener('load', () => { 
     loadSavedTheme();
