@@ -407,9 +407,10 @@ button{cursor:pointer}
 <div class="page-scroll"><div class="page-container">
 <h2 style="color:var(--accent);margin-bottom:14px;">🔧 创作工具</h2>
 <div class="tools-tabs">
-<button class="tools-tab active" onclick="switchToolsTab('names',this)">👑 姓氏/名字</button>
-<button class="tools-tab" onclick="switchToolsTab('knowledge',this)">📚 知识库</button>
-<button class="tools-tab" onclick="switchToolsTab('books',this)">📖 上传书本</button>
+    <button class="tools-tab active" onclick="switchToolsTab('names',this)">👑 姓氏/名字</button>
+    <button class="tools-tab" onclick="switchToolsTab('knowledge',this)">📚 知识库</button>
+    <button class="tools-tab" onclick="switchToolsTab('books',this)">📖 上传书本</button>
+    <button class="tools-tab" onclick="switchToolsTab('trash',this)">🗑️ 回收站</button>
 </div>
 <div class="tools-content active" id="tools-names">
 <div class="card"><h3>👑 姓氏/名字生成器</h3>
@@ -440,6 +441,13 @@ button{cursor:pointer}
     <div class="card">
         <h3>📚 已上传书籍</h3>
         <div id="uploadedBooksList" class="entry-list"></div>
+    </div>
+</div>
+<div class="tools-content" id="tools-trash">
+    <div class="card">
+        <h3>🗑️ 回收站</h3>
+        <p style="font-size:.8em;color:var(--text2);margin-bottom:12px">已删除的内容会暂时保留在这里，可以恢复或永久删除。</p>
+        <div id="trashContent"></div>
     </div>
 </div>
 </div></div>
@@ -743,6 +751,7 @@ function switchToolsTab(tab, btn) {
     if(tab === 'names') renderNameResults();
     if(tab === 'knowledge') renderKnowledgeBase();
     if(tab === 'books') renderUploadedBooks();
+   if(tab === 'trash') renderTrash();
 }
 
 function createNewWork() {
@@ -780,6 +789,7 @@ function confirmCreateWork() {
         chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0 }],
         collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] },
         calendarData: { eraName:'', weekDays:7, months:[], festivals:[] ,globalTimeline: [],outline: [],},
+        trash: { characters: [], chapters: [], collectionEntries: [] },
         editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' },
         writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString()
     };
@@ -1179,6 +1189,10 @@ function renderChapters() {
         d.innerHTML = `<div class="sb-item-title">${ch.name}</div><div class="sb-item-desc">${ch.wordCount||0} 字</div>`;
         d.onclick = () => switchChapter(ch.id);
         d.ondblclick = () => renameChapter(ch.id);
+               d.oncontextmenu = (e) => {
+            e.preventDefault();
+            showChapterContextMenu(e, ch.id);
+        };
         
         // 拖拽事件
         d.ondragstart = handleDragStart;
@@ -1189,6 +1203,72 @@ function renderChapters() {
         
         el.appendChild(d);
     });
+}
+// ========== 章节右键菜单 ==========
+function showChapterContextMenu(e, chapterId) {
+    // 先删除已有的菜单
+    document.querySelectorAll('.chapter-context-menu').forEach(m => m.remove());
+    
+    const menu = document.createElement('div');
+    menu.className = 'chapter-context-menu';
+    menu.style.cssText = `
+        position: fixed;
+        left: ${e.clientX}px;
+        top: ${e.clientY}px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 9999;
+        padding: 5px 0;
+        min-width: 140px;
+    `;
+    menu.innerHTML = `
+        <div class="chapter-menu-item" onclick="renameChapter(${chapterId}); this.parentElement.remove();" style="padding:8px 15px;cursor:pointer;font-size:.85em">✏️ 重命名</div>
+        <div class="chapter-menu-item" onclick="deleteChapter(${chapterId}); this.parentElement.remove();" style="padding:8px 15px;cursor:pointer;font-size:.85em;color:var(--danger)">🗑️ 删除章节</div>
+    `;
+    document.body.appendChild(menu);
+    
+    // 点击其他地方关闭菜单
+    setTimeout(() => {
+        document.addEventListener('click', closeChapterContextMenu, { once: true });
+    }, 100);
+}
+
+function closeChapterContextMenu() {
+    document.querySelectorAll('.chapter-context-menu').forEach(m => m.remove());
+}
+
+function deleteChapter(chapterId) {
+    const w = currentWork(); if(!w) return;
+    const index = w.chapters.findIndex(c => c.id === chapterId);
+    if(index < 0) return;
+    const ch = w.chapters[index];
+    if(!confirm(`确定删除「${ch.name}」吗？可从回收站恢复。`)) return;
+    
+    const removed = w.chapters.splice(index, 1)[0];
+    removed.deleted = true;
+    removed.deletedAt = Date.now();
+    w.trash = w.trash || { characters: [], chapters: [], collectionEntries: [] };
+    w.trash.chapters.push(removed);
+    
+    // 如果删除的是当前章节，切换到第一个章节
+    if(w.currentChapterId === chapterId) {
+        if(w.chapters.length > 0) {
+            w.currentChapterId = w.chapters[0].id;
+            document.getElementById('editor').value = w.chapters[0].content || '';
+        } else {
+            // 如果删除了所有章节，创建新的空章节
+            const newCh = { id: Date.now(), name: '第一章', content: '', wordCount: 0, characters: [] };
+            w.chapters.push(newCh);
+            w.currentChapterId = newCh.id;
+            document.getElementById('editor').value = '';
+        }
+    }
+    
+    renderChapters();
+    saveAll();
+    showToast('章节已移入回收站');
 }
 
 // ========== 章节拖拽排序 ==========
@@ -1908,14 +1988,21 @@ function deleteCharacter() {
         return;
     }
     const charName = w.characters[index].name || '未命名';
-    if(!confirm(`确定要删除「${charName}」吗？此操作不可恢复！`)) return;
-    w.characters.splice(index, 1);
+    if(!confirm(`确定要删除「${charName}」吗？可从回收站恢复。`)) return;
+    
+    // 软删除：标记 deleted
+    const removed = w.characters.splice(index, 1)[0];
+    removed.deleted = true;
+    removed.deletedAt = Date.now();
+    w.trash = w.trash || { characters: [], chapters: [], collectionEntries: [] };
+    w.trash.characters.push(removed);
+    
     closeCharEditor();
     renderCharGrid();
     renderSidebarChars();
     updateFamilyFilters();
     saveAll();
-    showToast('人物已删除');
+    showToast('已移入回收站');
 }
 function switchWvTab(tab, btn) {
     document.querySelectorAll('.wv-tab').forEach(b => b.classList.remove('active'));
@@ -2151,15 +2238,20 @@ function renderCollection() {
 }
    function deleteCollectionEntry(type, name) {
     const w = currentWork(); if(!w) return;
-    if(!confirm(`确定删除词条「${name}」吗？`)) return;
+    if(!confirm(`确定删除词条「${name}」吗？可从回收站恢复。`)) return;
     const entries = w.collectionEntries[type];
     if(!entries) return;
     const idx = entries.findIndex(e => e.name === name);
     if(idx >= 0) {
-        entries.splice(idx, 1);
+        const removed = entries.splice(idx, 1)[0];
+        removed.deleted = true;
+        removed.deletedAt = Date.now();
+        removed.originalType = type;
+        w.trash = w.trash || { characters: [], chapters: [], collectionEntries: [] };
+        w.trash.collectionEntries.push(removed);
         saveAll();
         renderCollection();
-        showToast('词条已删除');
+        showToast('已移入回收站');
     }
 }
    function toggleCustomCollType() {
@@ -3235,6 +3327,126 @@ function downloadFile(content, filename, mimeType) {
 function escapeHtml(text) {
     if(!text) return '';
     return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+// ========== 回收站 ==========
+function renderTrash() {
+    const container = document.getElementById('trashContent');
+    if(!container) return;
+    const w = currentWork();
+    if(!w) { container.innerHTML = '<p style="color:var(--text2)">请先选择一个作品</p>'; return; }
+    
+    const trash = w.trash || { characters: [], chapters: [], collectionEntries: [] };
+    const total = (trash.characters?.length || 0) + (trash.chapters?.length || 0) + (trash.collectionEntries?.length || 0);
+    
+    if(total === 0) {
+        container.innerHTML = '<p style="color:var(--text2);font-size:.85em">回收站为空</p>';
+        return;
+    }
+    
+    let html = '';
+    
+    // 章节
+    if(trash.chapters && trash.chapters.length > 0) {
+        html += `<h4 style="color:var(--accent);margin-bottom:8px;font-size:.9em">📖 章节（${trash.chapters.length}）</h4>`;
+        trash.chapters.forEach((ch, i) => {
+            html += `<div class="entry-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div><strong>${ch.name}</strong> <span style="font-size:.75em;color:var(--text2)">${ch.wordCount||0} 字</span></div>
+                <div style="display:flex;gap:6px">
+                    <button class="btn btn-secondary btn-sm" onclick="restoreTrash('chapter', ${i})">恢复</button>
+                    <button class="btn btn-danger btn-sm" onclick="permanentDelete('chapter', ${i})">彻底删除</button>
+                </div>
+            </div>`;
+        });
+    }
+    
+    // 人物
+    if(trash.characters && trash.characters.length > 0) {
+        html += `<h4 style="color:var(--accent);margin:15px 0 8px;font-size:.9em">👤 人物（${trash.characters.length}）</h4>`;
+        trash.characters.forEach((c, i) => {
+            html += `<div class="entry-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div><strong>${c.name}</strong> <span style="font-size:.75em;color:var(--text2)">${c.race || ''} ${c.role ? '· '+c.role : ''}</span></div>
+                <div style="display:flex;gap:6px">
+                    <button class="btn btn-secondary btn-sm" onclick="restoreTrash('character', ${i})">恢复</button>
+                    <button class="btn btn-danger btn-sm" onclick="permanentDelete('character', ${i})">彻底删除</button>
+                </div>
+            </div>`;
+        });
+    }
+    
+    // 词条
+    if(trash.collectionEntries && trash.collectionEntries.length > 0) {
+        html += `<h4 style="color:var(--accent);margin:15px 0 8px;font-size:.9em">📚 词条（${trash.collectionEntries.length}）</h4>`;
+        trash.collectionEntries.forEach((e, i) => {
+            html += `<div class="entry-item" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div><strong>${e.name}</strong> <span style="font-size:.75em;color:var(--text2)">[${e.originalType || '未分类'}]</span></div>
+                <div style="display:flex;gap:6px">
+                    <button class="btn btn-secondary btn-sm" onclick="restoreTrash('collectionEntry', ${i})">恢复</button>
+                    <button class="btn btn-danger btn-sm" onclick="permanentDelete('collectionEntry', ${i})">彻底删除</button>
+                </div>
+            </div>`;
+        });
+    }
+    
+    html += `<div style="margin-top:20px;text-align:right"><button class="btn btn-danger btn-sm" onclick="clearTrash()">🗑️ 清空回收站</button></div>`;
+    
+    container.innerHTML = html;
+}
+
+function restoreTrash(type, index) {
+    const w = currentWork(); if(!w) return;
+    const trash = w.trash;
+    if(!trash) return;
+    
+    if(type === 'chapter') {
+        const item = trash.chapters.splice(index, 1)[0];
+        delete item.deleted;
+        delete item.deletedAt;
+        w.chapters.push(item);
+    } else if(type === 'character') {
+        const item = trash.characters.splice(index, 1)[0];
+        delete item.deleted;
+        delete item.deletedAt;
+        w.characters.push(item);
+        renderCharGrid();
+        renderSidebarChars();
+        updateFamilyFilters();
+    } else if(type === 'collectionEntry') {
+        const item = trash.collectionEntries.splice(index, 1)[0];
+        const origType = item.originalType || 'places';
+        delete item.deleted;
+        delete item.deletedAt;
+        delete item.originalType;
+        if(!w.collectionEntries[origType]) w.collectionEntries[origType] = [];
+        w.collectionEntries[origType].push(item);
+    }
+    
+    saveAll();
+    renderTrash();
+    showToast('已恢复');
+}
+
+function permanentDelete(type, index) {
+    const w = currentWork(); if(!w) return;
+    if(!confirm('彻底删除后不可恢复，确定吗？')) return;
+    const trash = w.trash;
+    if(!trash) return;
+    
+    if(type === 'chapter') trash.chapters.splice(index, 1);
+    else if(type === 'character') trash.characters.splice(index, 1);
+    else if(type === 'collectionEntry') trash.collectionEntries.splice(index, 1);
+    
+    saveAll();
+    renderTrash();
+    showToast('已彻底删除');
+}
+
+function clearTrash() {
+    const w = currentWork(); if(!w) return;
+    if(!confirm('确定清空回收站？所有内容将永久删除且无法恢复。')) return;
+    w.trash = { characters: [], chapters: [], collectionEntries: [] };
+    saveAll();
+    renderTrash();
+    showToast('回收站已清空');
 }
 window.addEventListener('load', () => { 
     loadSavedTheme();
