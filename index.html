@@ -3113,10 +3113,10 @@ function exportAsHtml(w, chapters) {
     const fontColor = settings.fontColor || '#333';
     
     let chaptersHtml = '';
-    chapters.forEach(ch => {
+    chapters.forEach((ch, index) => {
         const content = (ch.content || '').split('\n').map(line => line ? `<p>${escapeHtml(line)}</p>` : '<br>').join('');
         chaptersHtml += `
-            <section class="chapter">
+            <section class="chapter" id="chapter-${index}">
                 <h2>${escapeHtml(ch.name)}</h2>
                 ${content}
             </section>`;
@@ -3126,35 +3126,99 @@ function exportAsHtml(w, chapters) {
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>${escapeHtml(w.title)}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(w.title)} - 阅读模式</title>
 <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 40px 50px;
-        background: #faf8f3;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 60px 40px;
+        background: linear-gradient(180deg, #faf8f3 0%, #f5f0e8 100%);
         color: ${fontColor};
         font-family: ${fontFamily};
         font-size: ${fontSize};
         line-height: ${lineHeight};
         letter-spacing: ${letterSpacing};
+        min-height: 100vh;
     }
-    h1 { text-align: center; color: #5a4a3a; margin-bottom: 10px; border-bottom: 2px solid #d4c5a8; padding-bottom: 15px; }
-    h2 { color: #6a5a4a; margin-top: 40px; border-left: 4px solid #c9a83f; padding-left: 15px; }
-    .meta { text-align: center; color: #999; font-size: .85em; margin-bottom: 40px; }
-    .chapter { margin-bottom: 60px; }
-    p { text-indent: 2em; margin: 8px 0; }
-    hr { border: none; border-top: 1px dashed #d4c5a8; margin: 40px 0; }
+    header {
+        text-align: center;
+        padding-bottom: 30px;
+        margin-bottom: 50px;
+        border-bottom: 2px solid #c9a83f;
+    }
+    h1 {
+        font-size: 2.2em;
+        color: #5a4a3a;
+        margin-bottom: 12px;
+        letter-spacing: 2px;
+    }
+    .meta {
+        color: #999;
+        font-size: .85em;
+        font-style: italic;
+    }
+    h2 {
+        color: #6a5a4a;
+        margin-top: 60px;
+        margin-bottom: 25px;
+        font-size: 1.3em;
+        border-left: 4px solid #c9a83f;
+        padding-left: 15px;
+        letter-spacing: 1px;
+    }
+    .chapter { margin-bottom: 80px; }
+    p {
+        text-indent: 2em;
+        margin: 12px 0;
+        text-align: justify;
+    }
+    .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #c9a83f;
+        color: white;
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.2em;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        opacity: 0.7;
+        transition: opacity .2s;
+    }
+    .back-to-top:hover { opacity: 1; }
+    footer {
+        text-align: center;
+        padding-top: 40px;
+        margin-top: 80px;
+        border-top: 1px dashed #d4c5a8;
+        color: #aaa;
+        font-size: .8em;
+    }
+    @media (max-width: 600px) {
+        body { padding: 30px 20px; }
+        h1 { font-size: 1.6em; }
+    }
 </style>
 </head>
 <body>
-    <h1>${escapeHtml(w.title)}</h1>
-    <div class="meta">导出时间：${new Date().toLocaleString('zh-CN')}</div>
+    <header>
+        <h1>${escapeHtml(w.title)}</h1>
+        <div class="meta">导出时间：${new Date().toLocaleString('zh-CN')}</div>
+    </header>
     ${chaptersHtml}
+    <footer>
+        <p>本作品由「西幻创作工坊」导出</p>
+    </footer>
+    <button class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到顶部">↑</button>
 </body>
 </html>`;
     downloadFile(html, w.title + '.html', 'text/html');
-    showToast('HTML 导出成功');
+    showToast('HTML 导出成功，可分享给朋友');
 }
 
 // ===== 工具函数 =====
