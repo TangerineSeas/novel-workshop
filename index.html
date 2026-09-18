@@ -398,6 +398,24 @@ button{cursor:pointer}
     </div>
     <div id="outlineContainer" style="max-width:700px;margin:0 auto"></div>
 </div>
+<div class="wv-content" id="wv-map">
+    <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <h3 style="margin:0;font-size:1em">🗺️ 世界地图</h3>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <input type="file" id="mapUploadInput" accept="image/*" style="display:none" onchange="uploadMap(event)">
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('mapUploadInput').click()">📤 上传地图</button>
+                <button class="btn btn-secondary btn-sm" onclick="toggleMarkMode()" id="markModeBtn">📍 标记模式</button>
+                <button class="btn btn-secondary btn-sm" onclick="resetMapView()">🔄 重置视图</button>
+                <button class="btn btn-danger btn-sm" onclick="clearMap()">🗑️ 清除地图</button>
+            </div>
+        </div>
+        <p style="font-size:.75em;color:var(--text2);margin-top:8px" id="mapHint">上传地图后，点击「标记模式」，再点击地图上任意位置即可添加地点标记。</p>
+    </div>
+    <div id="mapContainer" style="position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--border);border-radius:8px;height:500px;cursor:default">
+        <p style="text-align:center;color:var(--text2);padding-top:200px;font-size:.9em" id="mapEmptyHint">还没有上传地图</p>
+    </div>
+</div>
 </div>
 
 <div class="page" id="page-characters">
@@ -419,24 +437,6 @@ button{cursor:pointer}
 </div>
 <canvas id="relationCanvas"></canvas>
 <div class="relation-legend"><span><span class="badge badge-main">主角</span> 红色</span><span><span class="badge badge-important">重要配角</span> 橙色</span><span><span class="badge badge-minor">配角</span> 灰色</span><span>连线 = 人物关系</span></div>
-</div>
-<div class="wv-content" id="wv-map">
-    <div class="card" style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-            <h3 style="margin:0;font-size:1em">🗺️ 世界地图</h3>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <input type="file" id="mapUploadInput" accept="image/*" style="display:none" onchange="uploadMap(event)">
-                <button class="btn btn-primary btn-sm" onclick="document.getElementById('mapUploadInput').click()">📤 上传地图</button>
-                <button class="btn btn-secondary btn-sm" onclick="toggleMarkMode()" id="markModeBtn">📍 标记模式</button>
-                <button class="btn btn-secondary btn-sm" onclick="resetMapView()">🔄 重置视图</button>
-                <button class="btn btn-danger btn-sm" onclick="clearMap()">🗑️ 清除地图</button>
-            </div>
-        </div>
-        <p style="font-size:.75em;color:var(--text2);margin-top:8px" id="mapHint">上传地图后，点击「标记模式」，再点击地图上任意位置即可添加地点标记。</p>
-    </div>
-    <div id="mapContainer" style="position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--border);border-radius:8px;height:500px;cursor:default">
-        <p style="text-align:center;color:var(--text2);padding-top:200px;font-size:.9em" id="mapEmptyHint">还没有上传地图</p>
-    </div>
 </div>
 </div></div>
 </div>
