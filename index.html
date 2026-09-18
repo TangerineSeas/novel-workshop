@@ -300,6 +300,7 @@ button{cursor:pointer}
 <input type="file" id="customFontInput" accept=".ttf,.otf,.woff,.woff2" style="display:none" onchange="importCustomFont(event)">
 <button class="btn btn-secondary btn-sm" onclick="toggleTimer()" id="timerBtn">⏱ 开始计时</button>
 <button class="btn btn-primary btn-sm" onclick="manualSave()">💾 手动保存</button>
+<button class="btn btn-secondary btn-sm" onclick="toggleFocusMode()">🎯 专注</button>
 <span class="timer-display" id="timerDisplay">00:00:00</span>
 <span style="font-size:.72em;color:var(--text2)">字数：<span id="wordCount">0</span></span>
 </div>
@@ -3215,6 +3216,79 @@ async function init() {
     saveAll();
    switchTrendRange(7);
 }
+// ========== 专注模式 ==========
+let focusMode = false;
+
+function toggleFocusMode() {
+    focusMode = !focusMode;
+    const sidebar = document.getElementById('sidebar');
+    const toolbar = document.querySelector('.toolbar');
+    const charPanel = document.getElementById('charPanel');
+    const writingMain = document.querySelector('.writing-main');
+    
+    if(focusMode) {
+        // 进入专注模式
+        if(sidebar) sidebar.style.display = 'none';
+        if(toolbar) toolbar.style.display = 'none';
+        if(charPanel) charPanel.style.display = 'none';
+        if(writingMain) writingMain.style.width = '100%';
+        
+        // 显示退出按钮
+        let exitBtn = document.getElementById('focusExitBtn');
+        if(!exitBtn) {
+            exitBtn = document.createElement('button');
+            exitBtn.id = 'focusExitBtn';
+            exitBtn.textContent = '✕ 退出专注';
+            exitBtn.style.cssText = 'position:fixed;top:15px;right:15px;z-index:9999;padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:20px;cursor:pointer;font-size:.85em;box-shadow:0 2px 10px rgba(0,0,0,0.3)';
+            exitBtn.onclick = toggleFocusMode;
+            document.body.appendChild(exitBtn);
+        }
+        exitBtn.style.display = 'block';
+        
+        // 编辑区居中并加宽
+        const editorWrap = document.querySelector('.editor-wrap');
+        if(editorWrap) {
+            editorWrap.style.padding = '60px 20px';
+        }
+        const paper = document.getElementById('editorPaper');
+        if(paper) {
+            paper.style.maxWidth = '850px';
+            paper.style.boxShadow = 'none';
+        }
+        
+        showToast('已进入专注模式，按 Esc 退出');
+    } else {
+        // 退出专注模式
+        if(sidebar) sidebar.style.display = '';
+        if(toolbar) toolbar.style.display = '';
+        if(writingMain) writingMain.style.width = '';
+        
+        // 恢复人设面板状态（只有在没被主动关闭时显示）
+        if(charPanel && charPanel.dataset.wasActive === 'true') {
+            charPanel.style.display = '';
+        }
+        
+        const exitBtn = document.getElementById('focusExitBtn');
+        if(exitBtn) exitBtn.style.display = 'none';
+        
+        const editorWrap = document.querySelector('.editor-wrap');
+        if(editorWrap) editorWrap.style.padding = '';
+        const paper = document.getElementById('editorPaper');
+        if(paper) {
+            paper.style.maxWidth = '';
+            paper.style.boxShadow = '';
+        }
+        
+        showToast('已退出专注模式');
+    }
+}
+
+// ESC 键退出专注模式
+document.addEventListener('keydown', function(e) {
+    if(e.key === 'Escape' && focusMode) {
+        toggleFocusMode();
+    }
+});
 // ========== 多格式导出 ==========
 function openExportMenu(workId) {
     const w = works.find(x => x.id === workId);
