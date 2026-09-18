@@ -321,6 +321,7 @@ button{cursor:pointer}
     <button class="wv-tab" onclick="switchWvTab('collection',this)">📚 设定合集</button>
     <button class="wv-tab" onclick="switchWvTab('calendar',this)">📅 自定义日历</button>
     <button class="wv-tab" onclick="switchWvTab('timeline',this)">📜 时间线</button>
+   <button class="wv-tab" onclick="switchWvTab('map',this)">🗺️ 地图</button>
     <button class="wv-tab" onclick="switchWvTab('outline',this)">🗂️ 大纲</button>
 </div>
 <div class="wv-content active" id="wv-questionnaire">
@@ -418,6 +419,24 @@ button{cursor:pointer}
 </div>
 <canvas id="relationCanvas"></canvas>
 <div class="relation-legend"><span><span class="badge badge-main">主角</span> 红色</span><span><span class="badge badge-important">重要配角</span> 橙色</span><span><span class="badge badge-minor">配角</span> 灰色</span><span>连线 = 人物关系</span></div>
+</div>
+<div class="wv-content" id="wv-map">
+    <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <h3 style="margin:0;font-size:1em">🗺️ 世界地图</h3>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <input type="file" id="mapUploadInput" accept="image/*" style="display:none" onchange="uploadMap(event)">
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('mapUploadInput').click()">📤 上传地图</button>
+                <button class="btn btn-secondary btn-sm" onclick="toggleMarkMode()" id="markModeBtn">📍 标记模式</button>
+                <button class="btn btn-secondary btn-sm" onclick="resetMapView()">🔄 重置视图</button>
+                <button class="btn btn-danger btn-sm" onclick="clearMap()">🗑️ 清除地图</button>
+            </div>
+        </div>
+        <p style="font-size:.75em;color:var(--text2);margin-top:8px" id="mapHint">上传地图后，点击「标记模式」，再点击地图上任意位置即可添加地点标记。</p>
+    </div>
+    <div id="mapContainer" style="position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--border);border-radius:8px;height:500px;cursor:default">
+        <p style="text-align:center;color:var(--text2);padding-top:200px;font-size:.9em" id="mapEmptyHint">还没有上传地图</p>
+    </div>
 </div>
 </div></div>
 </div>
@@ -2105,6 +2124,7 @@ function switchWvTab(tab, btn) {
     if(tab === 'questionnaire') renderDynamicQuestionnaire();
        if(tab === 'timeline') renderTimeline();
        if(tab === 'outline') renderOutline();
+       if(tab === 'map') renderMap();
 }
 function renderDynamicQuestionnaire() {
     const w = currentWork();
@@ -3137,6 +3157,267 @@ function deleteOutlineNode(id) {
     renderOutline();
     saveAll();
     showToast('已删除');
+}
+// ========== 地图 ==========
+let mapScale = 1;
+let mapOffsetX = 0;
+let mapOffsetY = 0;
+let markMode = false;
+let isDraggingMap = false;
+let dragStartX = 0;
+let dragStartY = 0;
+
+function renderMap() {
+    const w = currentWork(); if(!w) return;
+    const container = document.getElementById('mapContainer');
+    if(!container) return;
+    
+    const mapData = w.map || {};
+    if(!mapData.image) {
+        container.innerHTML = '<p style="text-align:center;color:var(--text2);padding-top:200px;font-size:.9em" id="mapEmptyHint">还没有上传地图</p>';
+        return;
+    }
+    
+    // 构建地图内容
+    container.innerHTML = `
+        <img id="mapImage" src="${mapData.image}" style="position:absolute;top:0;left:0;transform-origin:0 0;transform:translate(${mapOffsetX}px, ${mapOffsetY}px) scale(${mapScale});max-width:none;user-select:none;pointer-events:none" draggable="false">
+        <div id="mapMarkersLayer" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+    `;
+    
+    // 渲染标记
+    const markersLayer = document.getElementById('mapMarkersLayer');
+    (mapData.markers || []).forEach((marker, index) => {
+        const el = document.createElement('div');
+        el.style.cssText = `position:absolute;left:${marker.x * mapScale + mapOffsetX}px;top:${marker.y * mapScale + mapOffsetY}px;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;z-index:10`;
+        el.innerHTML = `
+            <div style="background:var(--accent);color:#fff;padding:4px 10px;border-radius:12px;font-size:.75em;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.3);position:relative">
+                📍 ${marker.name || '未命名'}
+                <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid var(--accent)"></div>
+            </div>
+        `;
+        el.onclick = (e) => { e.stopPropagation(); openMarkerModal(index); };
+        markersLayer.appendChild(el);
+    });
+    
+    // 绑定鼠标事件
+    container.style.cursor = markMode ? 'crosshair' : 'grab';
+    
+    container.onmousedown = (e) => {
+        if(markMode) return;
+        isDraggingMap = true;
+        dragStartX = e.clientX - mapOffsetX;
+        dragStartY = e.clientY - mapOffsetY;
+        container.style.cursor = 'grabbing';
+    };
+    
+    container.onmousemove = (e) => {
+        if(!isDraggingMap) return;
+        mapOffsetX = e.clientX - dragStartX;
+        mapOffsetY = e.clientY - dragStartY;
+        const img = document.getElementById('mapImage');
+        if(img) img.style.transform = `translate(${mapOffsetX}px, ${mapOffsetY}px) scale(${mapScale})`;
+        // 更新标记位置
+        (mapData.markers || []).forEach((marker, index) => {
+            const m = markersLayer.children[index];
+            if(m) {
+                m.style.left = (marker.x * mapScale + mapOffsetX) + 'px';
+                m.style.top = (marker.y * mapScale + mapOffsetY) + 'px';
+            }
+        });
+    };
+    
+    container.onmouseup = () => {
+        isDraggingMap = false;
+        container.style.cursor = markMode ? 'crosshair' : 'grab';
+    };
+    
+    container.onmouseleave = () => {
+        isDraggingMap = false;
+        container.style.cursor = markMode ? 'crosshair' : 'grab';
+    };
+    
+    // 滚轮缩放
+    container.onwheel = (e) => {
+        e.preventDefault();
+        const rect = container.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const oldScale = mapScale;
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        mapScale = Math.max(0.2, Math.min(5, mapScale * delta));
+        // 以鼠标为中心缩放
+        mapOffsetX = mouseX - (mouseX - mapOffsetX) * (mapScale / oldScale);
+        mapOffsetY = mouseY - (mouseY - mapOffsetY) * (mapScale / oldScale);
+        const img = document.getElementById('mapImage');
+        if(img) img.style.transform = `translate(${mapOffsetX}px, ${mapOffsetY}px) scale(${mapScale})`;
+        // 更新标记位置
+        (mapData.markers || []).forEach((marker, index) => {
+            const m = markersLayer.children[index];
+            if(m) {
+                m.style.left = (marker.x * mapScale + mapOffsetX) + 'px';
+                m.style.top = (marker.y * mapScale + mapOffsetY) + 'px';
+            }
+        });
+    };
+    
+    // 点击添加标记
+    container.onclick = (e) => {
+        if(!markMode) return;
+        const rect = container.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        // 转换为原图坐标
+        const x = (clickX - mapOffsetX) / mapScale;
+        const y = (clickY - mapOffsetY) / mapScale;
+        addMapMarker(x, y);
+    };
+}
+
+function uploadMap(event) {
+    const file = event.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const w = currentWork(); if(!w) return;
+        w.map = w.map || {};
+        w.map.image = e.target.result;
+        w.map.markers = w.map.markers || [];
+        mapScale = 1;
+        mapOffsetX = 0;
+        mapOffsetY = 0;
+        saveAll();
+        renderMap();
+        showToast('地图已上传');
+    };
+    reader.readAsDataURL(file);
+}
+
+function toggleMarkMode() {
+    markMode = !markMode;
+    const btn = document.getElementById('markModeBtn');
+    const container = document.getElementById('mapContainer');
+    const hint = document.getElementById('mapHint');
+    if(markMode) {
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-primary');
+        btn.textContent = '📍 标记模式（开启）';
+        if(container) container.style.cursor = 'crosshair';
+        if(hint) hint.textContent = '点击地图上任意位置添加标记。再次点击按钮退出标记模式。';
+    } else {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+        btn.textContent = '📍 标记模式';
+        if(container) container.style.cursor = 'grab';
+        if(hint) hint.textContent = '上传地图后，点击「标记模式」，再点击地图上任意位置即可添加地点标记。';
+    }
+}
+
+function resetMapView() {
+    mapScale = 1;
+    mapOffsetX = 0;
+    mapOffsetY = 0;
+    renderMap();
+}
+
+function clearMap() {
+    const w = currentWork(); if(!w) return;
+    if(!confirm('确定清除地图及所有标记吗？')) return;
+    w.map = {};
+    saveAll();
+    renderMap();
+    showToast('地图已清除');
+}
+
+function addMapMarker(x, y) {
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:420px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">📍 新增地点标记</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">地点名称</label>
+                <input class="form-input" id="markerName" placeholder="如：龙息山脉">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述（可选）</label>
+                <textarea class="form-textarea" id="markerDesc" style="min-height:80px" placeholder="简短的描述..."></textarea>
+            </div>
+            <div class="btn-row" style="justify-content:flex-end">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveMarker(${x}, ${y}, -1)">保存</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('markerName').focus();
+}
+
+function openMarkerModal(index) {
+    const w = currentWork(); if(!w || !w.map || !w.map.markers) return;
+    const marker = w.map.markers[index];
+    if(!marker) return;
+    
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:420px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">📍 编辑地点标记</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">地点名称</label>
+                <input class="form-input" id="markerName" value="${(marker.name || '').replace(/"/g, '&quot;')}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述（可选）</label>
+                <textarea class="form-textarea" id="markerDesc" style="min-height:80px">${marker.desc || ''}</textarea>
+            </div>
+            <div class="btn-row" style="justify-content:space-between">
+                <button class="btn btn-danger" onclick="deleteMarker(${index})">删除</button>
+                <div>
+                    <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                    <button class="btn btn-primary" onclick="saveMarker(${marker.x}, ${marker.y}, ${index})">保存</button>
+                </div>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('markerName').focus();
+}
+
+function saveMarker(x, y, editIndex) {
+    const w = currentWork(); if(!w) return;
+    const name = document.getElementById('markerName').value.trim();
+    const desc = document.getElementById('markerDesc').value.trim();
+    if(!name) { showToast('请输入地点名称'); return; }
+    
+    w.map = w.map || {};
+    w.map.markers = w.map.markers || [];
+    
+    if(editIndex >= 0) {
+        w.map.markers[editIndex] = { x, y, name, desc };
+    } else {
+        w.map.markers.push({ x, y, name, desc });
+    }
+    
+    saveAll();
+    renderMap();
+    document.querySelector('.modal.active')?.remove();
+    showToast('标记已保存');
+}
+
+function deleteMarker(index) {
+    const w = currentWork(); if(!w) return;
+    if(!confirm('确定删除此标记？')) return;
+    w.map.markers.splice(index, 1);
+    saveAll();
+    renderMap();
+    document.querySelector('.modal.active')?.remove();
+    showToast('标记已删除');
 }
 async function init() {
     // 生成或获取用户ID
