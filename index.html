@@ -1177,7 +1177,7 @@ function manualSave() {
 function addChapter() {
     const w = currentWork(); if(!w) return;
     const name = prompt('章节名称：'); if(!name) return;
-    const ch = { id: Date.now(), name, content:'', wordCount:0, characters: [] };
+   const ch = { id: Date.now(), name, content:'', wordCount:0, characters: [], status: 'draft' };
     w.chapters.push(ch); w.currentChapterId = ch.id;
     document.getElementById('editor').value = '';
     renderChapters(); updateWordCount(); saveAll();
@@ -1203,19 +1203,33 @@ function renderChapters() {
         titleDisplay.onclick = () => renameWork();
     }
     
+    // 状态对应的颜色和标签
+    const statusMap = {
+        'draft': { label: '草稿', color: '#95a5a6' },
+        'first': { label: '初稿', color: '#f39c12' },
+        'final': { label: '定稿', color: '#4caf50' }
+    };
+    
     w.chapters.forEach((ch, index) => {
         const d = document.createElement('div');
         d.className = 'sb-item' + (ch.id === w.currentChapterId ? ' active' : '');
         d.draggable = true;
         d.dataset.chapterId = ch.id;
         d.dataset.index = index;
-        d.innerHTML = `<div class="sb-item-title">${ch.name}</div><div class="sb-item-desc">${ch.wordCount||0} 字</div>`;
+        
+        const status = ch.status || 'draft';
+        const statusInfo = statusMap[status] || statusMap['draft'];
+        
+        d.innerHTML = `
+            <div class="sb-item-title" style="display:flex;justify-content:space-between;align-items:center;gap:5px">
+                <span>${ch.name}</span>
+                <span style="font-size:.7em;padding:2px 6px;border-radius:8px;background:${statusInfo.color};color:#fff;white-space:nowrap">${statusInfo.label}</span>
+            </div>
+            <div class="sb-item-desc">${ch.wordCount||0} 字</div>
+        `;
         d.onclick = () => switchChapter(ch.id);
         d.ondblclick = () => renameChapter(ch.id);
-               d.oncontextmenu = (e) => {
-            e.preventDefault();
-            showChapterContextMenu(e, ch.id);
-        };
+        d.oncontextmenu = (e) => { e.preventDefault(); openChapterStatusMenu(ch.id); };
         
         // 拖拽事件
         d.ondragstart = handleDragStart;
@@ -1226,6 +1240,59 @@ function renderChapters() {
         
         el.appendChild(d);
     });
+}
+// ========== 章节状态标记 ==========
+function openChapterStatusMenu(chapterId) {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === chapterId);
+    if(!ch) return;
+    
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    
+    const currentStatus = ch.status || 'draft';
+    const statuses = [
+        { value: 'draft', label: '草稿', color: '#95a5a6', desc: '还没写完，随时大改' },
+        { value: 'first', label: '初稿', color: '#f39c12', desc: '基本完成，需要润色' },
+        { value: 'final', label: '定稿', color: '#4caf50', desc: '已经满意，不再大改' }
+    ];
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:420px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">📝 章节状态</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <p style="font-size:.85em;color:var(--text2);margin-bottom:12px">为「${ch.name}」设置状态：</p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+                ${statuses.map(s => `
+                    <button class="btn ${currentStatus === s.value ? 'btn-primary' : 'btn-secondary'}" 
+                        style="text-align:left;padding:12px;display:flex;align-items:center;gap:10px"
+                        onclick="setChapterStatus(${chapterId}, '${s.value}')">
+                        <span style="width:12px;height:12px;border-radius:50%;background:${s.color};flex-shrink:0"></span>
+                        <span style="flex:1">
+                            <strong>${s.label}</strong>
+                            <span style="display:block;font-size:.8em;color:var(--text2);font-weight:normal">${s.desc}</span>
+                        </span>
+                    </button>
+                `).join('')}
+            </div>
+            <p style="font-size:.75em;color:var(--text2);margin-top:12px;text-align:center">💡 在章节列表上右键也可快速切换</p>
+        </div>`;
+    document.body.appendChild(modal);
+}
+
+function setChapterStatus(chapterId, status) {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === chapterId);
+    if(!ch) return;
+    ch.status = status;
+    saveAll();
+    renderChapters();
+    document.querySelector('.modal.active')?.remove();
+    const names = { draft: '草稿', first: '初稿', final: '定稿' };
+    showToast('已标记为「' + names[status] + '」');
 }
 // ========== 章节右键菜单 ==========
 function showChapterContextMenu(e, chapterId) {
