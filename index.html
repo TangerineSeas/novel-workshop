@@ -223,6 +223,14 @@ button{cursor:pointer}
 <div class="page-scroll"><div class="page-container">
 <div class="home-hero"><h1>📖 我的作品</h1><p>选择一部作品继续创作，或创建新的世界</p>
 <button class="new-work-btn" onclick="createNewWork()">+ 创建新作品</button></div>
+
+<div class="card" style="margin:20px auto;max-width:500px;padding:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="margin:0;font-size:1em">🎯 今日写作目标</h3>
+        <button class="btn btn-secondary btn-sm" onclick="editDailyGoal()">设定</button>
+    </div>
+    <div id="dailyGoalDisplay"></div>
+</div>
 <div class="work-grid" id="workGrid"></div>
 <div class="calendar-dashboard" id="dashboardCal">
 <h3>📅 码字日历（本月）</h3>
@@ -833,6 +841,7 @@ function renderHome() {
         card.onclick = () => openWork(w.id);
         grid.appendChild(card);
     });
+   renderDailyGoal();
     renderDashboardCalendar();
 }
 function renderDashboardCalendar() {
@@ -1119,6 +1128,9 @@ function updateWordCount() {
         w.dailyWordCounts = w.dailyWordCounts || {};
         w.dailyWordCounts[today] = len;
         w.lastModified = Date.now();
+               if(document.getElementById('dailyGoalDisplay')) {
+            renderDailyGoal();
+        }
     }
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => { saveAll(); showToast('已自动保存'); }, 10000);
@@ -3439,7 +3451,66 @@ function permanentDelete(type, index) {
     renderTrash();
     showToast('已彻底删除');
 }
+// ========== 写作目标 ==========
+function getTodayWordCount() {
+    const today = new Date().toISOString().slice(0,10);
+    let total = 0;
+    works.forEach(w => {
+        if(w.dailyWordCounts && w.dailyWordCounts[today]) {
+            total += w.dailyWordCounts[today];
+        }
+    });
+    return total;
+}
 
+function getDailyGoal() {
+    return parseInt(localStorage.getItem('dailyGoal') || '0');
+}
+
+function setDailyGoal(value) {
+    localStorage.setItem('dailyGoal', value);
+}
+
+function editDailyGoal() {
+    const current = getDailyGoal();
+    const input = prompt('设定每日写作目标（字数）：', current > 0 ? current : '2000');
+    if(input === null) return;
+    const value = parseInt(input);
+    if(isNaN(value) || value <= 0) {
+        showToast('请输入有效数字');
+        return;
+    }
+    setDailyGoal(value);
+    renderDailyGoal();
+    showToast('目标已设定');
+}
+
+function renderDailyGoal() {
+    const container = document.getElementById('dailyGoalDisplay');
+    if(!container) return;
+    const goal = getDailyGoal();
+    const todayCount = getTodayWordCount();
+    
+    if(goal === 0) {
+        container.innerHTML = '<p style="color:var(--text2);font-size:.85em;text-align:center">还没设定目标，点击右上角「设定」开始吧</p>';
+        return;
+    }
+    
+    const percent = Math.min(100, Math.round(todayCount / goal * 100));
+    const isComplete = todayCount >= goal;
+    const barColor = isComplete ? 'var(--success)' : 'var(--accent)';
+    
+    container.innerHTML = `
+        <div style="display:flex;justify-content:space-between;font-size:.85em;margin-bottom:6px">
+            <span>${todayCount} / ${goal} 字</span>
+            <span style="color:${isComplete ? 'var(--success)' : 'var(--accent)'};font-weight:bold">${percent}%</span>
+        </div>
+        <div style="width:100%;height:10px;background:var(--bg3);border-radius:5px;overflow:hidden">
+            <div style="width:${percent}%;height:100%;background:${barColor};transition:width .3s;border-radius:5px"></div>
+        </div>
+        ${isComplete ? '<p style="text-align:center;margin-top:8px;font-size:.85em;color:var(--success)">🎉 今日目标已达成！</p>' : ''}
+    `;
+}
 function clearTrash() {
     const w = currentWork(); if(!w) return;
     if(!confirm('确定清空回收站？所有内容将永久删除且无法恢复。')) return;
