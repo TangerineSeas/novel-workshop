@@ -231,6 +231,16 @@ button{cursor:pointer}
     </div>
     <div id="dailyGoalDisplay"></div>
 </div>
+<div class="card" style="margin:20px auto;max-width:700px;padding:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="margin:0;font-size:1em">📊 码字趋势</h3>
+        <div style="display:flex;gap:6px">
+            <button class="btn btn-secondary btn-sm" id="trendBtn7" onclick="switchTrendRange(7)">7天</button>
+            <button class="btn btn-secondary btn-sm" id="trendBtn30" onclick="switchTrendRange(30)">30天</button>
+        </div>
+    </div>
+    <div id="trendChartDisplay"></div>
+</div>
 <div class="work-grid" id="workGrid"></div>
 <div class="calendar-dashboard" id="dashboardCal">
 <h3>📅 码字日历（本月）</h3>
@@ -843,6 +853,7 @@ function renderHome() {
     });
    renderDailyGoal();
     renderDashboardCalendar();
+       renderTrendChart();
 }
 function renderDashboardCalendar() {
     const now = new Date();
@@ -3135,6 +3146,7 @@ async function init() {
         if(e.target && e.target.id && e.target.id.startsWith('wv_')) updateWvProgress();
     });
     saveAll();
+   switchTrendRange(7);
 }
 // ========== 多格式导出 ==========
 function openExportMenu(workId) {
@@ -3510,6 +3522,74 @@ function renderDailyGoal() {
         </div>
         ${isComplete ? '<p style="text-align:center;margin-top:8px;font-size:.85em;color:var(--success)">🎉 今日目标已达成！</p>' : ''}
     `;
+}
+// ========== 码字趋势图 ==========
+let trendRange = 7;
+
+function switchTrendRange(days) {
+    trendRange = days;
+    document.getElementById('trendBtn7').className = days === 7 ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+    document.getElementById('trendBtn30').className = days === 30 ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+    renderTrendChart();
+}
+
+function getWordsByDate(days) {
+    // 返回最近 days 天的 { date, words } 数组
+    const result = [];
+    const now = new Date();
+    for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const dateKey = d.toISOString().slice(0, 10);
+        let words = 0;
+        works.forEach(w => {
+            if (w.dailyWordCounts && w.dailyWordCounts[dateKey]) {
+                words += w.dailyWordCounts[dateKey];
+            }
+        });
+        result.push({ date: dateKey, words });
+    }
+    return result;
+}
+
+function renderTrendChart() {
+    const container = document.getElementById('trendChartDisplay');
+    if (!container) return;
+    
+    const data = getWordsByDate(trendRange);
+    const maxWords = Math.max(...data.map(d => d.words), 1);
+    const totalWords = data.reduce((s, d) => s + d.words, 0);
+    const avgWords = Math.round(totalWords / trendRange);
+    const maxDay = data.reduce((a, b) => a.words > b.words ? a : b, data[0]);
+    
+    // 统计信息
+    let html = `<div style="display:flex;gap:20px;justify-content:space-around;margin-bottom:16px;font-size:.85em">
+        <div style="text-align:center"><div style="font-weight:bold;color:var(--accent);font-size:1.3em">${totalWords}</div><div style="color:var(--text2);font-size:.8em">总字数</div></div>
+        <div style="text-align:center"><div style="font-weight:bold;color:var(--accent);font-size:1.3em">${avgWords}</div><div style="color:var(--text2);font-size:.8em">日均</div></div>
+        <div style="text-align:center"><div style="font-weight:bold;color:var(--accent);font-size:1.3em">${maxDay.words}</div><div style="color:var(--text2);font-size:.8em">最高（${maxDay.date.slice(5)}）</div></div>
+    </div>`;
+    
+    // 柱状图
+    html += `<div style="display:flex;align-items:flex-end;gap:${trendRange === 30 ? '3' : '8'}px;height:120px;padding:0 5px">`;
+    data.forEach(d => {
+        const height = Math.max(2, Math.round(d.words / maxWords * 100));
+        const day = d.date.slice(5);
+        const isToday = d.date === new Date().toISOString().slice(0, 10);
+        html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%" title="${day}: ${d.words} 字">
+            <div style="width:100%;background:${isToday ? 'var(--gold)' : 'var(--accent)'};height:${height}%;border-radius:2px 2px 0 0;transition:height .3s;min-height:2px"></div>
+        </div>`;
+    });
+    html += `</div>`;
+    
+    // 日期标签
+    html += `<div style="display:flex;gap:${trendRange === 30 ? '3' : '8'}px;padding:4px 5px 0;font-size:.65em;color:var(--text2)">`;
+    data.forEach((d, i) => {
+        const showLabel = trendRange === 7 || i % 5 === 0 || i === data.length - 1;
+        html += `<div style="flex:1;text-align:center">${showLabel ? d.date.slice(5) : ''}</div>`;
+    });
+    html += `</div>`;
+    
+    container.innerHTML = html;
 }
 function clearTrash() {
     const w = currentWork(); if(!w) return;
