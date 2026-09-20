@@ -847,7 +847,7 @@ function confirmCreateWork() {
         calendarData: { eraName:'', weekDays:7, months:[], festivals:[] ,globalTimeline: [],outline: [],},
         trash: { characters: [], chapters: [], collectionEntries: [] },
         editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' },
-        writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString()
+        writingSessions: [], dailyWordCounts: {}, factions: [],factionRelations: [],createdAt: new Date().toISOString()
     };
     works.push(work); currentWorkId = work.id;
     closeNewWorkModal(); saveAll(); renderHome(); goPage('writing'); showToast('作品已创建！');
@@ -2143,6 +2143,7 @@ function switchWvTab(tab, btn) {
        if(tab === 'timeline') renderTimeline();
        if(tab === 'outline') renderOutline();
        if(tab === 'map') renderMap();
+   if(tab === 'factions') renderFactions();
 }
 function renderDynamicQuestionnaire() {
     const w = currentWork();
@@ -3436,6 +3437,402 @@ function deleteMarker(index) {
     renderMap();
     document.querySelector('.modal.active')?.remove();
     showToast('标记已删除');
+}
+// ========== 势力关系图 ==========
+const FACTION_TYPES = ['王国', '家族', '教会', '行会', '部落', '其他'];
+const FACTION_TYPE_COLORS = {
+    '王国': '#4a90e2',
+    '家族': '#e74c3c',
+    '教会': '#f39c12',
+    '行会': '#9b59b6',
+    '部落': '#27ae60',
+    '其他': '#95a5a6'
+};
+const RELATION_TYPES = ['敌对', '同盟', '联姻', '附属', '贸易', '中立'];
+const RELATION_COLORS = {
+    '敌对': '#e74c3c',
+    '同盟': '#27ae60',
+    '联姻': '#e91e63',
+    '附属': '#f39c12',
+    '贸易': '#3498db',
+    '中立': '#95a5a6'
+};
+
+let factionHoverEdge = null;
+
+function getFactionColor(faction) {
+    if(faction.color) return faction.color;
+    return FACTION_TYPE_COLORS[faction.type] || '#95a5a6';
+}
+
+function renderFactions() {
+    const w = currentWork(); if(!w) return;
+    renderFactionGraph();
+    renderFactionList();
+}
+
+function renderFactionList() {
+    const container = document.getElementById('factionListContainer');
+    if(!container) return;
+    const w = currentWork(); if(!w) return;
+    const factions = w.factions || [];
+    const relations = w.factionRelations || [];
+    
+    if(factions.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:var(--text2);font-size:.85em;padding:20px">暂无势力，点击上方「新增势力」开始</p>';
+        return;
+    }
+    
+    let html = `<h4 style="color:var(--accent);margin-bottom:10px;font-size:.9em">🏰 势力列表（${factions.length}）</h4>`;
+    factions.forEach(f => {
+        const relCount = relations.filter(r => r.from === f.id || r.to === f.id).length;
+        const color = getFactionColor(f);
+        html += `
+            <div class="faction-card" onclick="openFactionEditor(${f.id})">
+                <div class="faction-card-info">
+                    <div class="faction-card-name">
+                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle"></span>
+                        ${f.name || '未命名'}
+                    </div>
+                    <div class="faction-card-meta">
+                        <span class="faction-type-badge" style="background:${color};color:#fff">${f.type || '未分类'}</span>
+                        ${relCount} 条关系
+                    </div>
+                    ${f.desc ? `<div class="faction-card-desc">${f.desc.slice(0, 80)}${f.desc.length > 80 ? '...' : ''}</div>` : ''}
+                </div>
+                <div class="faction-card-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openFactionEditor(${f.id})">编辑</button>
+                    <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteFaction(${f.id})">删除</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `<h4 style="color:var(--accent);margin:20px 0 10px;font-size:.9em">🔗 关系列表（${relations.length}）</h4>`;
+    if(relations.length === 0) {
+        html += '<p style="font-size:.82em;color:var(--text2)">暂无关系</p>';
+    } else {
+        relations.forEach((r, idx) => {
+            const fromFaction = factions.find(f => f.id === r.from);
+            const toFaction = factions.find(f => f.id === r.to);
+            if(!fromFaction || !toFaction) return;
+            const relColor = r.color || RELATION_COLORS[r.type] || '#95a5a6';
+            html += `
+                <div class="faction-relation-item">
+                    <span class="rel-text">
+                        <strong style="color:${getFactionColor(fromFaction)}">${fromFaction.name}</strong>
+                        <span style="color:${relColor};font-weight:bold;margin:0 6px">—${r.type}→</span>
+                        <strong style="color:${getFactionColor(toFaction)}">${toFaction.name}</strong>
+                        ${r.desc ? `<span style="color:var(--text2);font-size:.9em;margin-left:8px">（${r.desc}）</span>` : ''}
+                    </span>
+                    <button class="btn btn-danger btn-sm" onclick="deleteFactionRelation(${idx})">✕</button>
+                </div>
+            `;
+        });
+    }
+    
+    container.innerHTML = html;
+}
+
+function openFactionEditor(id) {
+    const w = currentWork(); if(!w) return;
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    
+    const faction = id ? (w.factions || []).find(f => f.id === id) : null;
+    const isEdit = !!faction;
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:560px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">${isEdit ? '✏️ 编辑势力' : '➕ 新增势力'}</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">势力名称</label>
+                <input class="form-input" id="factionName" value="${faction ? (faction.name || '').replace(/"/g, '&quot;') : ''}" placeholder="如：洛塞弗尔家族">
+            </div>
+            <div class="form-group">
+                <label class="form-label">势力类型</label>
+                <select class="form-select" id="factionType" onchange="toggleCustomFactionType()">
+                    ${FACTION_TYPES.map(t => `<option value="${t}" ${faction && faction.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+                    <option value="custom" ${faction && !FACTION_TYPES.includes(faction.type) && faction.type ? 'selected' : ''}>自定义...</option>
+                </select>
+                <input class="form-input" id="factionTypeCustom" placeholder="输入自定义类型" style="margin-top:6px;display:${faction && !FACTION_TYPES.includes(faction.type) && faction.type ? 'block' : 'none'}" value="${faction && !FACTION_TYPES.includes(faction.type) ? faction.type : ''}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">颜色（可选）</label>
+                <input type="color" class="form-input" id="factionColor" value="${faction && faction.color ? faction.color : '#4a90e2'}" style="height:40px;padding:2px">
+            </div>
+            <div class="form-group">
+                <label class="form-label">势力描述</label>
+                <textarea class="form-textarea" id="factionDesc" style="min-height:120px" placeholder="势力的历史、目标、领袖、成员...">${faction ? (faction.desc || '') : ''}</textarea>
+            </div>
+            <div class="btn-row" style="justify-content:flex-end">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveFaction(${id || 'null'})">保存</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('factionName').focus();
+}
+
+function toggleCustomFactionType() {
+    const sel = document.getElementById('factionType');
+    const custom = document.getElementById('factionTypeCustom');
+    custom.style.display = sel.value === 'custom' ? 'block' : 'none';
+}
+
+function saveFaction(id) {
+    const w = currentWork(); if(!w) return;
+    const name = document.getElementById('factionName').value.trim();
+    if(!name) { showToast('请输入势力名称'); return; }
+    const typeSelect = document.getElementById('factionType').value;
+    const type = typeSelect === 'custom' ? document.getElementById('factionTypeCustom').value.trim() : typeSelect;
+    if(!type) { showToast('请输入势力类型'); return; }
+    const color = document.getElementById('factionColor').value;
+    const desc = document.getElementById('factionDesc').value.trim();
+    
+    w.factions = w.factions || [];
+    
+    if(id) {
+        const faction = w.factions.find(f => f.id === id);
+        if(faction) { faction.name = name; faction.type = type; faction.color = color; faction.desc = desc; }
+    } else {
+        w.factions.push({ id: Date.now(), name, type, color, desc });
+    }
+    
+    saveAll();
+    renderFactions();
+    document.querySelector('.modal.active')?.remove();
+    showToast('势力已保存');
+}
+
+function deleteFaction(id) {
+    const w = currentWork(); if(!w) return;
+    const faction = (w.factions || []).find(f => f.id === id);
+    if(!faction) return;
+    if(!confirm(`确定删除势力「${faction.name}」吗？相关关系也会一并删除。`)) return;
+    w.factions = w.factions.filter(f => f.id !== id);
+    w.factionRelations = (w.factionRelations || []).filter(r => r.from !== id && r.to !== id);
+    saveAll();
+    renderFactions();
+    showToast('已删除');
+}
+
+function openFactionRelationEditor(relationIndex) {
+    const w = currentWork(); if(!w) return;
+    const factions = w.factions || [];
+    if(factions.length < 2) { showToast('至少需要两个势力才能创建关系'); return; }
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    
+    const rel = relationIndex !== null && relationIndex !== undefined ? (w.factionRelations || [])[relationIndex] : null;
+    const isEdit = !!rel;
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:560px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">${isEdit ? '✏️ 编辑关系' : '🔗 新增势力关系'}</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">势力 A</label>
+                <select class="form-select" id="relFrom">
+                    ${factions.map(f => `<option value="${f.id}" ${rel && rel.from === f.id ? 'selected' : ''}>${f.name}</option>`).join('')}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">关系类型</label>
+                <select class="form-select" id="relType" onchange="toggleCustomRelType()">
+                    ${RELATION_TYPES.map(t => `<option value="${t}" ${rel && rel.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+                    <option value="custom" ${rel && !RELATION_TYPES.includes(rel.type) ? 'selected' : ''}>自定义...</option>
+                </select>
+                <input class="form-input" id="relTypeCustom" placeholder="输入自定义关系" style="margin-top:6px;display:${rel && !RELATION_TYPES.includes(rel.type) ? 'block' : 'none'}" value="${rel && !RELATION_TYPES.includes(rel.type) ? rel.type : ''}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">势力 B</label>
+                <select class="form-select" id="relTo">
+                    ${factions.map(f => `<option value="${f.id}" ${rel && rel.to === f.id ? 'selected' : ''}>${f.name}</option>`).join('')}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">关系描述（可选）</label>
+                <textarea class="form-textarea" id="relDesc" style="min-height:80px" placeholder="如：世代联姻、边境冲突...">${rel ? (rel.desc || '') : ''}</textarea>
+            </div>
+            <div class="btn-row" style="justify-content:flex-end">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveFactionRelation(${relationIndex !== null && relationIndex !== undefined ? relationIndex : 'null'})">保存</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+}
+
+function toggleCustomRelType() {
+    const sel = document.getElementById('relType');
+    const custom = document.getElementById('relTypeCustom');
+    custom.style.display = sel.value === 'custom' ? 'block' : 'none';
+}
+
+function saveFactionRelation(index) {
+    const w = currentWork(); if(!w) return;
+    const from = parseInt(document.getElementById('relFrom').value);
+    const to = parseInt(document.getElementById('relTo').value);
+    if(from === to) { showToast('不能选择同一个势力'); return; }
+    const typeSelect = document.getElementById('relType').value;
+    const type = typeSelect === 'custom' ? document.getElementById('relTypeCustom').value.trim() : typeSelect;
+    if(!type) { showToast('请输入关系类型'); return; }
+    const desc = document.getElementById('relDesc').value.trim();
+    
+    w.factionRelations = w.factionRelations || [];
+    
+    if(index !== null && index !== undefined) {
+        w.factionRelations[index] = { from, to, type, desc };
+    } else {
+        w.factionRelations.push({ from, to, type, desc });
+    }
+    
+    saveAll();
+    renderFactions();
+    document.querySelector('.modal.active')?.remove();
+    showToast('关系已保存');
+}
+
+function deleteFactionRelation(index) {
+    const w = currentWork(); if(!w) return;
+    if(!confirm('确定删除此关系？')) return;
+    w.factionRelations.splice(index, 1);
+    saveAll();
+    renderFactions();
+    showToast('已删除');
+}
+
+function renderFactionGraph() {
+    const canvas = document.getElementById('factionCanvas');
+    if(!canvas) return;
+    const w = currentWork(); if(!w) return;
+    const factions = w.factions || [];
+    const relations = w.factionRelations || [];
+    
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const W = rect.width - 32;
+    const H = 420;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+    
+    if(factions.length === 0) {
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text2').trim() || '#999';
+        ctx.font = '14px Georgia';
+        ctx.textAlign = 'center';
+        ctx.fillText('暂无势力，先添加势力吧', W/2, H/2);
+        return;
+    }
+    
+    // 环形布局
+    const cx = W/2, cy = H/2;
+    const radius = Math.min(W, H) / 2 - 70;
+    const positions = {};
+    factions.forEach((f, i) => {
+        const angle = (i / factions.length) * 2 * Math.PI - Math.PI/2;
+        positions[f.id] = { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
+    });
+    
+    // 绘制关系（带偏移，避免重叠）
+    relations.forEach(r => {
+        const p1 = positions[r.from], p2 = positions[r.to];
+        if(!p1 || !p2) return;
+        
+        const relColor = r.color || RELATION_COLORS[r.type] || '#95a5a6';
+        const isHover = factionHoverEdge === r;
+        
+        // 计算偏移（让线不重叠）
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const len = Math.sqrt(dx*dx + dy*dy);
+        const offset = 6;
+        const nx = -dy / len * offset;
+        const ny = dx / len * offset;
+        
+        // 绘制箭头
+        const startX = p1.x + nx;
+        const startY = p1.y + ny;
+        const endX = p2.x + nx;
+        const endY = p2.y + ny;
+        
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.strokeStyle = relColor;
+        ctx.lineWidth = isHover ? 3 : 2;
+        ctx.stroke();
+        
+        // 箭头头部
+        const angle = Math.atan2(endY - startY, endX - startX);
+        const arrowLen = 10;
+        const arrowAngle = 0.4;
+        ctx.beginPath();
+        ctx.moveTo(endX, endY);
+        ctx.lineTo(endX - arrowLen * Math.cos(angle - arrowAngle), endY - arrowLen * Math.sin(angle - arrowAngle));
+        ctx.lineTo(endX - arrowLen * Math.cos(angle + arrowAngle), endY - arrowLen * Math.sin(angle + arrowAngle));
+        ctx.closePath();
+        ctx.fillStyle = relColor;
+        ctx.fill();
+        
+        // 关系类型标签
+        const mx = (startX + endX) / 2;
+        const my = (startY + endY) / 2;
+        ctx.font = '11px Georgia';
+        ctx.textAlign = 'center';
+        const textWidth = ctx.measureText(r.type).width;
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg2').trim() || '#fff';
+        ctx.fillRect(mx - textWidth/2 - 4, my - 8, textWidth + 8, 16);
+        ctx.fillStyle = relColor;
+        ctx.fillText(r.type, mx, my + 4);
+    });
+    
+    // 绘制节点
+    factions.forEach(f => {
+        const p = positions[f.id];
+        const color = getFactionColor(f);
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 30, 0, 2*Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // 名称（支持换行）
+        const lines = wrapText(ctx, f.name || '未命名', 11, 90);
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#fff';
+        ctx.font = '11px Georgia';
+        ctx.textAlign = 'center';
+        lines.forEach((line, idx) => {
+            ctx.fillText(line, p.x, p.y + 42 + idx * 13);
+        });
+    });
+    
+    // 点击检测
+    canvas.onclick = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        factions.forEach(f => {
+            const p = positions[f.id];
+            if(Math.sqrt((clickX - p.x)**2 + (clickY - p.y)**2) <= 30) {
+                openFactionEditor(f.id);
+            }
+        });
+    };
 }
 async function init() {
     // 生成或获取用户ID
