@@ -322,6 +322,7 @@ button{cursor:pointer}
     <button class="wv-tab" onclick="switchWvTab('calendar',this)">📅 自定义日历</button>
     <button class="wv-tab" onclick="switchWvTab('timeline',this)">📜 时间线</button>
    <button class="wv-tab" onclick="switchWvTab('map',this)">🗺️ 地图</button>
+   <button class="wv-tab" onclick="switchWvTab('factions',this)">⚔️ 势力</button>
     <button class="wv-tab" onclick="switchWvTab('outline',this)">🗂️ 大纲</button>
 </div>
 <div class="wv-content active" id="wv-questionnaire">
@@ -415,6 +416,23 @@ button{cursor:pointer}
     <div id="mapContainer" style="position:relative;overflow:hidden;background:var(--bg);border:1px solid var(--border);border-radius:8px;height:500px;cursor:default">
         <p style="text-align:center;color:var(--text2);padding-top:200px;font-size:.9em" id="mapEmptyHint">还没有上传地图</p>
     </div>
+</div>
+<div class="wv-content" id="wv-factions">
+    <div class="card" style="margin-bottom:12px;padding:15px 20px;max-width:700px;margin-left:auto;margin-right:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <h3 style="margin:0;font-size:1em">⚔️ 势力关系图</h3>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="btn btn-primary btn-sm" onclick="openFactionEditor(null)">+ 新增势力</button>
+                <button class="btn btn-secondary btn-sm" onclick="openFactionRelationEditor(null)">+ 新增关系</button>
+                <button class="btn btn-secondary btn-sm" onclick="renderFactionGraph()">🔄 刷新</button>
+            </div>
+        </div>
+        <p style="font-size:.75em;color:var(--text2);margin-top:8px">点击节点查看/编辑势力，点击连线查看关系。可将鼠标悬停在连线上高亮。</p>
+    </div>
+    <div id="factionGraphContainer" style="max-width:800px;margin:0 auto 16px">
+        <canvas id="factionCanvas" style="width:100%;height:420px;background:var(--bg);border:1px solid var(--border);border-radius:8px"></canvas>
+    </div>
+    <div id="factionListContainer" style="max-width:700px;margin:0 auto"></div>
 </div>
 </div>
 
