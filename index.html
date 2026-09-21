@@ -301,6 +301,7 @@ button{cursor:pointer}
 <button class="btn btn-secondary btn-sm" onclick="toggleTimer()" id="timerBtn">⏱ 开始计时</button>
 <button class="btn btn-primary btn-sm" onclick="manualSave()">💾 手动保存</button>
 <button class="btn btn-secondary btn-sm" onclick="toggleFocusMode()">🎯 专注</button>
+<button class="btn btn-secondary btn-sm" onclick="openChapterNote()" id="chapterNoteBtn">📌 备忘</button>
 <span class="timer-display" id="timerDisplay">00:00:00</span>
 <span style="font-size:.72em;color:var(--text2)">字数：<span id="wordCount">0</span></span>
 </div>
@@ -3605,7 +3606,7 @@ function saveFaction(id) {
     
     saveAll();
     renderFactions();
-    document.querySelector('.modal.active')?.remove();
+    document.querySelectorAll('.modal.active').forEach(m => m.remove());
     showToast('势力已保存');
 }
 
@@ -3696,7 +3697,7 @@ function saveFactionRelation(index) {
     
     saveAll();
     renderFactions();
-    document.querySelector('.modal.active')?.remove();
+    document.querySelectorAll('.modal.active').forEach(m => m.remove());
     showToast('关系已保存');
 }
 
