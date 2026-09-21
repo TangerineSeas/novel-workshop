@@ -2364,3 +2364,36 @@
     top: 56px;
     z-index: 9998;
 }
+
+/* 世界观标签栏固定在顶部 */
+#page-worldview {
+    flex-direction: column;
+}
+
+#page-worldview .page-scroll {
+    padding-top: 0;
+}
+
+.wv-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    background: var(--bg);
+    padding: 12px 0;
+    margin: 0 0 16px 0;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 移动端适配 */
+@media (max-width: 900px) {
+    .wv-tabs {
+        padding: 10px 0;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+    .wv-tabs::-webkit-scrollbar {
+        height: 3px;
+    }
+}
