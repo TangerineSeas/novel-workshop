@@ -2342,3 +2342,25 @@
 .faction-relation-item .rel-text {
     flex: 1;
 }
+
+/* 修复页面层级：header 永远在最上 */
+.header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999 !important;
+}
+
+.main-container {
+    margin-top: 56px;
+}
+
+.page {
+    height: calc(100vh - 56px);
+}
+
+.mobile-nav-overlay {
+    top: 56px;
+    z-index: 9998;
+}
