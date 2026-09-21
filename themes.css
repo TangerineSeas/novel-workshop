@@ -2424,3 +2424,60 @@
         height: calc(100vh - 56px - env(safe-area-inset-top, 0px)) !important;
     }
 }
+
+/* 修复页面定位：所有页面从 header 下方开始 */
+body {
+    padding-top: 0;
+}
+
+.page {
+    position: fixed !important;
+    top: 56px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: auto !important;
+    overflow: hidden !important;
+    z-index: 1;
+}
+
+.page.active {
+    display: flex !important;
+}
+
+.page-scroll {
+    flex: 1;
+    overflow-y: auto !important;
+    height: auto !important;
+    padding: 22px;
+}
+
+/* header 永远在最上 */
+.header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999 !important;
+}
+
+/* 移动端侧边栏和弹窗位置适配 */
+.sidebar {
+    top: 56px !important;
+    height: calc(100vh - 56px) !important;
+}
+
+.char-panel {
+    top: 56px !important;
+    height: calc(100vh - 56px) !important;
+}
+
+.mobile-nav-overlay {
+    top: 56px !important;
+    z-index: 9998;
+}
+
+/* 弹窗必须在最上层 */
+.modal {
+    z-index: 10000 !important;
+}
