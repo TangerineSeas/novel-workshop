@@ -2397,3 +2397,30 @@
         height: 3px;
     }
 }
+
+/* 修复页面布局：page-scroll 必须在 header 下方 */
+.main-container {
+    position: relative !important;
+    margin-top: 56px !important;
+    height: calc(100vh - 56px) !important;
+}
+
+.page {
+    height: 100% !important;
+}
+
+.page.active {
+    height: 100% !important;
+}
+
+.page-scroll {
+    height: 100% !important;
+    max-height: 100% !important;
+}
+
+@media (max-width: 900px) {
+    .main-container {
+        margin-top: 56px !important;
+        height: calc(100vh - 56px - env(safe-area-inset-top, 0px)) !important;
+    }
+}
