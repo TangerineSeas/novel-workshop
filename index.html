@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>西幻创作工坊 v3.1.2</title>
+<title>西幻创作工坊 v3.2.0</title>
 <link rel="stylesheet" href="themes.css">
    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="knowledge.js"></script>
@@ -202,6 +202,45 @@ button{cursor:pointer}
 @media(min-width:901px){.mobile-nav-overlay{display:none!important}}
         .cal-day.has-note{border-color:var(--accent)}
 .note-dot{font-size:.7em;margin-top:2px}
+/* ===== v3.2 章节备忘 / 词条排序 / 引用统计 / 书签 / 侧边栏折叠 ===== */
+.entry-item{position:relative}
+.entry-item.nw-dragging{opacity:.35}
+.entry-item.nw-drag-over{outline:2px dashed var(--accent);outline-offset:2px}
+.nw-drag-handle{position:absolute;top:6px;right:8px;font-size:.85em;color:var(--text2);opacity:.35;cursor:grab;user-select:none;line-height:1}
+.entry-item:hover .nw-drag-handle{opacity:.85}
+.nw-ref-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.nw-ref-badge{font-size:.68em;padding:2px 7px;border-radius:10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);cursor:pointer;user-select:none}
+.nw-ref-badge:hover{border-color:var(--accent);color:var(--accent)}
+.nw-ref-badge.is-zero{opacity:.55;cursor:default}
+.nw-ref-badge.is-zero:hover{border-color:var(--border);color:var(--text2)}
+.nw-coll-stats{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.72em;color:var(--text2);margin:0 0 10px}
+.nw-coll-stats .nw-stat-num{color:var(--accent);font-weight:bold}
+.nw-coll-stats button{padding:3px 9px;border-radius:11px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;font-size:.95em}
+.nw-coll-stats button:hover{border-color:var(--accent);color:var(--accent)}
+.entry-link.nw-dangling{color:var(--danger);text-decoration:underline dotted}
+.sidebar{transition:width .25s ease}
+.sidebar.nw-collapsed{width:0!important;min-width:0!important;padding:0!important;border-right:0!important;overflow:hidden!important}
+.nw-collapse-btn{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1em;padding:0 2px;line-height:1}
+.nw-collapse-btn:hover{color:var(--accent)}
+#nwSidebarExpandBtn{display:none;position:fixed;left:3px;top:50%;transform:translateY(-50%);z-index:60;background:var(--bg2);border:1px solid var(--border);border-radius:0 8px 8px 0;color:var(--accent);padding:16px 7px;cursor:pointer;font-size:1em;line-height:1;box-shadow:2px 0 10px rgba(0,0,0,.25)}
+#nwSidebarExpandBtn:hover{background:var(--bg3);color:var(--text)}
+#nwSidebarExpandBtn.show{display:block}
+.nw-bookmark-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);margin-bottom:6px;cursor:pointer;transition:.15s}
+.nw-bookmark-row:hover{border-color:var(--accent);background:var(--bg3)}
+.nw-bookmark-main{flex:1;min-width:0}
+.nw-bookmark-label{font-size:.82em;font-weight:bold;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nw-bookmark-preview{font-size:.7em;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.nw-bookmark-pos{font-size:.68em;color:var(--text2);white-space:nowrap}
+.nw-btn-x{background:none;border:none;color:var(--text2);cursor:pointer;font-size:.9em;padding:2px 4px}
+.nw-btn-x:hover{color:var(--danger)}
+.nw-flash{animation:nwFlash 1.4s ease}
+@keyframes nwFlash{0%{background:rgba(255,215,0,.4)}100%{background:transparent}}
+@media(max-width:900px){
+  .sidebar.nw-collapsed{width:270px!important;padding:0!important;border-right:1px solid var(--border)!important}
+  #nwSidebarExpandBtn{display:none!important}
+  .nw-collapse-btn{display:none!important}
+  .nw-drag-handle{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -253,7 +292,10 @@ button{cursor:pointer}
 <div class="page" id="page-writing">
 <aside class="sidebar" id="sidebar">
 <div class="sb-section">
-    <div class="sb-title">📋 章节列表</div>
+    <div class="sb-title" style="justify-content:space-between">
+        <span>📋 章节列表</span>
+        <button class="nw-collapse-btn" onclick="toggleWritingSidebar()" title="折叠侧边栏（Ctrl+反斜杠）">«</button>
+    </div>
     <div id="workTitleDisplay" style="font-size:.75em;color:var(--accent);font-weight:bold;margin-bottom:8px;padding:4px 8px;background:var(--bg);border-radius:4px"></div>
     <div id="chapterList"></div>
     <button class="sb-add" onclick="addChapter()">+ 新建章节</button>
@@ -302,6 +344,7 @@ button{cursor:pointer}
 <button class="btn btn-primary btn-sm" onclick="manualSave()">💾 手动保存</button>
 <button class="btn btn-secondary btn-sm" onclick="toggleFocusMode()">🎯 专注</button>
 <button class="btn btn-secondary btn-sm" onclick="openChapterNote()" id="chapterNoteBtn">📌 备忘</button>
+<button class="btn btn-secondary btn-sm" onclick="openBookmarkPanel()" id="bookmarkBtn">🔖 书签</button>
 <span class="timer-display" id="timerDisplay">00:00:00</span>
 <span style="font-size:.72em;color:var(--text2)">字数：<span id="wordCount">0</span></span>
 </div>
@@ -312,6 +355,7 @@ button{cursor:pointer}
 <div class="cp-body" id="cpBody"></div>
 </aside>
 </div>
+<button id="nwSidebarExpandBtn" onclick="toggleWritingSidebar()" title="展开章节列表">»</button>
 
 <div class="page" id="page-worldview">
 <div class="page-scroll"><div class="page-container">
@@ -333,7 +377,17 @@ button{cursor:pointer}
     <button class="btn btn-primary" onclick="saveWorldview()" style="flex:1;padding:12px">💾 保存</button>
     <button class="btn btn-secondary" onclick="showWorldviewDoc()" style="flex:1;padding:12px">📜 查看文档</button>
 </div>
-<div class="card" id="wvDoc" style="display:none;margin-top:12px;"><h3>📜 世界观文档</h3><div id="wvDocContent" style="line-height:1.8;font-size:.88em"></div></div>
+<div class="card" id="wvDoc" style="display:none;margin-top:12px;">
+<h3 style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+    <span>📜 世界观文档</span>
+    <span style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="copyWorldviewDoc()">📋 复制 Markdown</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportWorldviewDoc('md')">⬇️ 导出 .md</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportWorldviewDoc('txt')">⬇️ 导出 .txt</button>
+    </span>
+</h3>
+<div id="wvDocContent" style="line-height:1.8;font-size:.88em"></div>
+</div>
 </div>
 <div class="wv-content" id="wv-collection">
 <div class="btn-row" style="margin-bottom:12px">
@@ -352,8 +406,9 @@ button{cursor:pointer}
 <button class="btn btn-primary btn-sm" onclick="addCollectionEntry()">+ 添加</button>
 </div>
 <input class="form-input" id="collSearch" placeholder="🔍 搜索词条..." style="margin-bottom:10px" oninput="renderCollection()">
+<div class="nw-coll-stats" id="collStats"></div>
 <div class="entry-list" id="collList"></div>
-<p style="font-size:.7em;color:var(--text2);margin-top:8px">💡 描述中使用 [[类型:名称]] 创建引用链接</p>
+<p style="font-size:.7em;color:var(--text2);margin-top:8px">💡 描述中使用 [[类型:名称]] 创建引用链接 · 在单一分类下拖拽卡片可调整顺序</p>
 </div>
 <div class="wv-content" id="wv-calendar">
 <div class="card"><h3>📅 历法设置</h3>
@@ -379,6 +434,7 @@ button{cursor:pointer}
     <button onclick="calNextMonth()">下月 →</button>
 </div>
 <div class="calendar-grid" id="calendarGrid"></div>
+<div id="calFestivalLegend" style="display:none;margin-top:12px;padding:10px 12px;border:1px dashed var(--border);border-radius:8px;font-size:.75em;color:var(--text2);line-height:1.8"></div>
 </div>
 </div>
 </div></div>
@@ -717,6 +773,7 @@ function goPage(page) {
     if(page === 'characters') { renderCharGrid(); updateFamilyFilters(); drawRelationGraph(); }
     if(page === 'tools') { renderNameResults(); renderKnowledgeBase(); renderUploadedBooks(); }
     if(page === 'dev') { renderDevQuestionList(); renderDevNameList(); renderDevKbList(); }
+    updateSidebarCollapseUI();
 }
 
 const themes = ['dark', 'light', 'parchment', 'deepsea', 'black', 'pink', 'retrogreen', 'cherry'];
@@ -1099,35 +1156,6 @@ function replaceInWork() {
     saveAll();
     showToast(`已替换 ${count} 处`);
 }
-function exportNovel() { const w = currentWork(); if(w) exportWork(w.id); }
-function exportWork(id) {
-    const w = works.find(x => x.id === id); if(!w) return;
-    let text = `《${w.title}》\n导出时间：${new Date().toLocaleString('zh-CN')}\n${'='.repeat(40)}\n\n`;
-    w.chapters.forEach(ch => { text += `【${ch.name}】\n${ch.content || ''}\n\n${'-'.repeat(30)}\n\n`; });
-    if(w.worldview && Object.keys(w.worldview).length > 0) {
-        text += '【世界观设定】\n';
-        Object.entries(w.worldview).forEach(([k, v]) => { if(v) text += `${k}：${v}\n`; });
-        text += '\n' + '-'.repeat(30) + '\n\n';
-    }
-    if(w.characters.length > 0) {
-        text += '【人物档案】\n';
-        w.characters.forEach(c => {
-            text += `${c.name}（${c.importance === 'main' ? '主角' : c.importance === 'important' ? '重要配角' : c.importance === 'minor' ? '次要配角' : '龙套'}）\n`;
-            if(c.raceCustom) text += `  种族：${c.raceCustom}\n`;
-            else if(c.race) text += `  种族：${c.race}\n`;
-            if(c.role) text += `  身份：${c.role}\n`;
-            if(c.family) text += `  家族：${c.family}\n`;
-            if(c.birth) text += `  出生：${c.birth}\n`;
-            if(c.description) text += `  设定：${c.description}\n`;
-            if(c.relations) text += `  关系：\n${c.relations.split('\n').map(r => '    ' + r).join('\n')}\n`;
-            text += '\n';
-        });
-    }
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = w.title + '.txt'; a.click();
-    URL.revokeObjectURL(url); showToast('导出成功');
-}
 function updateStyle() {
     const ed = document.getElementById('editor');
     const paper = document.getElementById('editorPaper');
@@ -1258,13 +1286,15 @@ function renderChapters() {
         
         const status = ch.status || 'draft';
         const statusInfo = statusMap[status] || statusMap['draft'];
+        const hasNote = !!(ch.note && ch.note.trim());
+        const bmCount = (ch.bookmarks || []).length;
         
         d.innerHTML = `
             <div class="sb-item-title" style="display:flex;justify-content:space-between;align-items:center;gap:5px">
-                <span>${ch.name}</span>
+                <span>${ch.name}${hasNote ? ` <span title="章节备忘：${escapeHtml(ch.note.replace(/\s+/g,' ').slice(0,80))}" style="font-size:.9em">📌</span>` : ''}</span>
                 <span style="font-size:.7em;padding:2px 6px;border-radius:8px;background:${statusInfo.color};color:#fff;white-space:nowrap">${statusInfo.label}</span>
             </div>
-            <div class="sb-item-desc">${ch.wordCount||0} 字</div>
+            <div class="sb-item-desc">${ch.wordCount||0} 字${bmCount ? ' · 🔖' + bmCount : ''}</div>
         `;
         d.onclick = () => switchChapter(ch.id);
         d.ondblclick = () => renameChapter(ch.id);
@@ -1279,8 +1309,218 @@ function renderChapters() {
         
         el.appendChild(d);
     });
+    updateChapterToolButtons();
 }
-// ========== 章节状态标记 ==========
+
+// 同步工具栏上「备忘 / 书签」按钮的状态
+function updateChapterToolButtons() {
+    const w = currentWork();
+    const ch = w ? w.chapters.find(c => c.id === w.currentChapterId) : null;
+    const noteBtn = document.getElementById('chapterNoteBtn');
+    if(noteBtn) noteBtn.textContent = (ch && ch.note && ch.note.trim()) ? '📌 备忘 •' : '📌 备忘';
+    const bmBtn = document.getElementById('bookmarkBtn');
+    if(bmBtn) {
+        const n = (ch && ch.bookmarks) ? ch.bookmarks.length : 0;
+        bmBtn.textContent = n ? '🔖 书签 ' + n : '🔖 书签';
+    }
+}
+// ========== 章节备忘（不进入正文/导出） ==========
+function openChapterNote() {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    if(!ch) { showToast('请先选择章节'); return; }
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwChapterNoteModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:560px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">📌 章节备忘</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div style="font-size:.78em;color:var(--text2);margin-bottom:10px">
+                《${escapeHtml(ch.name)}》· 只给自己看，不会出现在正文、复制和导出文件里
+            </div>
+            <textarea id="nwChapterNoteInput" class="form-textarea" style="min-height:190px;line-height:1.7"
+                placeholder="这一章要写什么？关键情节、伏笔、情绪基调、待办…"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px;flex-wrap:wrap">
+                <span id="nwChapterNoteMeta" style="font-size:.7em;color:var(--text2)"></span>
+                <span style="display:flex;gap:6px">
+                    <button class="btn btn-secondary btn-sm" onclick="this.closest('.modal').remove()">取消</button>
+                    <button class="btn btn-primary btn-sm" onclick="saveChapterNote()">保存备忘</button>
+                </span>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    const ta = document.getElementById('nwChapterNoteInput');
+    const meta = document.getElementById('nwChapterNoteMeta');
+    ta.value = ch.note || '';
+    meta.textContent = ch.note
+        ? (ch.noteUpdatedAt ? '上次更新：' + new Date(ch.noteUpdatedAt).toLocaleString('zh-CN') : '已有备忘（' + ch.note.length + ' 字）')
+        : '还没有备忘';
+    ta.oninput = () => { meta.textContent = ta.value.length + ' 字 · Ctrl+Enter 保存'; };
+    ta.onkeydown = e => { if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); saveChapterNote(); } };
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+}
+
+function saveChapterNote() {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    const ta = document.getElementById('nwChapterNoteInput');
+    if(!ch || !ta) return;
+    const val = ta.value.trim();
+    if(val) { ch.note = val; ch.noteUpdatedAt = Date.now(); }
+    else { delete ch.note; delete ch.noteUpdatedAt; }
+    document.getElementById('nwChapterNoteModal')?.remove();
+    saveAll(); renderChapters();
+    showToast(val ? '章节备忘已保存' : '章节备忘已清空');
+}
+
+// ========== 书签 ==========
+function openBookmarkPanel() {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    if(!ch) { showToast('请先选择章节'); return; }
+    if(!Array.isArray(ch.bookmarks)) ch.bookmarks = [];
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwBookmarkModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:620px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">🔖 书签 · ${escapeHtml(ch.name)}</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+                <input id="nwBmLabel" class="form-input" placeholder="书签名称（留空自动取光标附近的文字）" style="flex:1;min-width:180px">
+                <button class="btn btn-primary btn-sm" onclick="addBookmarkAtCursor()">＋ 标记当前光标</button>
+            </div>
+            <div id="nwBmList"></div>
+            <p style="font-size:.7em;color:var(--text2);margin-top:10px">书签只记录字符位置，不改动正文；切换章节后仍会保留（大幅改写正文后位置可能偏移）。</p>
+        </div>`;
+    document.body.appendChild(modal);
+    renderBookmarkList();
+    document.getElementById('nwBmLabel').focus();
+}
+
+function renderBookmarkList() {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    const box = document.getElementById('nwBmList');
+    if(!ch || !box) return;
+    const list = (ch.bookmarks || []).slice().sort((a, b) => a.pos - b.pos);
+    if(!list.length) {
+        box.innerHTML = '<p style="font-size:.8em;color:var(--text2);padding:16px 0;text-align:center">本章还没有书签。把光标放到想记住的位置，点上面的按钮即可。</p>';
+        return;
+    }
+    box.innerHTML = '';
+    list.forEach(bm => {
+        const row = document.createElement('div');
+        row.className = 'nw-bookmark-row';
+        const pct = ch.content ? Math.round(bm.pos / ch.content.length * 100) : 0;
+        row.innerHTML = `
+            <span>🔖</span>
+            <div class="nw-bookmark-main">
+                <div class="nw-bookmark-label">${escapeHtml(bm.label || '未命名书签')}</div>
+                <div class="nw-bookmark-preview">${escapeHtml(bookmarkPreview(bm.pos))}</div>
+            </div>
+            <span class="nw-bookmark-pos">${pct}%</span>
+            <button class="nw-btn-x" title="删除书签">✕</button>`;
+        row.onclick = () => jumpToBookmark(bm.id);
+        row.querySelector('.nw-btn-x').onclick = ev => { ev.stopPropagation(); deleteBookmark(bm.id); };
+        box.appendChild(row);
+    });
+}
+
+function bookmarkPreview(pos) {
+    const ed = document.getElementById('editor');
+    const text = (ed && ed.value ? ed.value : '').replace(/\s+/g, ' ');
+    if(!text) return '（空章节）';
+    const a = Math.max(0, pos - 16), b = Math.min(text.length, pos + 16);
+    return (a > 0 ? '…' : '') + text.slice(a, b) + (b < text.length ? '…' : '');
+}
+
+function addBookmarkAtCursor() {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    const ed = document.getElementById('editor');
+    if(!ch || !ed) return;
+    if(!Array.isArray(ch.bookmarks)) ch.bookmarks = [];
+    const pos = (typeof ed.selectionStart === 'number') ? ed.selectionStart : 0;
+    const input = document.getElementById('nwBmLabel');
+    let label = input ? input.value.trim() : '';
+    if(!label) {
+        const before = (ed.value || '').slice(Math.max(0, pos - 10), pos).replace(/\s+/g, ' ').trim();
+        label = before ? '…' + before : ('第 ' + (pos + 1) + ' 字');
+    }
+    ch.bookmarks.push({ id: 'bm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6), pos, label, createdAt: Date.now() });
+    if(input) input.value = '';
+    saveAll(); renderChapters(); renderBookmarkList();
+    showToast('已添加书签');
+}
+
+function jumpToBookmark(id) {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    const bm = (ch && ch.bookmarks ? ch.bookmarks : []).find(b => b.id === id);
+    if(!bm) return;
+    document.getElementById('nwBookmarkModal')?.remove();
+    const ed = document.getElementById('editor');
+    if(!ed) return;
+    const pos = Math.max(0, Math.min(bm.pos, ed.value.length));
+    ed.focus();
+    ed.setSelectionRange(pos, pos);
+    const ratio = ed.value.length ? pos / ed.value.length : 0;
+    ed.scrollTop = Math.max(0, ratio * ed.scrollHeight - ed.clientHeight / 2);
+    const paper = document.getElementById('editorPaper');
+    if(paper) { paper.classList.remove('nw-flash'); void paper.offsetWidth; paper.classList.add('nw-flash'); }
+    showToast('已跳到书签：' + (bm.label || ''));
+}
+
+function deleteBookmark(id) {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    if(!ch || !Array.isArray(ch.bookmarks)) return;
+    ch.bookmarks = ch.bookmarks.filter(b => b.id !== id);
+    saveAll(); renderChapters(); renderBookmarkList();
+    showToast('书签已删除');
+}
+
+// ========== 写作侧边栏折叠 ==========
+const NW_SIDEBAR_KEY = 'nwSidebarCollapsed';
+function isWritingSidebarCollapsed() {
+    const sb = document.getElementById('sidebar');
+    return !!(sb && sb.classList.contains('nw-collapsed'));
+}
+function applyWritingSidebarCollapse(collapsed, persist = true) {
+    const sb = document.getElementById('sidebar');
+    if(!sb) return;
+    sb.classList.toggle('nw-collapsed', !!collapsed);
+    if(persist) { try { localStorage.setItem(NW_SIDEBAR_KEY, collapsed ? '1' : '0'); } catch(e) {} }
+    updateSidebarCollapseUI();
+}
+function toggleWritingSidebar() {
+    if(window.innerWidth <= 900) { showToast('手机上请用左上角 ☰ 打开章节列表'); return; }
+    applyWritingSidebarCollapse(!isWritingSidebarCollapsed());
+}
+function updateSidebarCollapseUI() {
+    const btn = document.getElementById('nwSidebarExpandBtn');
+    if(!btn) return;
+    const writing = document.getElementById('page-writing');
+    const active = !!(writing && writing.classList.contains('active'));
+    btn.classList.toggle('show', active && isWritingSidebarCollapsed() && window.innerWidth > 900);
+}
+document.addEventListener('keydown', e => {
+    if((e.ctrlKey || e.metaKey) && (e.key === '\\' || e.key === '|')) {
+        const writing = document.getElementById('page-writing');
+        if(writing && writing.classList.contains('active')) { e.preventDefault(); toggleWritingSidebar(); }
+    }
+});
+
+
 function openChapterStatusMenu(chapterId) {
     const w = currentWork(); if(!w) return;
     const ch = w.chapters.find(c => c.id === chapterId);
@@ -1318,6 +1558,10 @@ function openChapterStatusMenu(chapterId) {
                 `).join('')}
             </div>
             <p style="font-size:.75em;color:var(--text2);margin-top:12px;text-align:center">💡 在章节列表上右键也可快速切换</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+                <button class="btn btn-secondary btn-sm" style="color:var(--danger);border-color:var(--danger)" onclick="this.closest('.modal').remove(); deleteChapter(${chapterId})">🗑️ 删除本章</button>
+                <span style="font-size:.7em;color:var(--text2)">删除后可在回收站恢复</span>
+            </div>
         </div>`;
     document.body.appendChild(modal);
 }
@@ -1333,41 +1577,6 @@ function setChapterStatus(chapterId, status) {
     const names = { draft: '草稿', first: '初稿', final: '定稿' };
     showToast('已标记为「' + names[status] + '」');
 }
-// ========== 章节右键菜单 ==========
-function showChapterContextMenu(e, chapterId) {
-    // 先删除已有的菜单
-    document.querySelectorAll('.chapter-context-menu').forEach(m => m.remove());
-    
-    const menu = document.createElement('div');
-    menu.className = 'chapter-context-menu';
-    menu.style.cssText = `
-        position: fixed;
-        left: ${e.clientX}px;
-        top: ${e.clientY}px;
-        background: var(--bg2);
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        z-index: 9999;
-        padding: 5px 0;
-        min-width: 140px;
-    `;
-    menu.innerHTML = `
-        <div class="chapter-menu-item" onclick="renameChapter(${chapterId}); this.parentElement.remove();" style="padding:8px 15px;cursor:pointer;font-size:.85em">✏️ 重命名</div>
-        <div class="chapter-menu-item" onclick="deleteChapter(${chapterId}); this.parentElement.remove();" style="padding:8px 15px;cursor:pointer;font-size:.85em;color:var(--danger)">🗑️ 删除章节</div>
-    `;
-    document.body.appendChild(menu);
-    
-    // 点击其他地方关闭菜单
-    setTimeout(() => {
-        document.addEventListener('click', closeChapterContextMenu, { once: true });
-    }, 100);
-}
-
-function closeChapterContextMenu() {
-    document.querySelectorAll('.chapter-context-menu').forEach(m => m.remove());
-}
-
 function deleteChapter(chapterId) {
     const w = currentWork(); if(!w) return;
     const index = w.chapters.findIndex(c => c.id === chapterId);
@@ -2263,24 +2472,147 @@ function updateWvProgress() {
     document.getElementById('wvProgress').style.width = pct + '%';
     document.getElementById('wvProgressText').textContent = '完成度：' + pct + '%';
 }
-function showWorldviewDoc() {
-    const w = currentWork(); if(!w) return;
+// ========== 世界观文档（预览 / 导出）==========
+function buildWorldviewDoc() {
+    const w = currentWork(); if(!w) return null;
     const allQuestions = [...getDefaultQuestions(), ...(devData.questionnaire || [])];
-    let html = '';
-    const groups = {};
-    allQuestions.forEach(q => { if(!groups[q.category]) groups[q.category] = []; groups[q.category].push(q); });
-    Object.entries(groups).forEach(([cat, qs]) => {
-        html += `<h4 style="color:var(--accent);margin:15px 0 8px">${cat}</h4>`;
-        qs.forEach(q => {
-            const answer = w.worldview?.[q.id] || '未设定';
-            // 将答案中的换行符转换为 <br>，确保段落分行
-            const answerHtml = answer.replace(/\n/g, '<br>');
-            html += `<p style="margin-bottom:6px"><strong>${q.text}：</strong>${answerHtml}</p>`;
+    const groups = new Map();
+    allQuestions.forEach(q => {
+        if(!groups.has(q.category)) groups.set(q.category, []);
+        groups.get(q.category).push({ text: q.text, answer: String((w.worldview || {})[q.id] || '').trim() });
+    });
+    const sections = [...groups.entries()].map(([cat, items]) => ({ cat, items }));
+    const collections = [];
+    Object.entries(w.collectionEntries || {}).forEach(([type, arr]) => {
+        if(!arr || !arr.length) return;
+        collections.push({
+            type,
+            label: refTypeLabel(type),
+            entries: arr.map(e => ({ name: e.name, desc: e.desc || '' }))
         });
     });
+    const answered = sections.reduce((n, s) => n + s.items.filter(i => i.answer).length, 0);
+    return { title: w.title || '未命名作品', sections, collections, answered, total: allQuestions.length };
+}
+
+function refsToPlain(text) {
+    return String(text || '').replace(/\[\[([^\]\:]+):([^\]]+)\]\]/g, (m, t, n) => n);
+}
+
+function worldviewDocMarkdown(doc) {
+    if(!doc) return '';
+    const date = new Date().toLocaleDateString('zh-CN');
+    let md = `# 《${doc.title}》世界观设定\n\n> 导出自西幻创作工坊 · ${date} · 问卷完成度 ${doc.answered}/${doc.total}\n\n`;
+    doc.sections.forEach(s => {
+        const filled = s.items.filter(i => i.answer);
+        if(!filled.length) return;
+        md += `## ${s.cat}\n\n`;
+        filled.forEach(i => { md += `### ${i.text}\n\n${i.answer}\n\n`; });
+    });
+    const cats = doc.collections.filter(c => c.entries.length);
+    if(cats.length) {
+        md += `## 设定合集\n\n`;
+        cats.forEach(c => {
+            md += `### ${c.label}（${c.entries.length}）\n\n`;
+            c.entries.forEach(e => {
+                md += `**${e.name}**\n\n${refsToPlain(e.desc) || '（暂无描述）'}\n\n`;
+            });
+        });
+    }
+    const empty = doc.total - doc.answered;
+    if(empty > 0) md += `---\n\n还有 ${empty} 个问卷问题未填写。\n`;
+    return md;
+}
+
+function worldviewDocText(doc) {
+    if(!doc) return '';
+    const date = new Date().toLocaleString('zh-CN');
+    let t = `《${doc.title}》世界观设定\n导出自西幻创作工坊 · ${date}\n问卷完成度：${doc.answered}/${doc.total}\n`;
+    const line = '='.repeat(40) + '\n\n';
+    t += line;
+    doc.sections.forEach(s => {
+        const filled = s.items.filter(i => i.answer);
+        if(!filled.length) return;
+        t += `【${s.cat}】\n\n`;
+        filled.forEach(i => {
+            const body = i.answer.split('\n').map(l => '    ' + l).join('\n');
+            t += `${i.text}：\n${body}\n\n`;
+        });
+    });
+    const cats = doc.collections.filter(c => c.entries.length);
+    if(cats.length) {
+        t += line + '【设定合集】\n\n';
+        cats.forEach(c => {
+            t += `-- ${c.label}（${c.entries.length}）--\n\n`;
+            c.entries.forEach(e => {
+                const body = refsToPlain(e.desc).split('\n').map(l => '    ' + l).join('\n');
+                t += `${e.name}\n${body || '    （暂无描述）'}\n\n`;
+            });
+        });
+    }
+    return t;
+}
+
+function showWorldviewDoc() {
+    const doc = buildWorldviewDoc(); if(!doc) return;
+    let html = `<div style="font-size:.78em;color:var(--text2);margin-bottom:6px;padding-bottom:10px;border-bottom:1px dashed var(--border)">
+        问卷完成度 ${doc.answered}/${doc.total} · 导出的文档会同时包含下面的「设定合集」
+    </div>`;
+    doc.sections.forEach(s => {
+        if(!s.items.some(i => i.answer)) return;
+        html += `<h4 style="color:var(--accent);margin:15px 0 8px">${escapeHtml(s.cat)}</h4>`;
+        s.items.forEach(i => {
+            if(!i.answer) return;
+            html += `<p style="margin-bottom:8px"><strong>${escapeHtml(i.text)}：</strong>${escapeHtml(i.answer).replace(/\n/g, '<br>')}</p>`;
+        });
+    });
+    const cats = doc.collections.filter(c => c.entries.length);
+    if(cats.length) {
+        html += `<h4 style="color:var(--accent);margin:18px 0 8px">设定合集</h4>`;
+        cats.forEach(c => {
+            html += `<div style="margin-bottom:10px"><div style="font-weight:bold;color:var(--text)">${escapeHtml(c.label)}（${c.entries.length}）</div>`;
+            c.entries.forEach(e => {
+                html += `<div style="margin:4px 0 0 10px;font-size:.95em"><strong>${escapeHtml(e.name)}</strong>：${escapeHtml(refsToPlain(e.desc)) || '<span style="color:var(--text2)">暂无描述</span>'}</div>`;
+            });
+            html += `</div>`;
+        });
+    }
+    if(doc.answered === 0 && !cats.length) {
+        html += `<p style="color:var(--text2);font-size:.85em;margin-top:10px">还没有填写世界观问卷，也还没有设定合集词条。</p>`;
+    }
     document.getElementById('wvDocContent').innerHTML = html;
     document.getElementById('wvDoc').style.display = 'block';
     document.getElementById('wvDoc').scrollIntoView({ behavior:'smooth' });
+}
+
+function exportWorldviewDoc(format) {
+    const doc = buildWorldviewDoc(); if(!doc) return;
+    const safe = (doc.title || '未命名作品').replace(/[\\/:*?"<>|]/g, '_');
+    if(format === 'txt') {
+        downloadFile(worldviewDocText(doc), safe + '-世界观.txt', 'text/plain');
+    } else {
+        downloadFile(worldviewDocMarkdown(doc), safe + '-世界观.md', 'text/markdown');
+    }
+    showToast('已导出世界观文档');
+}
+
+async function copyWorldviewDoc() {
+    const doc = buildWorldviewDoc(); if(!doc) return;
+    const md = worldviewDocMarkdown(doc);
+    try {
+        await navigator.clipboard.writeText(md);
+        showToast('已复制 Markdown 到剪贴板');
+    } catch(e) {
+        const ta = document.createElement('textarea');
+        ta.value = md;
+        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch(err) { ok = false; }
+        ta.remove();
+        showToast(ok ? '已复制 Markdown 到剪贴板' : '复制失败，请改用导出');
+    }
 }
 function addCollectionEntry() {
     const w = currentWork(); if(!w) return;
@@ -2291,62 +2623,135 @@ if(!type) return;
     openCollectionModal(null, type, name);
     collName.value = '';
 }
-function parseRefs(text) {
-    const pattern = /\[\[([^\]]+)\]\]/g;
-    return text.replace(pattern, (match, inner) => {
-        const parts = inner.split(':');
-        if(parts.length >= 2) {
-            const type = parts[0].trim(); const name = parts.slice(1).join(':').trim();
-            return `<span class="entry-link" onclick="jumpToEntry('${type}','${name.replace(/'/g,"\\'")}')">${name}</span>`;
+// ========== 词条引用（[[类型:名称]]）==========
+const NW_REF_ALIASES = { '地名':'places', '地点':'places', '家族':'families', '历史':'history', '历史事件':'history', '种族':'races', '魔法':'magic', '节日':'festivals' };
+const NW_TYPE_LABELS = { places:'地名', families:'家族', history:'历史事件', races:'种族', magic:'魔法', festivals:'节日' };
+function normalizeRefType(t) {
+    const k = String(t || '').trim();
+    return NW_REF_ALIASES[k] || k;
+}
+function refTypeLabel(t) { return NW_TYPE_LABELS[t] || t; }
+
+// 建立整部作品的引用索引：谁引用了我 / 我引用了谁 / 断链
+function collectRefIndex(w) {
+    const out = { entries: [], inMap: new Map(), outMap: new Map(), dangling: [], totalLinks: 0, byKey: new Map() };
+    if(!w || !w.collectionEntries) return out;
+    Object.keys(w.collectionEntries).forEach(type => {
+        (w.collectionEntries[type] || []).forEach(e => {
+            const item = { type, name: e.name, desc: e.desc || '' };
+            out.entries.push(item);
+            out.byKey.set(type + ':' + e.name, item);
+        });
+    });
+    out.entries.forEach(e => {
+        const outs = [];
+        const re = /\[\[([^\]]+)\]\]/g;
+        let m;
+        while((m = re.exec(e.desc))) {
+            const i = m[1].indexOf(':');
+            if(i < 0) continue;
+            const type = normalizeRefType(m[1].slice(0, i));
+            const name = m[1].slice(i + 1).trim();
+            if(!name) continue;
+            const key = type + ':' + name;
+            const exists = out.byKey.has(key);
+            outs.push({ type, name, exists });
+            out.totalLinks++;
+            if(exists) {
+                if(!out.inMap.has(key)) out.inMap.set(key, []);
+                out.inMap.get(key).push({ type: e.type, name: e.name });
+            } else {
+                out.dangling.push({ from: { type: e.type, name: e.name }, type, name });
+            }
         }
-        return match;
+        out.outMap.set(e.type + ':' + e.name, outs);
+    });
+    return out;
+}
+
+function parseRefs(text) {
+    const w = currentWork();
+    const pattern = /\[\[([^\]]+)\]\]/g;
+    return String(text == null ? '' : text).replace(pattern, (match, inner) => {
+        const i = inner.indexOf(':');
+        if(i < 0) return match;
+        const type = normalizeRefType(inner.slice(0, i));
+        const name = inner.slice(i + 1).trim();
+        if(!name) return match;
+        const exists = !!(w && (w.collectionEntries[type] || []).some(e => e.name === name));
+        return `<span class="entry-link${exists ? '' : ' nw-dangling'}" title="${exists ? '跳转到词条' : '引用的词条不存在'}" onclick="jumpToEntry('${type}','${name.replace(/'/g, "\\'")}')">${name}</span>`;
     });
 }
+
 function jumpToEntry(type, name) {
     const w = currentWork(); if(!w) return;
+    type = normalizeRefType(type);
     const entry = (w.collectionEntries[type] || []).find(e => e.name === name);
-    if(entry) {
-        collType.value = type; collSearch.value = ''; renderCollection();
-        setTimeout(() => {
-            document.querySelectorAll('#collList .entry-item').forEach(el => {
-                if(el.querySelector('.entry-name').textContent === name) {
-                    el.style.borderColor = 'var(--gold)'; el.scrollIntoView({ behavior:'smooth', block:'center' });
-                    setTimeout(() => el.style.borderColor = '', 2000);
-                }
-            });
-        }, 100);
+    if(!entry) { showToast('引用的词条「' + name + '」还不存在'); return; }
+    // 若当前不在设定合集页，先切过去
+    const collTab = document.getElementById('wv-collection');
+    if(!collTab.classList.contains('active')) {
+        const idx = ['questionnaire','collection','calendar','timeline','map','factions','outline'].indexOf('collection');
+        switchWvTab('collection', document.querySelectorAll('.wv-tab')[idx]);
     }
+    collType.value = type;
+    collSearch.value = '';
+    renderCollection();
+    setTimeout(() => {
+        document.querySelectorAll('#collList .entry-item').forEach(el => {
+            const nameEl = el.querySelector('.entry-name');
+            if(nameEl && nameEl.textContent === name) {
+                el.style.borderColor = 'var(--gold)';
+                el.scrollIntoView({ behavior:'smooth', block:'center' });
+                setTimeout(() => el.style.borderColor = '', 2000);
+            }
+        });
+    }, 100);
 }
+
 function renderCollection() {
     const w = currentWork(); if(!w) return;
     const type = getEffectiveCollType();
     if(!type) return;
     const q = collSearch.value.toLowerCase().trim();
-    const list = document.getElementById('collList'); 
+    const list = document.getElementById('collList');
     list.innerHTML = '';
+
+    const refIndex = collectRefIndex(w);
+    // 「全部词条」和搜索状态下不排序（跨分类/筛选后的序号对不上原数组）
+    const canDrag = type !== 'all' && !q;
 
     // 构建要显示的词条数组（每个元素包含 type, name, desc）
     let allEntries = [];
     if(type === 'all') {
-        // 合并所有大类
         for (const category in w.collectionEntries) {
-            const entries = w.collectionEntries[category] || [];
-            entries.forEach(e => {
+            (w.collectionEntries[category] || []).forEach(e => {
                 allEntries.push({ type: category, name: e.name, desc: e.desc || '' });
             });
         }
     } else {
-        const entries = (w.collectionEntries[type] || []);
-        entries.forEach(e => {
+        (w.collectionEntries[type] || []).forEach(e => {
             allEntries.push({ type: type, name: e.name, desc: e.desc || '' });
         });
     }
 
-    // 搜索过滤
     if(q) {
-        allEntries = allEntries.filter(e => 
+        allEntries = allEntries.filter(e =>
             e.name.toLowerCase().includes(q) || e.desc.toLowerCase().includes(q)
         );
+    }
+
+    // 顶部统计
+    const stats = document.getElementById('collStats');
+    if(stats) {
+        const danglingColor = refIndex.dangling.length ? 'var(--danger)' : 'var(--text2)';
+        stats.innerHTML = `
+            <span>共 <b class="nw-stat-num">${refIndex.entries.length}</b> 个词条</span>
+            <span>·</span>
+            <span><b class="nw-stat-num">${refIndex.totalLinks}</b> 条引用</span>
+            <span>·</span>
+            <span style="color:${danglingColor}"><b class="nw-stat-num" style="color:${danglingColor}">${refIndex.dangling.length}</b> 条断链</span>
+            <button onclick="showRefOverview()">🔗 引用统计</button>`;
     }
 
     if(allEntries.length === 0) {
@@ -2354,18 +2759,174 @@ function renderCollection() {
         return;
     }
 
-    allEntries.forEach(e => {
+    allEntries.forEach((e, i) => {
+        const key = e.type + ':' + e.name;
+        const inN = (refIndex.inMap.get(key) || []).length;
+        const outN = (refIndex.outMap.get(key) || []).length;
         const d = document.createElement('div');
         d.className = 'entry-item';
+        d.dataset.index = i;
         d.innerHTML = `
+            ${canDrag ? '<span class="nw-drag-handle" title="按住拖拽可调整顺序">⠿</span>' : ''}
             <div class="entry-name">${e.name}</div>
             <div class="entry-desc">${parseRefs(e.desc || '无描述')}</div>
+            <div class="nw-ref-row">
+                <span class="nw-ref-badge${inN ? '' : ' is-zero'}" data-ref="in">🔗 被引用 ${inN}</span>
+                <span class="nw-ref-badge${outN ? '' : ' is-zero'}" data-ref="out">↗ 引用 ${outN}</span>
+            </div>
             <button class="entry-delete-btn" onclick="event.stopPropagation(); deleteCollectionEntry('${e.type}', '${e.name.replace(/'/g, "\\'")}')" style="margin-top:5px;font-size:.75em;background:var(--danger);color:#fff;border:none;border-radius:4px;padding:3px 8px;cursor:pointer;">删除</button>
         `;
-        // 点击条目编辑时传入实际大类名
         d.onclick = () => openCollectionModal({name: e.name, desc: e.desc}, e.type, null);
+        const inBadge = d.querySelector('[data-ref="in"]');
+        const outBadge = d.querySelector('[data-ref="out"]');
+        if(inN) inBadge.onclick = ev => { ev.stopPropagation(); showRefDetail(e.type, e.name, 'in'); };
+        if(outN) outBadge.onclick = ev => { ev.stopPropagation(); showRefDetail(e.type, e.name, 'out'); };
+        if(canDrag) { d.draggable = true; attachCollectionDrag(d, i); }
         list.appendChild(d);
     });
+}
+
+// 拖拽排序
+let nwCollDragFrom = -1;
+function attachCollectionDrag(el, index) {
+    el.ondragstart = ev => {
+        nwCollDragFrom = index;
+        el.classList.add('nw-dragging');
+        try { ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', String(index)); } catch(e) {}
+    };
+    el.ondragend = () => {
+        el.classList.remove('nw-dragging');
+        document.querySelectorAll('.entry-item.nw-drag-over').forEach(x => x.classList.remove('nw-drag-over'));
+        nwCollDragFrom = -1;
+    };
+    el.ondragover = ev => {
+        if(nwCollDragFrom < 0) return;
+        ev.preventDefault();
+        try { ev.dataTransfer.dropEffect = 'move'; } catch(e) {}
+        el.classList.add('nw-drag-over');
+    };
+    el.ondragleave = () => el.classList.remove('nw-drag-over');
+    el.ondrop = ev => {
+        ev.preventDefault();
+        el.classList.remove('nw-drag-over');
+        const from = nwCollDragFrom;
+        nwCollDragFrom = -1;
+        if(from < 0 || from === index) return;
+        const type = getEffectiveCollType();
+        const w = currentWork();
+        const arr = w && w.collectionEntries ? w.collectionEntries[type] : null;
+        if(!arr || from >= arr.length || index >= arr.length) return;
+        const [item] = arr.splice(from, 1);
+        arr.splice(index, 0, item);
+        saveAll();
+        renderCollection();
+        showToast('词条顺序已更新');
+    };
+}
+
+function nwRefRow(type, name, sub, onClick) {
+    const row = document.createElement('div');
+    row.className = 'nw-bookmark-row';
+    row.innerHTML = `
+        <span style="font-size:.9em">🔗</span>
+        <div class="nw-bookmark-main">
+            <div class="nw-bookmark-label">${escapeHtml(name)}</div>
+            <div class="nw-bookmark-preview">${escapeHtml(sub || '')}</div>
+        </div>`;
+    if(onClick) row.onclick = onClick;
+    return row;
+}
+
+function showRefDetail(type, name, focus) {
+    const w = currentWork(); if(!w) return;
+    const idx = collectRefIndex(w);
+    const key = type + ':' + name;
+    const ins = idx.inMap.get(key) || [];
+    const outs = idx.outMap.get(key) || [];
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwRefDetailModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:640px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">🔗 ${escapeHtml(name)} · 引用关系</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div id="nwRefInBox"></div>
+            <div id="nwRefOutBox" style="margin-top:16px"></div>
+        </div>`;
+    document.body.appendChild(modal);
+
+    const inBox = document.getElementById('nwRefInBox');
+    inBox.innerHTML = `<h4 style="color:var(--accent);font-size:.9em;margin-bottom:8px">被这些词条引用（${ins.length}）</h4>`;
+    if(ins.length) {
+        ins.forEach(src => inBox.appendChild(nwRefRow(src.type, src.name, refTypeLabel(src.type),
+            () => { modal.remove(); jumpToEntry(src.type, src.name); })));
+    } else {
+        inBox.insertAdjacentHTML('beforeend', '<p style="font-size:.8em;color:var(--text2);padding:4px 0">还没有词条引用它</p>');
+    }
+
+    const outBox = document.getElementById('nwRefOutBox');
+    outBox.innerHTML = `<h4 style="color:var(--accent);font-size:.9em;margin-bottom:8px">它引用了（${outs.length}）</h4>`;
+    if(outs.length) {
+        outs.forEach(t => {
+            const sub = t.exists ? refTypeLabel(t.type) : '⚠ 断链：词条不存在';
+            const row = nwRefRow(t.type, t.name, sub, t.exists ? () => { modal.remove(); jumpToEntry(t.type, t.name); } : null);
+            if(!t.exists) row.style.borderColor = 'var(--danger)';
+            outBox.appendChild(row);
+        });
+    } else {
+        outBox.insertAdjacentHTML('beforeend', '<p style="font-size:.8em;color:var(--text2);padding:4px 0">它的描述里还没有引用其他词条</p>');
+    }
+    if(focus === 'out') outBox.scrollIntoView({ block: 'nearest' });
+}
+
+function showRefOverview() {
+    const w = currentWork(); if(!w) return;
+    const idx = collectRefIndex(w);
+    const ranked = idx.entries.map(e => ({ ...e, n: (idx.inMap.get(e.type + ':' + e.name) || []).length }))
+        .filter(e => e.n > 0).sort((a, b) => b.n - a.n).slice(0, 20);
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwRefOverviewModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:680px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">🔗 词条引用统计</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px;font-size:.8em">
+                <span>词条 <b style="color:var(--accent)">${idx.entries.length}</b></span>
+                <span>引用链接 <b style="color:var(--accent)">${idx.totalLinks}</b></span>
+                <span>断链 <b style="color:${idx.dangling.length ? 'var(--danger)' : 'var(--accent)'}">${idx.dangling.length}</b></span>
+            </div>
+            <h4 style="color:var(--accent);font-size:.9em;margin-bottom:8px">被引用最多</h4>
+            <div id="nwRefRankBox"></div>
+            <h4 style="color:var(--danger);font-size:.9em;margin:16px 0 8px">断链（描述里写了但词条不存在）</h4>
+            <div id="nwRefDanglingBox"></div>
+        </div>`;
+    document.body.appendChild(modal);
+
+    const rankBox = document.getElementById('nwRefRankBox');
+    if(ranked.length) {
+        ranked.forEach(e => rankBox.appendChild(nwRefRow(e.type, e.name, refTypeLabel(e.type) + ' · 被引用 ' + e.n + ' 次',
+            () => { modal.remove(); showRefDetail(e.type, e.name, 'in'); })));
+    } else {
+        rankBox.innerHTML = '<p style="font-size:.8em;color:var(--text2)">还没有任何引用关系。在描述里写 [[类型:名称]] 就会自动统计。</p>';
+    }
+
+    const danglingBox = document.getElementById('nwRefDanglingBox');
+    if(idx.dangling.length) {
+        idx.dangling.forEach(dg => {
+            const row = nwRefRow(dg.type, dg.name, '来自「' + dg.from.name + '」', null);
+            row.style.borderColor = 'var(--danger)';
+            danglingBox.appendChild(row);
+        });
+    } else {
+        danglingBox.innerHTML = '<p style="font-size:.8em;color:var(--text2)">没有断链 🎉</p>';
+    }
 }
    function deleteCollectionEntry(type, name) {
     const w = currentWork(); if(!w) return;
@@ -2465,7 +3026,7 @@ let calViewMonth = 0;
 let calViewYear = new Date().getFullYear();
 function saveCalendar() {
     const w = currentWork(); if(!w) return;
-        const existingNotes = w.calendarData.notes || {};
+    const existingNotes = (w.calendarData && w.calendarData.notes) || {};
     w.calendarData = {
         eraName: calEraName.value || '',
         weekDays: parseInt(calWeekDays.value) || 7,
@@ -2477,19 +3038,20 @@ function saveCalendar() {
 }
 function renderCalendar() {
     const w = currentWork();
-    const defaults = { eraName:'', weekDays:7, months:[{name:'初春月',days:30},{name:'花月',days:28},{name:'盛夏月',days:31},{name:'秋收月',days:30},{name:'霜月',days:29},{name:'寒冬月',days:31}], festivals:[] };
-    const data = w && w.calendarData && w.calendarData.months && w.calendarData.months.length > 0 ? w.calendarData : defaults;
-    if(w && w.calendarData) { calEraName.value = data.eraName; calWeekDays.value = data.weekDays; calMonths.value = data.months.map(m => m.name + ':' + m.days).join('\n'); calFestivals.value = data.festivals.map(f => f.name + ':' + f.month + ':' + f.day).join('\n'); }
+    const defaults = { eraName:'', weekDays:7, months:[{name:'初春月',days:30},{name:'花月',days:28},{name:'盛夏月',days:31},{name:'秋收月',days:30},{name:'霜月',days:29},{name:'寒冬月',days:31}], festivals:[{name:'新年节',month:'初春月',day:1},{name:'花祭',month:'花月',day:10},{name:'丰收祭',month:'秋收月',day:15},{name:'冬至节',month:'寒冬月',day:21}] };
+    const hasSavedCalendar = !!(w && w.calendarData && w.calendarData.months && w.calendarData.months.length > 0);
+    const data = hasSavedCalendar ? w.calendarData : defaults;
+    if(hasSavedCalendar) { calEraName.value = data.eraName; calWeekDays.value = data.weekDays; calMonths.value = data.months.map(m => m.name + ':' + m.days).join('\n'); calFestivals.value = data.festivals.map(f => f.name + ':' + f.month + ':' + f.day).join('\n'); }
     if(calViewMonth >= data.months.length) calViewMonth = 0;
     if(calViewMonth < 0) calViewMonth = data.months.length - 1;
     const month = data.months[calViewMonth];
     const grid = document.getElementById('calendarGrid');
     grid.style.gridTemplateColumns = `repeat(${data.weekDays}, 1fr)`;
     document.getElementById('calMonthTitle').textContent = `${data.eraName || '帝国历'} · ${month.name}（${month.days}天）`;
-document.getElementById('calYearInput').value = calViewYear;
+    document.getElementById('calYearInput').value = calViewYear;
     grid.innerHTML = '';
     for(let i=0; i<data.weekDays; i++) { const h = document.createElement('div'); h.className='cal-header'; h.textContent=`第${i+1}日`; grid.appendChild(h); }
-        const notes = w.calendarData.notes || {};
+    const notes = (w && w.calendarData && w.calendarData.notes) || {};
     for(let day=1; day<=month.days; day++) {
         const d = document.createElement('div');
         const fest = data.festivals.find(f => f.month === month.name && f.day === day);
@@ -2497,16 +3059,28 @@ document.getElementById('calYearInput').value = calViewYear;
         const note = notes[dateKey] || '';
         d.className = 'cal-day' + (fest ? ' festival' : '') + (note ? ' has-note' : '');
         d.style.cursor = 'pointer';
+        if(fest) d.title = '🎉 ' + fest.name;
         d.innerHTML = `${day}${fest ? `<span class="festival-name">${fest.name}</span>` : ''}${note ? `<span class="note-dot">📝</span>` : ''}`;
         d.onclick = () => openCalendarNote(dateKey, note);
         grid.appendChild(d);
     }
+    // 本月节日图例，让高亮更容易被注意到
+    const legend = document.getElementById('calFestivalLegend');
+    if(legend) {
+        const fests = data.festivals.filter(f => f.month === month.name).sort((a, b) => a.day - b.day);
+        if(fests.length) {
+            legend.style.display = 'block';
+            legend.innerHTML = '🎉 <b style="color:var(--gold)">本月节日</b>：' +
+                fests.map(f => `${escapeHtml(f.name)}（第 ${f.day} 日）`).join(' · ');
+        } else {
+            legend.style.display = 'none';
+            legend.innerHTML = '';
+        }
+    }
 }
 function calPrevMonth() { calViewMonth--; renderCalendar(); }
 function calNextMonth() { calViewMonth++; renderCalendar(); }
-    function calPrevYear() { calViewYear--; renderCalendar(); }
-function calNextYear() { calViewYear++; renderCalendar(); }
-    function calJumpToYear() {
+function calJumpToYear() {
     const year = parseInt(document.getElementById('calYearInput').value);
     if(year && year > 0 && year < 9999) {
         calViewYear = year;
@@ -2518,6 +3092,7 @@ function openCalendarNote(dateKey, existingNote) {
     const note = prompt('请输入备注：', existingNote || '');
     if(note === null) return;
     const w = currentWork(); if(!w) return;
+    w.calendarData = w.calendarData || { eraName:'', weekDays:7, months:[], festivals:[], notes:{} };
     w.calendarData.notes = w.calendarData.notes || {};
     if(note.trim() === '') {
         delete w.calendarData.notes[dateKey];
@@ -3915,6 +4490,7 @@ async function init() {
     });
     saveAll();
    switchTrendRange(7);
+    updateSidebarCollapseUI();
 }
 // ========== 专注模式 ==========
 let focusMode = false;
@@ -4442,6 +5018,10 @@ function clearTrash() {
 }
 window.addEventListener('load', () => { 
     loadSavedTheme();
+    // 侧边栏折叠状态要尽早恢复，不能等云端数据加载完
+    try {
+        if(localStorage.getItem(NW_SIDEBAR_KEY) === '1' && window.innerWidth > 900) applyWritingSidebarCollapse(true, false);
+    } catch(e) {}
     init(); 
 });
 // 页面关闭/刷新时自动暂停计时并记录
