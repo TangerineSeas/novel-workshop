@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>西幻创作工坊 v3.2.0</title>
+<title>西幻创作工坊 v3.3.0</title>
 <link rel="stylesheet" href="themes.css">
    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="knowledge.js"></script>
@@ -255,6 +255,7 @@ button{cursor:pointer}
 <button class="nav-btn" data-page="tools" onclick="goPage('tools')">🔧 工具</button>
 <button class="nav-btn dev-nav-btn" data-page="dev" onclick="goPage('dev')" id="devNavBtn" style="display:none;color:var(--dev)">🔓 开发者</button>
 </nav>
+<button class="theme-btn" onclick="openSyncPanel()" id="syncBtn" title="云同步">☁️</button>
 <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
 </header>
 
@@ -282,7 +283,7 @@ button{cursor:pointer}
 </div>
 <div class="work-grid" id="workGrid"></div>
 <div class="calendar-dashboard" id="dashboardCal">
-<h3>📅 码字日历（本月）</h3>
+<h3>📅 码字日历（本月）<span style="font-size:.65em;color:var(--text2);font-weight:normal;margin-left:6px">按每天新增字数统计</span></h3>
 <div class="stats-row" id="statsRow"></div>
 <div class="daily-grid" id="dailyGrid"></div>
 </div>
@@ -729,9 +730,33 @@ let devData = {
 
 const SUPABASE_URL = 'https://upylpcsuqqevergsrits.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVweWxwY3N1cXFldmVyZ3NyaXRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MzU1NjgsImV4cCI6MjEwMzQxMTU2OH0.8XrIA8g5yq8tL8bTAGe-XtJbGhOXv_mrwyiT80BEXmA';
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = (window.supabase && typeof window.supabase.createClient === 'function')
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    : null;
 let currentUserId = null;
+// 云同步状态：null=未知，true=已连接，false=不可用
+let nwCloudReachable = null;
+let nwLastSyncAt = 0;
+let nwSyncError = '';
     function currentWork() { return works.find(w => w.id === currentWorkId) || null; }
+
+// ===== 码字统计辅助 =====
+// 本地日期键。旧代码用 toISOString() 会按 UTC 算，东八区 0–8 点会记到前一天。
+function nwLocalDateKey(d) {
+    const dt = d ? new Date(d) : new Date();
+    return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+}
+// 每个章节上一次看到的字数，用来算「这次输入新增了多少」
+const nwWordBaseline = new Map();
+let nwLastCountedChapterId = null;
+// 旧版统计把「章节总字数」当成「今日字数」，无法还原真实历史，一次性归档后重新开始
+function nwMigrateWordStats(w) {
+    if(!w || w.statsVersion === 2) return false;
+    w.legacyDailyWordCounts = w.dailyWordCounts || {};
+    w.dailyWordCounts = {};
+    w.statsVersion = 2;
+    return true;
+}
 
 function logoClick() {
     logoClickCount++;
@@ -905,7 +930,7 @@ function confirmCreateWork() {
         calendarData: { eraName:'', weekDays:7, months:[], festivals:[] ,globalTimeline: [],outline: [],},
         trash: { characters: [], chapters: [], collectionEntries: [] },
         editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' },
-        writingSessions: [], dailyWordCounts: {}, factions: [],factionRelations: [],createdAt: new Date().toISOString()
+        writingSessions: [], dailyWordCounts: {}, statsVersion: 2, factions: [],factionRelations: [],createdAt: new Date().toISOString()
     };
     works.push(work); currentWorkId = work.id;
     closeNewWorkModal(); saveAll(); renderHome(); goPage('writing'); showToast('作品已创建！');
@@ -1027,7 +1052,7 @@ function recordTimingSession() {
         const segEnd = endOfDay < now ? endOfDay : now;
         const segDuration = Math.floor((segEnd - current) / 1000);
         if(segDuration > 0) {
-            const dateKey = current.toISOString().slice(0,10);
+            const dateKey = nwLocalDateKey(current);
             const w = currentWork();
             if(w) {
                 w.writingSessions.push({ date: dateKey, duration: segDuration, timestamp: Date.now() });
@@ -1082,6 +1107,8 @@ function formatCurrentChapter() {
     text = text.replace(/\n{3,}/g, '\n\n');
     
     editor.value = text;
+    // 排版插入的空行也不计入今日字数
+    nwLastCountedChapterId = null;
     updateWordCount();
     saveAll();
     showToast('排版完成');
@@ -1150,7 +1177,8 @@ function replaceInWork() {
     // 更新当前编辑器
     const currentCh = w.chapters.find(c => c.id === w.currentChapterId);
     if(currentCh) document.getElementById('editor').value = currentCh.content || '';
-    
+    // 批量替换不算「今天新写的字」
+    nwLastCountedChapterId = null;
     updateWordCount();
     renderChapters();
     saveAll();
@@ -1196,18 +1224,34 @@ function updateStyle() {
     if(w) { w.editorSettings = { fontFamily:fontFamily.value, fontSize:fontSize.value, fontColor:fontColor.value, lineHeight:lineHeight.value, letterSpacing:letterSpacing.value, paperBg:paperBg.value }; }
 }
 function updateWordCount() {
-    const len = document.getElementById('editor').value.length;
+    const ed = document.getElementById('editor');
+    const text = ed.value;
+    const len = text.length;
     document.getElementById('wordCount').textContent = len;
     const w = currentWork();
     if(w) {
         const ch = w.chapters.find(c => c.id === w.currentChapterId) || w.chapters[0];
-        if(ch) { ch.content = document.getElementById('editor').value; ch.wordCount = len; renderChapters(); }
-        const today = new Date().toISOString().slice(0,10);
-        w.dailyWordCounts = w.dailyWordCounts || {};
-        w.dailyWordCounts[today] = len;
-        w.lastModified = Date.now();
-               if(document.getElementById('dailyGoalDisplay')) {
-            renderDailyGoal();
+        if(ch) {
+            // 切换章节（或刚加载）时只记录基线，不把已有正文算进今天
+            if(nwLastCountedChapterId !== ch.id) {
+                nwLastCountedChapterId = ch.id;
+                nwWordBaseline.set(ch.id, len);
+            }
+            const prev = nwWordBaseline.has(ch.id) ? nwWordBaseline.get(ch.id) : len;
+            const delta = len - prev;
+            nwWordBaseline.set(ch.id, len);
+            ch.content = text;
+            ch.wordCount = len;
+            renderChapters();
+            if(delta > 0) {
+                const today = nwLocalDateKey();
+                w.dailyWordCounts = w.dailyWordCounts || {};
+                w.dailyWordCounts[today] = (w.dailyWordCounts[today] || 0) + delta;
+            }
+            w.lastModified = Date.now();
+            if(document.getElementById('dailyGoalDisplay')) {
+                renderDailyGoal();
+            }
         }
     }
     clearTimeout(saveTimer);
@@ -1219,27 +1263,162 @@ function showToast(msg) {
     t.style.display = 'flex';
     setTimeout(() => t.style.display = 'none', 1500);
 }
-async function saveAll() {
-    localStorage.setItem('novelWorkshop', JSON.stringify({ works, currentWorkId }));
-    localStorage.setItem('devData', JSON.stringify(devData));
-    
-    if(!currentUserId) return;
+// ===== 云同步 =====
+function saveLocalSnapshot() {
+    try {
+        localStorage.setItem('novelWorkshop', JSON.stringify({ works, currentWorkId, savedAt: Date.now() }));
+        localStorage.setItem('devData', JSON.stringify(devData));
+    } catch(e) {
+        console.error('本地保存失败:', e);
+    }
+}
+async function saveAll(opts) {
+    opts = opts || {};
+    saveLocalSnapshot();
+    if(opts.localOnly) { nwUpdateSyncUI(); return; }
+    if(!db || !currentUserId) {
+        nwCloudReachable = false;
+        nwSyncError = db ? '未获取到用户标识' : '云端脚本未加载';
+        nwUpdateSyncUI();
+        return;
+    }
     try {
         const { error } = await db
             .from('user_data')
             .upsert({
                 user_id: currentUserId,
-                data: { works, currentWorkId, devData },
+                data: { works, currentWorkId, devData, savedAt: Date.now() },
                 updated_at: new Date().toISOString()
             }, { onConflict: 'user_id' });
-        if(error) console.error('Supabase save error:', error);
+        if(error) throw error;
+        nwCloudReachable = true;
+        nwLastSyncAt = Date.now();
+        nwSyncError = '';
     } catch(e) {
-        console.error('Supabase save failed:', e);
+        nwCloudReachable = false;
+        nwSyncError = String((e && e.message) || e || '');
+        console.warn('云同步失败，数据已保存在本机：', e);
     }
+    nwUpdateSyncUI();
 }
 function manualSave() {
     saveAll();
     showToast('已手动保存');
+}
+
+// ===== 云同步面板 =====
+function nwSyncStatusHtml() {
+    const dot = (color, text) => `<span style="color:${color};font-weight:bold">● ${text}</span>`;
+    if(nwCloudReachable === true) {
+        return dot('var(--success)', '已连接') +
+            (nwLastSyncAt ? ` <span style="color:var(--text2)">· 上次同步 ${new Date(nwLastSyncAt).toLocaleString('zh-CN')}</span>` : '');
+    }
+    if(nwCloudReachable === false) {
+        return dot('var(--danger)', '云端不可用') + ' <span style="color:var(--text2)">· 数据已保存在本机，联网后会自动再试</span>';
+    }
+    return '<span style="color:var(--text2)">● 未连接</span>';
+}
+function nwUpdateSyncUI() {
+    const statusEl = document.getElementById('nwSyncStatus');
+    if(statusEl) statusEl.innerHTML = nwSyncStatusHtml();
+    const codeEl = document.getElementById('nwSyncCodeValue');
+    if(codeEl) codeEl.value = currentUserId || '—';
+    const btn = document.getElementById('syncBtn');
+    if(btn) {
+        btn.title = '云同步：' + (nwCloudReachable === true ? '已连接' : nwCloudReachable === false ? '离线（仅本机）' : '状态未知');
+        btn.style.opacity = nwCloudReachable === false ? '.55' : '1';
+    }
+}
+function openSyncPanel() {
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwSyncModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:620px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">☁️ 云同步</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div id="nwSyncStatus" style="font-size:.8em;margin-bottom:16px"></div>
+            <div class="form-group">
+                <label class="form-label">本机同步码</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <input class="form-input" id="nwSyncCodeValue" readonly style="flex:1;min-width:180px;font-family:monospace;font-size:.75em">
+                    <button class="btn btn-secondary btn-sm" onclick="copySyncCode()">复制</button>
+                    <button class="btn btn-primary btn-sm" onclick="manualCloudSync()">立即同步</button>
+                </div>
+            </div>
+            <div style="font-size:.75em;color:var(--text2);line-height:1.7;margin:10px 0 16px">
+                在另一台设备打开本站 → 点右上角 ☁️ → 输入同一个同步码，就能看到同一份作品。<br>
+                同步码相当于钥匙，<b style="color:var(--danger)">不要公开发给别人</b>；两台设备同时改同一份作品时，以最后保存的版本为准。
+            </div>
+            <div class="form-group">
+                <label class="form-label">使用另一个同步码（换设备 / 找回旧数据）</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <input class="form-input" id="nwSyncCodeInput" placeholder="user_..." style="flex:1;min-width:180px;font-family:monospace;font-size:.75em">
+                    <button class="btn btn-secondary btn-sm" onclick="applySyncCode()">使用此码</button>
+                </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+                <button class="btn btn-secondary btn-sm" style="color:var(--danger);border-color:var(--danger)" onclick="regenerateSyncCode()">生成新同步码</button>
+                <span style="font-size:.7em;color:var(--text2)">旧码的云端数据不会被删除</span>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    nwUpdateSyncUI();
+}
+async function copySyncCode() {
+    const code = currentUserId || '';
+    try {
+        await navigator.clipboard.writeText(code);
+        showToast('同步码已复制');
+    } catch(e) {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+        document.body.appendChild(ta); ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch(err) { ok = false; }
+        ta.remove();
+        showToast(ok ? '同步码已复制' : '复制失败，请手动选中复制');
+    }
+}
+async function manualCloudSync() {
+    await saveAll();
+    nwUpdateSyncUI();
+    showToast(nwCloudReachable ? '已同步到云端' : '云端不可用，已保存在本机');
+}
+async function applySyncCode() {
+    const input = document.getElementById('nwSyncCodeInput');
+    const code = (input && input.value || '').trim();
+    if(!/^user_[A-Za-z0-9_-]{4,}$/.test(code)) { showToast('同步码格式不对（应以 user_ 开头）'); return; }
+    if(code === currentUserId) { showToast('这就是当前同步码'); return; }
+    let cloudHasData = true;
+    if(db) {
+        try {
+            const { data, error } = await db.from('user_data').select('user_id').eq('user_id', code).maybeSingle();
+            if(!error && !data) cloudHasData = false;
+        } catch(e) { cloudHasData = true; }
+    }
+    const msg = cloudHasData
+        ? '切换后会重新加载页面，并以该同步码的云端数据为准。\n本机现有的作品会被覆盖，确定继续？'
+        : '这个同步码在云端还没有数据。\n继续会把本机作品上传到它下面，确定？';
+    if(!confirm(msg)) return;
+    localStorage.setItem('novelUserId', code);
+    localStorage.setItem('nwForceCloudPull', '1');
+    location.reload();
+}
+function regenerateSyncCode() {
+    if(!confirm('生成新同步码后，本机会用一个全新的云端空间；\n旧同步码里的数据不会被删除，但也不会再同步。继续？')) return;
+    const newId = 'user_' + Date.now() + '_' + Math.random().toString(36).slice(2,10);
+    localStorage.setItem('novelUserId', newId);
+    localStorage.removeItem('nwForceCloudPull');
+    currentUserId = newId;
+    document.getElementById('nwSyncModal')?.remove();
+    saveAll();
+    openSyncPanel();
+    showToast('已生成新的同步码，正在上传本机数据');
 }
 function addChapter() {
     const w = currentWork(); if(!w) return;
@@ -4427,24 +4606,47 @@ async function init() {
     if(saved.currentWorkId) currentWorkId = saved.currentWorkId;
     const savedDev = JSON.parse(localStorage.getItem('devData') || '{}');
     
-    // 然后从Supabase加载云端数据
-    try {
-        const { data, error } = await db
-            .from('user_data')
-            .select('data')
-            .eq('user_id', currentUserId)
-            .single();
-        if(data && data.data) {
-            if(data.data.works && data.data.works.length > 0) {
-                works = data.data.works;
-                currentWorkId = data.data.currentWorkId || works[0].id;
+    // 从 Supabase 拉云端数据：失败不能阻断启动，也不能把本机数据反向覆盖到云端
+    const forceCloudPull = localStorage.getItem('nwForceCloudPull') === '1';
+    if(forceCloudPull) localStorage.removeItem('nwForceCloudPull');
+    let cloudRow = null;
+    let cloudLoadFailed = false;
+    if(db) {
+        try {
+            const { data, error } = await db
+                .from('user_data')
+                .select('data, updated_at')
+                .eq('user_id', currentUserId)
+                .single();
+            if(error) {
+                // PGRST116 = 这个同步码在云端还没有记录，属于正常的新用户
+                if(error.code !== 'PGRST116') cloudLoadFailed = true;
+            } else {
+                cloudRow = data;
             }
-            if(data.data.devData) {
-                devData = { ...devData, ...data.data.devData };
-            }
+        } catch(e) {
+            cloudLoadFailed = true;
+            console.warn('云端读取失败，本次仅使用本机数据:', e);
         }
-    } catch(e) {
-        console.error('Supabase load failed:', e);
+    } else {
+        cloudLoadFailed = true;
+    }
+    nwCloudReachable = !cloudLoadFailed;
+
+    if(cloudRow && cloudRow.data) {
+        const cloudAt = Date.parse(cloudRow.updated_at || '') || cloudRow.data.savedAt || 0;
+        const localAt = saved.savedAt || 0;
+        const cloudHasWorks = !!(cloudRow.data.works && cloudRow.data.works.length > 0);
+        // 只有云端确实更新时才覆盖本机；换了同步码则强制以云端为准
+        const useCloud = forceCloudPull ? cloudHasWorks : (cloudHasWorks && cloudAt >= localAt);
+        if(useCloud) {
+            works = cloudRow.data.works;
+            currentWorkId = cloudRow.data.currentWorkId || works[0].id;
+            nwLastSyncAt = cloudAt;
+        }
+        if(cloudRow.data.devData) {
+            devData = { ...devData, ...cloudRow.data.devData };
+        }
     }
         // 只有当devData为空时才从localStorage加载
     if(devData.questionnaire.length === 0 && savedDev.questionnaire) devData.questionnaire = savedDev.questionnaire;
@@ -4455,9 +4657,14 @@ async function init() {
     if(devData.customBackgrounds.length === 0 && savedDev.customBackgrounds) devData.customBackgrounds = savedDev.customBackgrounds;
     if(devData.customFonts.length === 0 && savedDev.customFonts) devData.customFonts = savedDev.customFonts;
     if(works.length === 0) {
-        const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0, characters: [] }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, createdAt: new Date().toISOString() };
+        const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0, characters: [] }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, statsVersion: 2, createdAt: new Date().toISOString() };
         works.push(sample); currentWorkId = sample.id;
     }
+    // 旧版把「章节总字数」当成「今日字数」，无法还原真实历史：归档后从今天重新统计
+    let statsMigrated = false;
+    works.forEach(x => { if(nwMigrateWordStats(x)) statsMigrated = true; });
+    nwLastCountedChapterId = null;
+
     const w = currentWork();
     if(w && w.editorSettings) {
         const s = w.editorSettings;
@@ -4488,9 +4695,12 @@ async function init() {
     document.addEventListener('input', e => {
         if(e.target && e.target.id && e.target.id.startsWith('wv_')) updateWvProgress();
     });
-    saveAll();
+    saveAll({ localOnly: cloudLoadFailed });
    switchTrendRange(7);
     updateSidebarCollapseUI();
+    if(statsMigrated) {
+        setTimeout(() => showToast('码字统计已改为按每日新增字数计算，历史数据已归档'), 1200);
+    }
 }
 // ========== 专注模式 ==========
 let focusMode = false;
@@ -4882,7 +5092,7 @@ function permanentDelete(type, index) {
 }
 // ========== 写作目标 ==========
 function getTodayWordCount() {
-    const today = new Date().toISOString().slice(0,10);
+    const today = nwLocalDateKey();
     let total = 0;
     works.forEach(w => {
         if(w.dailyWordCounts && w.dailyWordCounts[today]) {
@@ -4957,7 +5167,7 @@ function getWordsByDate(days) {
     for (let i = days - 1; i >= 0; i--) {
         const d = new Date(now);
         d.setDate(d.getDate() - i);
-        const dateKey = d.toISOString().slice(0, 10);
+        const dateKey = nwLocalDateKey(d);
         let words = 0;
         works.forEach(w => {
             if (w.dailyWordCounts && w.dailyWordCounts[dateKey]) {
@@ -4991,7 +5201,7 @@ function renderTrendChart() {
     data.forEach(d => {
         const height = Math.max(2, Math.round(d.words / maxWords * 100));
         const day = d.date.slice(5);
-        const isToday = d.date === new Date().toISOString().slice(0, 10);
+        const isToday = d.date === nwLocalDateKey();
         html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%" title="${day}: ${d.words} 字">
             <div style="width:100%;background:${isToday ? 'var(--gold)' : 'var(--accent)'};height:${height}%;border-radius:2px 2px 0 0;transition:height .3s;min-height:2px"></div>
         </div>`;
@@ -5029,6 +5239,8 @@ window.addEventListener('beforeunload', function() {
     if(timerRunning) {
         pauseTimer();
     }
+    // 避免最后 10 秒自动保存间隔内丢字
+    try { saveCurrentWorkContent(); saveLocalSnapshot(); } catch(e) {}
 });
     function toggleMobileMenu() {
     let overlay = document.getElementById('mobileNavOverlay');
