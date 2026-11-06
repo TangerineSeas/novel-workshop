@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>西幻创作工坊 v3.3.0</title>
+<title>西幻创作工坊 v3.4.0</title>
 <link rel="stylesheet" href="themes.css">
    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="knowledge.js"></script>
@@ -738,6 +738,12 @@ let currentUserId = null;
 let nwCloudReachable = null;
 let nwLastSyncAt = 0;
 let nwSyncError = '';
+// 身份：'anon'=Supabase 匿名登录，'legacy'=旧版同步码，'offline'=云端不可用
+let nwAuthMode = 'legacy';
+let nwAuthUser = null;
+let nwLegacyUserId = null;
+let nwAuthError = '';
+let nwAuthKind = ''; // 'disabled'=后台未开启匿名登录，'network'=连不上，''=未知
     function currentWork() { return works.find(w => w.id === currentWorkId) || null; }
 
 // ===== 码字统计辅助 =====
@@ -1263,6 +1269,43 @@ function showToast(msg) {
     t.style.display = 'flex';
     setTimeout(() => t.style.display = 'none', 1500);
 }
+// ===== 匿名身份（Supabase Auth）=====
+function nwWithTimeout(promise, ms, label) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error(label + '超时')), ms))
+    ]);
+}
+async function nwInitAuth() {
+    if(!db || !db.auth) { nwAuthMode = 'offline'; return null; }
+    try {
+        const sess = await nwWithTimeout(db.auth.getSession(), 3000, '读取登录状态');
+        const session = (sess && sess.data) ? sess.data.session : null;
+        if(session && session.user) {
+            nwAuthUser = session.user;
+            nwAuthMode = 'anon';
+            return nwAuthUser;
+        }
+        if(typeof db.auth.signInAnonymously !== 'function') {
+            throw new Error('当前 supabase-js 版本不支持匿名登录');
+        }
+        const res = await nwWithTimeout(db.auth.signInAnonymously(), 5000, '匿名登录');
+        if(res && res.error) throw res.error;
+        if(res && res.data && res.data.user) {
+            nwAuthUser = res.data.user;
+            nwAuthMode = 'anon';
+            return nwAuthUser;
+        }
+        throw new Error('匿名登录没有返回用户');
+    } catch(e) {
+        nwAuthMode = 'legacy';
+        nwAuthError = String((e && e.message) || e || '');
+        nwAuthKind = /anonymous|disabled|not enabled|未开启/i.test(nwAuthError) ? 'disabled' : 'network';
+        console.warn('匿名身份不可用，回退到旧版身份：', e);
+        return null;
+    }
+}
+
 // ===== 云同步 =====
 function saveLocalSnapshot() {
     try {
@@ -1309,25 +1352,57 @@ function manualSave() {
 // ===== 云同步面板 =====
 function nwSyncStatusHtml() {
     const dot = (color, text) => `<span style="color:${color};font-weight:bold">● ${text}</span>`;
-    if(nwCloudReachable === true) {
-        return dot('var(--success)', '已连接') +
-            (nwLastSyncAt ? ` <span style="color:var(--text2)">· 上次同步 ${new Date(nwLastSyncAt).toLocaleString('zh-CN')}</span>` : '');
+    if(nwAuthMode === 'anon') {
+        if(nwCloudReachable === true) {
+            return dot('var(--success)', '匿名身份已连接') +
+                (nwLastSyncAt ? ` <span style="color:var(--text2)">· 上次同步 ${new Date(nwLastSyncAt).toLocaleString('zh-CN')}</span>` : '');
+        }
+        if(nwCloudReachable === false) {
+            return dot('var(--danger)', '云端不可用') + ' <span style="color:var(--text2)">· 数据已保存在本机，联网后会自动再试</span>';
+        }
+        return '<span style="color:var(--text2)">● 正在连接…</span>';
     }
-    if(nwCloudReachable === false) {
-        return dot('var(--danger)', '云端不可用') + ' <span style="color:var(--text2)">· 数据已保存在本机，联网后会自动再试</span>';
+    if(nwAuthMode === 'offline') {
+        return dot('var(--text2)', '离线模式') + ' <span style="color:var(--text2)">· 云端脚本未加载，数据只保存在本机</span>';
     }
-    return '<span style="color:var(--text2)">● 未连接</span>';
+    if(nwAuthKind === 'network') {
+        return dot('var(--gold)', '旧版身份') +
+            ' <span style="color:var(--text2)">· 云端连接失败，数据已保存在本机</span>';
+    }
+    return dot('var(--gold)', '旧版身份（未启用匿名登录）') +
+        ' <span style="color:var(--text2)">· 在 Supabase 开启 Anonymous sign-ins 后刷新本页即可切换</span>';
+}
+function nwIdentityHtml() {
+    if(nwAuthMode === 'anon' && nwAuthUser) {
+        const id = String(nwAuthUser.id || '');
+        return '身份：<b>匿名账户</b> <span style="font-family:monospace;color:var(--text2)">' + escapeHtml(id.slice(0, 8)) + '…</span>';
+    }
+    if(nwAuthMode === 'legacy') {
+        return nwLegacyUserId
+            ? '身份：<b>旧版同步码</b>（只在这台设备生效）'
+            : '身份：<b>本机模式</b>（还没有云端身份）';
+    }
+    return '身份：<b>本机模式</b>';
 }
 function nwUpdateSyncUI() {
     const statusEl = document.getElementById('nwSyncStatus');
     if(statusEl) statusEl.innerHTML = nwSyncStatusHtml();
-    const codeEl = document.getElementById('nwSyncCodeValue');
-    if(codeEl) codeEl.value = currentUserId || '—';
+    const idEl = document.getElementById('nwSyncIdentity');
+    if(idEl) idEl.innerHTML = nwIdentityHtml();
     const btn = document.getElementById('syncBtn');
     if(btn) {
         btn.title = '云同步：' + (nwCloudReachable === true ? '已连接' : nwCloudReachable === false ? '离线（仅本机）' : '状态未知');
         btn.style.opacity = nwCloudReachable === false ? '.55' : '1';
     }
+}
+function nwRenderLegacyBox() {
+    const box = document.getElementById('nwLegacyBox');
+    if(!box) return;
+    if(!nwLegacyUserId) { box.style.display = 'none'; return; }
+    box.style.display = 'block';
+    box.innerHTML = `<details><summary style="cursor:pointer;font-size:.75em;color:var(--text2)">旧版同步码（仅作记录）</summary>
+        <div style="font-family:monospace;font-size:.72em;color:var(--text2);margin-top:6px;word-break:break-all">${escapeHtml(nwLegacyUserId)}</div>
+        <p style="font-size:.7em;color:var(--text2);margin-top:6px">新版不再用它登录；切换到匿名身份时会自动合并旧云端数据。</p></details>`;
 }
 function openSyncPanel() {
     document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
@@ -1335,90 +1410,74 @@ function openSyncPanel() {
     modal.className = 'modal active';
     modal.id = 'nwSyncModal';
     modal.innerHTML = `
-        <div class="modal-content" style="max-width:620px">
+        <div class="modal-content" style="max-width:640px">
             <div class="modal-header">
                 <h3 style="color:var(--accent)">☁️ 云同步</h3>
                 <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
             </div>
-            <div id="nwSyncStatus" style="font-size:.8em;margin-bottom:16px"></div>
-            <div class="form-group">
-                <label class="form-label">本机同步码</label>
-                <div style="display:flex;gap:6px;flex-wrap:wrap">
-                    <input class="form-input" id="nwSyncCodeValue" readonly style="flex:1;min-width:180px;font-family:monospace;font-size:.75em">
-                    <button class="btn btn-secondary btn-sm" onclick="copySyncCode()">复制</button>
-                    <button class="btn btn-primary btn-sm" onclick="manualCloudSync()">立即同步</button>
-                </div>
+            <div id="nwSyncStatus" style="font-size:.82em;margin-bottom:6px"></div>
+            <div id="nwSyncIdentity" style="font-size:.78em;color:var(--text2);margin-bottom:16px"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-primary btn-sm" onclick="manualCloudSync()">立即同步</button>
+                <button class="btn btn-secondary btn-sm" onclick="exportFullBackup()">⬇️ 导出备份</button>
+                <button class="btn btn-secondary btn-sm" onclick="document.getElementById('nwBackupFile').click()">⬆️ 导入备份</button>
+                <input type="file" id="nwBackupFile" accept=".json,application/json" style="display:none" onchange="importFullBackup(event)">
             </div>
-            <div style="font-size:.75em;color:var(--text2);line-height:1.7;margin:10px 0 16px">
-                在另一台设备打开本站 → 点右上角 ☁️ → 输入同一个同步码，就能看到同一份作品。<br>
-                同步码相当于钥匙，<b style="color:var(--danger)">不要公开发给别人</b>；两台设备同时改同一份作品时，以最后保存的版本为准。
+            <div style="font-size:.75em;color:var(--text2);line-height:1.8;margin-top:16px">
+                <p style="margin-bottom:8px"><b style="color:var(--text)">换设备</b>：在旧设备「导出备份」，再在新设备打开 ☁️「导入备份」。</p>
+                <p style="margin-bottom:8px"><b style="color:var(--text)">注意</b>：匿名身份只存在这台浏览器里。清除浏览器数据或换浏览器会失去对云端数据的访问，<b style="color:var(--danger)">请定期导出备份</b>。</p>
+                <p>多端自动同步需要绑定邮箱，属于下一步，现在不会给你弹登录框。</p>
             </div>
-            <div class="form-group">
-                <label class="form-label">使用另一个同步码（换设备 / 找回旧数据）</label>
-                <div style="display:flex;gap:6px;flex-wrap:wrap">
-                    <input class="form-input" id="nwSyncCodeInput" placeholder="user_..." style="flex:1;min-width:180px;font-family:monospace;font-size:.75em">
-                    <button class="btn btn-secondary btn-sm" onclick="applySyncCode()">使用此码</button>
-                </div>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
-                <button class="btn btn-secondary btn-sm" style="color:var(--danger);border-color:var(--danger)" onclick="regenerateSyncCode()">生成新同步码</button>
-                <span style="font-size:.7em;color:var(--text2)">旧码的云端数据不会被删除</span>
-            </div>
+            <div id="nwLegacyBox" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"></div>
         </div>`;
     document.body.appendChild(modal);
+    nwRenderLegacyBox();
     nwUpdateSyncUI();
-}
-async function copySyncCode() {
-    const code = currentUserId || '';
-    try {
-        await navigator.clipboard.writeText(code);
-        showToast('同步码已复制');
-    } catch(e) {
-        const ta = document.createElement('textarea');
-        ta.value = code;
-        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
-        document.body.appendChild(ta); ta.select();
-        let ok = false;
-        try { ok = document.execCommand('copy'); } catch(err) { ok = false; }
-        ta.remove();
-        showToast(ok ? '同步码已复制' : '复制失败，请手动选中复制');
-    }
 }
 async function manualCloudSync() {
     await saveAll();
     nwUpdateSyncUI();
     showToast(nwCloudReachable ? '已同步到云端' : '云端不可用，已保存在本机');
 }
-async function applySyncCode() {
-    const input = document.getElementById('nwSyncCodeInput');
-    const code = (input && input.value || '').trim();
-    if(!/^user_[A-Za-z0-9_-]{4,}$/.test(code)) { showToast('同步码格式不对（应以 user_ 开头）'); return; }
-    if(code === currentUserId) { showToast('这就是当前同步码'); return; }
-    let cloudHasData = true;
-    if(db) {
-        try {
-            const { data, error } = await db.from('user_data').select('user_id').eq('user_id', code).maybeSingle();
-            if(!error && !data) cloudHasData = false;
-        } catch(e) { cloudHasData = true; }
-    }
-    const msg = cloudHasData
-        ? '切换后会重新加载页面，并以该同步码的云端数据为准。\n本机现有的作品会被覆盖，确定继续？'
-        : '这个同步码在云端还没有数据。\n继续会把本机作品上传到它下面，确定？';
-    if(!confirm(msg)) return;
-    localStorage.setItem('novelUserId', code);
-    localStorage.setItem('nwForceCloudPull', '1');
-    location.reload();
+function exportFullBackup() {
+    const payload = {
+        app: 'novel-workshop',
+        schema: 2,
+        exportedAt: new Date().toISOString(),
+        works,
+        currentWorkId,
+        devData,
+        dailyGoal: getDailyGoal()
+    };
+    downloadFile(JSON.stringify(payload, null, 2), '西幻创作工坊-备份-' + nwLocalDateKey() + '.json', 'application/json');
+    showToast('备份已导出');
 }
-function regenerateSyncCode() {
-    if(!confirm('生成新同步码后，本机会用一个全新的云端空间；\n旧同步码里的数据不会被删除，但也不会再同步。继续？')) return;
-    const newId = 'user_' + Date.now() + '_' + Math.random().toString(36).slice(2,10);
-    localStorage.setItem('novelUserId', newId);
-    localStorage.removeItem('nwForceCloudPull');
-    currentUserId = newId;
-    document.getElementById('nwSyncModal')?.remove();
-    saveAll();
-    openSyncPanel();
-    showToast('已生成新的同步码，正在上传本机数据');
+async function importFullBackup(ev) {
+    const input = ev && ev.target;
+    const file = input && input.files && input.files[0];
+    if(!file) return;
+    try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if(!data || !Array.isArray(data.works) || data.works.length === 0) {
+            throw new Error('文件里没有作品数据');
+        }
+        if(!confirm('将用备份覆盖当前 ' + works.length + ' 部作品（备份里有 ' + data.works.length + ' 部），确定？')) {
+            if(input) input.value = '';
+            return;
+        }
+        works = data.works;
+        const keepId = data.currentWorkId && data.works.some(w => w.id === data.currentWorkId);
+        currentWorkId = keepId ? data.currentWorkId : data.works[0].id;
+        if(data.devData && typeof data.devData === 'object') devData = data.devData;
+        if(data.dailyGoal) setDailyGoal(data.dailyGoal);
+        nwLastCountedChapterId = null;
+        await saveAll();
+        location.reload();
+    } catch(e) {
+        showToast('导入失败：' + ((e && e.message) || e));
+        if(input) input.value = '';
+    }
 }
 function addChapter() {
     const w = currentWork(); if(!w) return;
@@ -4593,22 +4652,22 @@ function renderFactionGraph() {
     };
 }
 async function init() {
-    // 生成或获取用户ID
-    currentUserId = localStorage.getItem('novelUserId');
-    if(!currentUserId) {
-        currentUserId = 'user_' + Date.now() + '_' + Math.random().toString(36).slice(2,10);
-        localStorage.setItem('novelUserId', currentUserId);
-    }
+    // 旧版同步码：匿名身份不可用时作为回退，同时用于迁移旧云端数据
+    // 注意：新版不再给新访客生成同步码，只有老用户才会有这个值
+    nwLegacyUserId = localStorage.getItem('novelUserId') || null;
+    currentUserId = nwLegacyUserId;
     
     // 先从localStorage加载（快速启动）
     const saved = JSON.parse(localStorage.getItem('novelWorkshop') || '{}');
     if(saved.works) works = saved.works;
     if(saved.currentWorkId) currentWorkId = saved.currentWorkId;
     const savedDev = JSON.parse(localStorage.getItem('devData') || '{}');
+
+    // 匿名身份（Supabase Auth）。失败时回退到旧版同步码，站点照常能用
+    const authUser = await nwInitAuth();
+    if(authUser) currentUserId = authUser.id;
     
     // 从 Supabase 拉云端数据：失败不能阻断启动，也不能把本机数据反向覆盖到云端
-    const forceCloudPull = localStorage.getItem('nwForceCloudPull') === '1';
-    if(forceCloudPull) localStorage.removeItem('nwForceCloudPull');
     let cloudRow = null;
     let cloudLoadFailed = false;
     if(db) {
@@ -4619,7 +4678,7 @@ async function init() {
                 .eq('user_id', currentUserId)
                 .single();
             if(error) {
-                // PGRST116 = 这个同步码在云端还没有记录，属于正常的新用户
+                // PGRST116 = 这个身份在云端还没有记录，属于正常的新用户
                 if(error.code !== 'PGRST116') cloudLoadFailed = true;
             } else {
                 cloudRow = data;
@@ -4633,20 +4692,41 @@ async function init() {
     }
     nwCloudReachable = !cloudLoadFailed;
 
-    if(cloudRow && cloudRow.data) {
-        const cloudAt = Date.parse(cloudRow.updated_at || '') || cloudRow.data.savedAt || 0;
-        const localAt = saved.savedAt || 0;
-        const cloudHasWorks = !!(cloudRow.data.works && cloudRow.data.works.length > 0);
-        // 只有云端确实更新时才覆盖本机；换了同步码则强制以云端为准
-        const useCloud = forceCloudPull ? cloudHasWorks : (cloudHasWorks && cloudAt >= localAt);
-        if(useCloud) {
-            works = cloudRow.data.works;
-            currentWorkId = cloudRow.data.currentWorkId || works[0].id;
-            nwLastSyncAt = cloudAt;
+    // 第一次切到匿名身份时，匿名账号下还没有数据：尝试把旧同步码那一行捞回来（RLS 收紧前有效）
+    let legacyRow = null;
+    const uidHasWorks = !!(cloudRow && cloudRow.data && cloudRow.data.works && cloudRow.data.works.length > 0);
+    if(nwAuthMode === 'anon' && !uidHasWorks && nwLegacyUserId && nwLegacyUserId !== currentUserId && db) {
+        try {
+            const { data, error } = await db
+                .from('user_data')
+                .select('data, updated_at')
+                .eq('user_id', nwLegacyUserId)
+                .single();
+            if(!error && data) legacyRow = data;
+        } catch(e) {
+            console.warn('旧版云端数据迁移失败（可能已开启 RLS），将使用本机数据:', e);
         }
-        if(cloudRow.data.devData) {
-            devData = { ...devData, ...cloudRow.data.devData };
+    }
+
+    // 本机 / 匿名云端 / 旧云端，取时间最新的那份
+    const localAt = saved.savedAt || 0;
+    let best = { source: 'local', at: localAt, data: null };
+    const consider = (row, source) => {
+        if(!row || !row.data || !row.data.works || !row.data.works.length) return;
+        const at = Date.parse(row.updated_at || '') || row.data.savedAt || 0;
+        if(at >= best.at) best = { source, at, data: row.data };
+    };
+    consider(cloudRow, 'cloud');
+    consider(legacyRow, 'legacy');
+    if(best.data) {
+        works = best.data.works;
+        currentWorkId = best.data.currentWorkId || works[0].id;
+        nwLastSyncAt = best.at;
+        if(best.data.devData) {
+            devData = { ...devData, ...best.data.devData };
         }
+    } else if(cloudRow && cloudRow.data && cloudRow.data.devData) {
+        devData = { ...devData, ...cloudRow.data.devData };
     }
         // 只有当devData为空时才从localStorage加载
     if(devData.questionnaire.length === 0 && savedDev.questionnaire) devData.questionnaire = savedDev.questionnaire;
