@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>西幻创作工坊 v3.4.0</title>
+<title>西幻创作工坊 v3.4.1</title>
 <link rel="stylesheet" href="themes.css">
    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="knowledge.js"></script>
@@ -236,6 +236,7 @@ button{cursor:pointer}
 .nw-flash{animation:nwFlash 1.4s ease}
 @keyframes nwFlash{0%{background:rgba(255,215,0,.4)}100%{background:transparent}}
 @media(max-width:900px){
+  #historyBtn{display:none!important}
   .sidebar.nw-collapsed{width:270px!important;padding:0!important;border-right:1px solid var(--border)!important}
   #nwSidebarExpandBtn{display:none!important}
   .nw-collapse-btn{display:none!important}
@@ -295,7 +296,10 @@ button{cursor:pointer}
 <div class="sb-section">
     <div class="sb-title" style="justify-content:space-between">
         <span>📋 章节列表</span>
-        <button class="nw-collapse-btn" onclick="toggleWritingSidebar()" title="折叠侧边栏（Ctrl+反斜杠）">«</button>
+        <span style="display:flex;gap:6px;align-items:center">
+            <button class="nw-collapse-btn" onclick="openChapterHistory()" title="历史版本">🕘</button>
+            <button class="nw-collapse-btn" onclick="toggleWritingSidebar()" title="折叠侧边栏（Ctrl+反斜杠）">«</button>
+        </span>
     </div>
     <div id="workTitleDisplay" style="font-size:.75em;color:var(--accent);font-weight:bold;margin-bottom:8px;padding:4px 8px;background:var(--bg);border-radius:4px"></div>
     <div id="chapterList"></div>
@@ -346,6 +350,7 @@ button{cursor:pointer}
 <button class="btn btn-secondary btn-sm" onclick="toggleFocusMode()">🎯 专注</button>
 <button class="btn btn-secondary btn-sm" onclick="openChapterNote()" id="chapterNoteBtn">📌 备忘</button>
 <button class="btn btn-secondary btn-sm" onclick="openBookmarkPanel()" id="bookmarkBtn">🔖 书签</button>
+<button class="btn btn-secondary btn-sm" onclick="openChapterHistory()" id="historyBtn">🕘 历史</button>
 <span class="timer-display" id="timerDisplay">00:00:00</span>
 <span style="font-size:.72em;color:var(--text2)">字数：<span id="wordCount">0</span></span>
 </div>
@@ -942,7 +947,13 @@ function confirmCreateWork() {
     closeNewWorkModal(); saveAll(); renderHome(); goPage('writing'); showToast('作品已创建！');
 }
 function openWork(id) {
-    saveCurrentWorkContent(); currentWorkId = id;
+    saveCurrentWorkContent();
+    const prevWork = currentWork();
+    if(prevWork) {
+        const prevCh = prevWork.chapters.find(c => c.id === prevWork.currentChapterId);
+        if(prevCh) nwSnapshotChapter(prevCh, 'switch');
+    }
+    currentWorkId = id;
     const w = currentWork();
     if(w) {
         const s = w.editorSettings || {};
@@ -1242,13 +1253,16 @@ function updateWordCount() {
             if(nwLastCountedChapterId !== ch.id) {
                 nwLastCountedChapterId = ch.id;
                 nwWordBaseline.set(ch.id, len);
+                nwHistLastTs.set(ch.id, Date.now());
+                nwHistLastContent.set(ch.id, text);
             }
             const prev = nwWordBaseline.has(ch.id) ? nwWordBaseline.get(ch.id) : len;
             const delta = len - prev;
             nwWordBaseline.set(ch.id, len);
             ch.content = text;
             ch.wordCount = len;
-            renderChapters();
+            nwRefreshChapterRow(ch);
+            nwSnapshotChapter(ch, 'auto');
             if(delta > 0) {
                 const today = nwLocalDateKey();
                 w.dailyWordCounts = w.dailyWordCounts || {};
@@ -1262,6 +1276,17 @@ function updateWordCount() {
     }
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => { saveAll(); showToast('已自动保存'); }, 10000);
+}
+// 只刷新当前章节那一行，避免每次输入重绘整个列表
+function nwRefreshChapterRow(ch) {
+    if(!ch) return;
+    const row = document.querySelector('#chapterList .sb-item[data-chapter-id="' + ch.id + '"]');
+    if(!row) return;
+    const desc = row.querySelector('.sb-item-desc');
+    if(desc) {
+        const bm = (ch.bookmarks || []).length;
+        desc.textContent = (ch.wordCount || 0) + ' 字' + (bm ? ' · 🔖' + bm : '');
+    }
 }
 function showToast(msg) {
     const t = document.getElementById('saveToast');
@@ -1300,7 +1325,9 @@ async function nwInitAuth() {
     } catch(e) {
         nwAuthMode = 'legacy';
         nwAuthError = String((e && e.message) || e || '');
-        nwAuthKind = /anonymous|disabled|not enabled|未开启/i.test(nwAuthError) ? 'disabled' : 'network';
+        if(/rate|too many|429/i.test(nwAuthError)) nwAuthKind = 'ratelimit';
+        else if(/anonymous|disabled|not enabled|未开启/i.test(nwAuthError)) nwAuthKind = 'disabled';
+        else nwAuthKind = 'network';
         console.warn('匿名身份不可用，回退到旧版身份：', e);
         return null;
     }
@@ -1365,6 +1392,10 @@ function nwSyncStatusHtml() {
     if(nwAuthMode === 'offline') {
         return dot('var(--text2)', '离线模式') + ' <span style="color:var(--text2)">· 云端脚本未加载，数据只保存在本机</span>';
     }
+    if(nwAuthKind === 'ratelimit') {
+        return dot('var(--gold)', '暂时无法创建云端身份') +
+            ' <span style="color:var(--text2)">· 内容已保存在本机，换网络或过一会儿刷新重试</span>';
+    }
     if(nwAuthKind === 'network') {
         return dot('var(--gold)', '旧版身份') +
             ' <span style="color:var(--text2)">· 云端连接失败，数据已保存在本机</span>';
@@ -1421,6 +1452,7 @@ function openSyncPanel() {
                 <button class="btn btn-primary btn-sm" onclick="manualCloudSync()">立即同步</button>
                 <button class="btn btn-secondary btn-sm" onclick="exportFullBackup()">⬇️ 导出备份</button>
                 <button class="btn btn-secondary btn-sm" onclick="document.getElementById('nwBackupFile').click()">⬆️ 导入备份</button>
+                <button class="btn btn-secondary btn-sm" onclick="nwCopyDiagnostics()">🩺 诊断信息</button>
                 <input type="file" id="nwBackupFile" accept=".json,application/json" style="display:none" onchange="importFullBackup(event)">
             </div>
             <div style="font-size:.75em;color:var(--text2);line-height:1.8;margin-top:16px">
@@ -1434,6 +1466,80 @@ function openSyncPanel() {
     nwRenderLegacyBox();
     nwUpdateSyncUI();
 }
+async function nwCopyText(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        return true;
+    } catch(e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+        document.body.appendChild(ta); ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch(err) { ok = false; }
+        ta.remove();
+        return ok;
+    }
+}
+async function nwCopyDiagnostics() {
+    const info = [
+        '西幻创作工坊 v3.4.1',
+        '身份模式: ' + nwAuthMode + (nwAuthKind ? ' / ' + nwAuthKind : ''),
+        '云端状态: ' + (nwCloudReachable === true ? '已连接' : nwCloudReachable === false ? '不可用' : '未知'),
+        '作品数: ' + works.length + ' · 章节数: ' + works.reduce((n, w) => n + (w.chapters ? w.chapters.length : 0), 0),
+        '当前作品: ' + ((currentWork() || {}).title || '无'),
+        '浏览器: ' + navigator.userAgent,
+        '时间: ' + new Date().toISOString(),
+        '错误: ' + (nwSyncError || nwAuthError || '无')
+    ].join('\n');
+    const ok = await nwCopyText(info);
+    if(ok) { showToast('诊断信息已复制，可直接贴到群里'); return; }
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:560px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">🩺 诊断信息</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <p style="font-size:.78em;color:var(--text2);margin-bottom:8px">自动复制失败，请手动全选复制下面的内容：</p>
+            <textarea class="form-textarea" readonly style="min-height:200px;font-size:.72em;font-family:monospace">${escapeHtml(info)}</textarea>
+            <div class="btn-row" style="justify-content:flex-end;margin-top:10px">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">关闭</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    const ta = modal.querySelector('textarea');
+    ta.focus();
+    ta.select();
+}
+function nwMaybeShowWelcome() {
+    try { if(localStorage.getItem('nwWelcomeSeen') === '1') return; } catch(e) { return; }
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwWelcomeModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:520px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">👋 欢迎使用测试版</h3>
+            </div>
+            <div style="font-size:.83em;line-height:2;color:var(--text2)">
+                <p>这是一个还在打磨的写作工具，先记住三件事：</p>
+                <p><b style="color:var(--text)">1. 作品跟这台浏览器绑定。</b>换设备或清除浏览器数据会失去云端访问，右上角 ☁️ 可导出/导入备份。</p>
+                <p><b style="color:var(--text)">2. 自动留历史版本。</b>每 5 分钟或切换章节时存一份，工具栏「🕘 历史」可以回滚。</p>
+                <p><b style="color:var(--text)">3. 遇到问题请反馈。</b>☁️ → 「复制诊断信息」，连同截图发到群里即可。</p>
+            </div>
+            <div class="btn-row" style="justify-content:flex-end;margin-top:16px">
+                <button class="btn btn-primary" onclick="nwDismissWelcome()">开始使用</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+}
+function nwDismissWelcome() {
+    try { localStorage.setItem('nwWelcomeSeen', '1'); } catch(e) {}
+    document.getElementById('nwWelcomeModal')?.remove();
+}
+
 async function manualCloudSync() {
     await saveAll();
     nwUpdateSyncUI();
@@ -1490,7 +1596,11 @@ function addChapter() {
 function switchChapter(id) {
     const w = currentWork(); if(!w) return;
     const cur = w.chapters.find(c => c.id === w.currentChapterId);
-    if(cur) { cur.content = document.getElementById('editor').value; cur.wordCount = document.getElementById('editor').value.length; }
+    if(cur) {
+        cur.content = document.getElementById('editor').value;
+        cur.wordCount = document.getElementById('editor').value.length;
+        nwSnapshotChapter(cur, 'switch');
+    }
     w.currentChapterId = id;
     const ch = w.chapters.find(c => c.id === id);
     if(ch) { document.getElementById('editor').value = ch.content || ''; renderChapters(); updateWordCount(); }
@@ -1561,6 +1671,221 @@ function updateChapterToolButtons() {
         const n = (ch && ch.bookmarks) ? ch.bookmarks.length : 0;
         bmBtn.textContent = n ? '🔖 书签 ' + n : '🔖 书签';
     }
+}
+// ========== 章节历史版本（本地 IndexedDB） ==========
+const NW_HISTORY_DB_NAME = 'nwHistoryV1';
+const NW_HISTORY_RETENTION = 7 * 24 * 60 * 60 * 1000;   // 保留 7 天
+const NW_HISTORY_MAX_PER_CHAPTER = 50;                   // 每章最多 50 个版本
+const NW_HISTORY_MAX_TOTAL = 500;                        // 全站最多 500 个版本，防止占用过大
+const NW_HISTORY_INTERVAL = 5 * 60 * 1000;               // 自动快照间隔
+let nwHistoryDBPromise = null;
+const nwHistLastTs = new Map();
+const nwHistLastContent = new Map();
+let nwHistCleanCounter = 0;
+let nwHistSelected = null;
+
+function nwHistoryOpenDB() {
+    if(nwHistoryDBPromise) return nwHistoryDBPromise;
+    nwHistoryDBPromise = new Promise((resolve, reject) => {
+        if(!window.indexedDB) { reject(new Error('浏览器不支持本地历史版本')); return; }
+        const req = indexedDB.open(NW_HISTORY_DB_NAME, 1);
+        req.onupgradeneeded = () => {
+            const db = req.result;
+            if(!db.objectStoreNames.contains('snapshots')) {
+                const store = db.createObjectStore('snapshots', { keyPath: 'id', autoIncrement: true });
+                store.createIndex('chapterId', 'chapterId', { unique: false });
+                store.createIndex('ts', 'ts', { unique: false });
+            }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error || new Error('IndexedDB 打开失败'));
+    });
+    return nwHistoryDBPromise;
+}
+function nwIDBRequest(req) {
+    return new Promise((resolve, reject) => {
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+}
+async function nwHistoryAdd(snap) {
+    try {
+        const db = await nwHistoryOpenDB();
+        const tx = db.transaction('snapshots', 'readwrite');
+        tx.objectStore('snapshots').add(snap);
+        await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+        nwHistCleanCounter++;
+        if(nwHistCleanCounter % 20 === 0) nwHistoryCleanup();
+        return true;
+    } catch(e) {
+        console.warn('历史版本保存失败：', e);
+        return false;
+    }
+}
+async function nwHistoryGet(id) {
+    try {
+        const db = await nwHistoryOpenDB();
+        return await nwIDBRequest(db.transaction('snapshots').objectStore('snapshots').get(id));
+    } catch(e) { return null; }
+}
+async function nwHistoryList(chapterId) {
+    try {
+        const db = await nwHistoryOpenDB();
+        const rows = await nwIDBRequest(db.transaction('snapshots').objectStore('snapshots').index('chapterId').getAll(chapterId));
+        return (rows || []).sort((a, b) => b.ts - a.ts);
+    } catch(e) { return []; }
+}
+async function nwHistoryCleanup() {
+    try {
+        const db = await nwHistoryOpenDB();
+        const all = await nwIDBRequest(db.transaction('snapshots').objectStore('snapshots').getAll());
+        const cutoff = Date.now() - NW_HISTORY_RETENTION;
+        const byChapter = new Map();
+        const toDelete = [];
+        (all || []).forEach(s => {
+            if(s.ts < cutoff) { toDelete.push(s.id); return; }
+            if(!byChapter.has(s.chapterId)) byChapter.set(s.chapterId, []);
+            byChapter.get(s.chapterId).push(s);
+        });
+        byChapter.forEach(list => {
+            list.sort((a, b) => b.ts - a.ts);
+            list.slice(NW_HISTORY_MAX_PER_CHAPTER).forEach(s => toDelete.push(s.id));
+        });
+        // 全局上限：删除最旧的
+        const deletedSet = new Set(toDelete);
+        const kept = (all || []).filter(s => !deletedSet.has(s.id)).sort((a, b) => a.ts - b.ts);
+        if(kept.length > NW_HISTORY_MAX_TOTAL) {
+            kept.slice(0, kept.length - NW_HISTORY_MAX_TOTAL).forEach(s => toDelete.push(s.id));
+        }
+        if(toDelete.length) {
+            const tx = db.transaction('snapshots', 'readwrite');
+            const store = tx.objectStore('snapshots');
+            toDelete.forEach(id => store.delete(id));
+            await new Promise(res => { tx.oncomplete = res; tx.onerror = res; });
+        }
+    } catch(e) { /* 静默失败，不影响写作 */ }
+}
+async function nwSnapshotChapter(ch, reason, force) {
+    if(!ch) return false;
+    const content = String(ch.content == null ? '' : ch.content);
+    if(!content.trim()) return false;
+    const lastContent = nwHistLastContent.get(ch.id);
+    if(!force && lastContent === content) return false;
+    const now = Date.now();
+    if(!force && now - (nwHistLastTs.get(ch.id) || 0) < NW_HISTORY_INTERVAL) return false;
+    nwHistLastTs.set(ch.id, now);
+    nwHistLastContent.set(ch.id, content);
+    return nwHistoryAdd({
+        workId: currentWorkId,
+        workTitle: (currentWork() || {}).title || '',
+        chapterId: ch.id,
+        chapterName: ch.name,
+        content,
+        words: content.length,
+        ts: now,
+        reason: reason || 'auto'
+    });
+}
+const NW_HIST_REASON = { auto: '自动', switch: '切换章节', manual: '手动', 'before-restore': '恢复前' };
+function nwHistReasonText(r) { return NW_HIST_REASON[r] || r || '自动'; }
+
+async function openChapterHistory() {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    if(!ch) { showToast('请先选择章节'); return; }
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwHistoryModal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:760px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">🕘 历史版本 · ${escapeHtml(ch.name)}</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+                <span style="font-size:.72em;color:var(--text2)">每 5 分钟 / 切换章节时自动保存，保留最近 7 天</span>
+                <button class="btn btn-primary btn-sm" onclick="nwSnapshotNow()">保存当前版本</button>
+            </div>
+            <div id="nwHistList" style="display:flex;flex-direction:column;gap:6px;max-height:230px;overflow-y:auto"></div>
+            <div id="nwHistPreview" style="display:none;margin-top:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+                    <b style="font-size:.85em" id="nwHistPreviewTitle"></b>
+                    <button class="btn btn-primary btn-sm" onclick="nwRestoreSelected()">恢复此版本</button>
+                </div>
+                <pre id="nwHistPreviewBody" style="white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;max-height:280px;overflow:auto;font-size:.78em;line-height:1.7;font-family:inherit;margin:0"></pre>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    await nwRenderHistoryList(ch);
+}
+
+async function nwRenderHistoryList(ch) {
+    const box = document.getElementById('nwHistList');
+    if(!box) return;
+    box.innerHTML = '<p style="font-size:.8em;color:var(--text2);padding:10px 0">读取中…</p>';
+    const rows = await nwHistoryList(ch.id);
+    box.innerHTML = '';
+    if(!rows.length) {
+        box.innerHTML = '<p style="font-size:.8em;color:var(--text2);padding:12px 0;text-align:center">还没有历史版本。开始写作后每 5 分钟会自动留一份，也可以点右上角手动保存。</p>';
+        return;
+    }
+    rows.forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'nw-bookmark-row';
+        row.innerHTML = `
+            <span>🕘</span>
+            <div class="nw-bookmark-main">
+                <div class="nw-bookmark-label">${new Date(r.ts).toLocaleString('zh-CN')}</div>
+                <div class="nw-bookmark-preview">${r.words} 字 · ${nwHistReasonText(r.reason)}</div>
+            </div>`;
+        row.onclick = () => nwPreviewSnapshot(r.id);
+        box.appendChild(row);
+    });
+}
+
+async function nwPreviewSnapshot(id) {
+    const snap = await nwHistoryGet(id);
+    if(!snap) { showToast('读取版本失败'); return; }
+    nwHistSelected = id;
+    const title = document.getElementById('nwHistPreviewTitle');
+    const body = document.getElementById('nwHistPreviewBody');
+    const box = document.getElementById('nwHistPreview');
+    if(!title || !body || !box) return;
+    title.textContent = new Date(snap.ts).toLocaleString('zh-CN') + ' · ' + snap.words + ' 字';
+    body.textContent = snap.content;
+    box.style.display = 'block';
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function nwRestoreSelected() {
+    if(!nwHistSelected) return;
+    const snap = await nwHistoryGet(nwHistSelected);
+    if(!snap) { showToast('读取版本失败'); return; }
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    if(!ch || ch.id !== snap.chapterId) { showToast('这个版本不属于当前章节'); return; }
+    if(!confirm('用这个版本覆盖当前章节？\n当前内容会先自动存一份历史，随时可以再换回来。')) return;
+    await nwSnapshotChapter(ch, 'before-restore', true);
+    document.getElementById('editor').value = snap.content;
+    ch.content = snap.content;
+    ch.wordCount = snap.content.length;
+    nwLastCountedChapterId = null;
+    updateWordCount();
+    renderChapters();
+    saveAll();
+    document.getElementById('nwHistoryModal')?.remove();
+    showToast('已恢复到 ' + new Date(snap.ts).toLocaleTimeString('zh-CN') + ' 的版本');
+}
+
+async function nwSnapshotNow() {
+    const w = currentWork(); if(!w) return;
+    const ch = w.chapters.find(c => c.id === w.currentChapterId);
+    if(!ch) return;
+    ch.content = document.getElementById('editor').value;
+    const ok = await nwSnapshotChapter(ch, 'manual', true);
+    showToast(ok ? '已保存当前版本' : '保存失败（浏览器可能禁用了本地存储）');
+    if(ok) await nwRenderHistoryList(ch);
 }
 // ========== 章节备忘（不进入正文/导出） ==========
 function openChapterNote() {
@@ -4778,9 +5103,11 @@ async function init() {
     saveAll({ localOnly: cloudLoadFailed });
    switchTrendRange(7);
     updateSidebarCollapseUI();
+    nwHistoryCleanup();
     if(statsMigrated) {
         setTimeout(() => showToast('码字统计已改为按每日新增字数计算，历史数据已归档'), 1200);
     }
+    setTimeout(nwMaybeShowWelcome, 1000);
 }
 // ========== 专注模式 ==========
 let focusMode = false;
@@ -4877,6 +5204,10 @@ function openExportMenu(workId) {
                     <option value="current">当前章节</option>
                 </select>
             </div>
+            <div class="form-group" style="display:flex;align-items:center;gap:8px">
+                <input type="checkbox" id="exportLore" checked style="width:16px;height:16px">
+                <label for="exportLore" style="font-size:.8em;color:var(--text2);cursor:pointer">附加设定资料（世界观 / 人物 / 设定合集）</label>
+            </div>
             <div class="form-group">
                 <label class="form-label">导出格式</label>
                 <div style="display:flex;flex-direction:column;gap:8px">
@@ -4893,41 +5224,121 @@ function doExport(workId, format) {
     const w = works.find(x => x.id === workId);
     if(!w) return;
     const scope = document.getElementById('exportScope').value;
+    const includeLore = !!(document.getElementById('exportLore') && document.getElementById('exportLore').checked);
     let chapters = w.chapters;
     if(scope === 'current') {
         const currentCh = w.chapters.find(c => c.id === (w.currentChapterId || w.chapters[0].id));
         chapters = currentCh ? [currentCh] : [];
     }
     
-    if(format === 'txt') exportAsTxt(w, chapters);
-    else if(format === 'md') exportAsMarkdown(w, chapters);
-    else if(format === 'html') exportAsHtml(w, chapters);
+    if(format === 'txt') exportAsTxt(w, chapters, includeLore);
+    else if(format === 'md') exportAsMarkdown(w, chapters, includeLore);
+    else if(format === 'html') exportAsHtml(w, chapters, includeLore);
     
     document.querySelector('.modal.active')?.remove();
 }
 
+// ===== 附录：世界观 / 人物 / 设定合集 =====
+function nwLoreSections(w) {
+    if(!w) return [];
+    const out = [];
+    const qs = [...getDefaultQuestions(), ...(devData.questionnaire || [])];
+    const wv = qs
+        .map(q => ({ name: q.text, body: String((w.worldview || {})[q.id] || '').trim() }))
+        .filter(x => x.body);
+    if(wv.length) out.push({ title: '世界观设定', items: wv });
+
+    if(w.characters && w.characters.length) {
+        const imp = { main: '主角', important: '重要配角', minor: '次要配角', extra: '龙套' };
+        out.push({
+            title: '人物档案',
+            items: w.characters.map(c => {
+                const rows = [];
+                if(c.role) rows.push('身份：' + c.role);
+                if(c.family) rows.push('家族：' + c.family);
+                if(c.raceCustom || c.race) rows.push('种族：' + (c.raceCustom || c.race));
+                if(c.birth) rows.push('出生：' + c.birth);
+                if(c.description) rows.push('设定：' + c.description);
+                if(c.relations) rows.push('关系：' + String(c.relations).replace(/\n/g, '；'));
+                const tag = c.importance && imp[c.importance] ? '（' + imp[c.importance] + '）' : '';
+                return { name: (c.name || '未命名') + tag, body: rows.join('\n') };
+            })
+        });
+    }
+
+    Object.entries(w.collectionEntries || {}).forEach(([type, arr]) => {
+        if(!arr || !arr.length) return;
+        out.push({
+            title: refTypeLabel(type),
+            items: arr.map(e => ({ name: e.name, body: refsToPlain(e.desc || '') }))
+        });
+    });
+    return out;
+}
+function nwAppendLoreTxt(text, w) {
+    const secs = nwLoreSections(w);
+    if(!secs.length) return text;
+    text += '\n\n' + '='.repeat(40) + '\n附：设定资料\n\n';
+    secs.forEach(sec => {
+        text += `【${sec.title}】\n`;
+        sec.items.forEach(it => {
+            if(it.body.indexOf('\n') >= 0) {
+                text += `${it.name}\n` + it.body.split('\n').map(l => '    ' + l).join('\n') + '\n\n';
+            } else {
+                text += `${it.name}：${it.body}\n`;
+            }
+        });
+        text += '\n';
+    });
+    return text;
+}
+function nwAppendLoreMd(md, w) {
+    const secs = nwLoreSections(w);
+    if(!secs.length) return md;
+    md += '\n\n## 附录：设定资料\n\n';
+    secs.forEach(sec => {
+        md += `### ${sec.title}\n\n`;
+        sec.items.forEach(it => { md += `#### ${it.name}\n\n${it.body}\n\n`; });
+    });
+    return md;
+}
+function nwAppendixHtml(w) {
+    const secs = nwLoreSections(w);
+    if(!secs.length) return '';
+    let html = '<section class="appendix"><h2>附录：设定资料</h2>';
+    secs.forEach(sec => {
+        html += `<h3>${escapeHtml(sec.title)}</h3>`;
+        sec.items.forEach(it => {
+            html += `<div class="lore-item"><div class="lore-name">${escapeHtml(it.name)}</div><div class="lore-body">${escapeHtml(it.body).replace(/\n/g, '<br>')}</div></div>`;
+        });
+    });
+    return html + '</section>';
+}
+
 // ===== TXT 导出 =====
-function exportAsTxt(w, chapters) {
+function exportAsTxt(w, chapters, includeLore) {
     let text = `《${w.title}》\n导出时间：${new Date().toLocaleString('zh-CN')}\n${'='.repeat(40)}\n\n`;
     chapters.forEach(ch => { 
         text += `【${ch.name}】\n${ch.content || ''}\n\n${'-'.repeat(30)}\n\n`; 
     });
+    if(includeLore) text = nwAppendLoreTxt(text, w);
     downloadFile(text, w.title + '.txt', 'text/plain');
     showToast('TXT 导出成功');
 }
 
 // ===== Markdown 导出 =====
-function exportAsMarkdown(w, chapters) {
+function exportAsMarkdown(w, chapters, includeLore) {
     let md = `# ${w.title}\n\n> 导出时间：${new Date().toLocaleString('zh-CN')}\n\n`;
     chapters.forEach(ch => {
         md += `## ${ch.name}\n\n${ch.content || ''}\n\n---\n\n`;
     });
+    if(includeLore) md = nwAppendLoreMd(md, w);
     downloadFile(md, w.title + '.md', 'text/markdown');
     showToast('Markdown 导出成功');
 }
 
 // ===== HTML 导出 =====
-function exportAsHtml(w, chapters) {
+function exportAsHtml(w, chapters, includeLore) {
     const settings = w.editorSettings || {};
     const fontFamily = settings.fontFamily || "'Georgia', serif";
     const fontSize = settings.fontSize || '16px';
@@ -5022,6 +5433,12 @@ function exportAsHtml(w, chapters) {
         color: #aaa;
         font-size: .8em;
     }
+    .appendix { margin-top: 80px; padding-top: 40px; border-top: 2px solid #d4c5a8; }
+    .appendix h2 { font-size: 1.4em; margin-bottom: 20px; color: #8a6d3b; }
+    .appendix h3 { font-size: 1.1em; margin: 26px 0 10px; color: #8a6d3b; }
+    .lore-item { margin: 12px 0; }
+    .lore-name { font-weight: bold; margin-bottom: 2px; }
+    .lore-body { font-size: .92em; color: #555; line-height: 1.8; }
     @media (max-width: 600px) {
         body { padding: 30px 20px; }
         h1 { font-size: 1.6em; }
@@ -5034,6 +5451,7 @@ function exportAsHtml(w, chapters) {
         <div class="meta">导出时间：${new Date().toLocaleString('zh-CN')}</div>
     </header>
     ${chaptersHtml}
+    ${includeLore ? nwAppendixHtml(w) : ''}
     <footer>
         <p>本作品由「西幻创作工坊」导出</p>
     </footer>
