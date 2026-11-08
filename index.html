@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>西幻创作工坊 v3.4.1</title>
+<title>西幻创作工坊 v3.6.0</title>
 <link rel="stylesheet" href="themes.css">
    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="knowledge.js"></script>
@@ -38,7 +38,7 @@ button{cursor:pointer}
 .home-hero{text-align:center;padding:30px 20px 15px}
 .home-hero h1{color:var(--accent);font-size:2em;margin-bottom:6px}
 .home-hero p{color:var(--text2);font-size:.9em}
-.work-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:18px}
+.work-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:18px}
 .work-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:.2s;text-align:center;position:relative}
 .work-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 4px 15px rgba(0,0,0,.3)}
 .work-card-title{font-weight:bold;color:var(--accent);font-size:1.05em;margin-bottom:4px}
@@ -202,6 +202,87 @@ button{cursor:pointer}
 @media(min-width:901px){.mobile-nav-overlay{display:none!important}}
         .cal-day.has-note{border-color:var(--accent)}
 .note-dot{font-size:.7em;margin-top:2px}
+/* ===== v3.5 主页布局 ===== */
+.home-hero{padding:26px 20px 6px}
+.home-hero h1{font-size:1.8em}
+.home-section{margin-top:24px}
+.home-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px}
+.home-section-head h3{margin:0;font-size:1em;color:var(--accent)}
+.continue-card{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px;padding:20px 22px;border-radius:12px;border:1px solid var(--border);background:linear-gradient(120deg,var(--bg2),var(--bg3));cursor:pointer;transition:.2s;flex-wrap:wrap}
+.continue-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.continue-kicker{font-size:.68em;letter-spacing:2px;color:var(--text2);margin-bottom:4px}
+.continue-title{font-size:1.25em;font-weight:bold;color:var(--accent);line-height:1.4}
+.continue-meta{font-size:.75em;color:var(--text2);margin-top:4px}
+.work-card{text-align:left;display:flex;flex-direction:column;min-height:168px;padding:18px 18px 14px}
+.work-card-title{font-size:1.02em;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
+.work-card-meta{font-size:.72em;color:var(--text2);margin-bottom:2px}
+.work-card-actions{margin-top:auto;padding-top:12px;justify-content:flex-start}
+.work-empty{grid-column:1/-1;text-align:center;padding:36px 20px;border:1px dashed var(--border);border-radius:12px;color:var(--text2)}
+.work-empty p{margin-bottom:12px;font-size:.85em}
+.home-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px}
+.home-card{margin:0!important;max-width:none!important;padding:18px!important;display:flex;flex-direction:column}
+.home-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px}
+.home-card-head h3{margin:0;font-size:1em}
+.home-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px}
+.home-quick button{padding:14px 10px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;font-size:.8em;transition:.2s}
+.home-quick button:hover{border-color:var(--accent);color:var(--accent);background:var(--bg3)}
+.home-mini{display:flex;gap:18px;flex-wrap:wrap;margin-top:auto;padding-top:14px;border-top:1px dashed var(--border);font-size:.7em;color:var(--text2)}
+.home-mini b{display:block;color:var(--accent);font-size:1.5em;line-height:1.3}
+@media(max-width:900px){
+  .work-card-title{min-height:0}
+  .home-stats{grid-template-columns:1fr}
+  .home-quick{grid-template-columns:repeat(2,1fr)}
+  .continue-card{padding:16px}
+  .continue-title{font-size:1.1em}
+}
+/* ===== v3.5 时间线 ===== */
+.timeline-vertical{max-height:none;overflow:visible}
+.tl-group-title{position:sticky;top:0;z-index:2;background:var(--bg2);color:var(--accent);font-size:.76em;font-weight:bold;padding:7px 12px;margin:8px 0 12px -30px;border:1px solid var(--border);border-radius:6px}
+.timeline-node .timeline-time{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.timeline-node .timeline-desc{cursor:pointer}
+.timeline-node .timeline-desc:hover{border-left-color:var(--gold)}
+.tl-chapter{font-size:.68em;padding:2px 8px;border-radius:9px;background:var(--bg3);color:var(--accent);cursor:pointer;white-space:nowrap}
+.tl-chapter:hover{background:var(--accent);color:#fff}
+/* 修复：iOS 安全区规则同时给了 top 和 bottom，toast 会被拉成整块面板 */
+.save-toast{top:auto!important;bottom:20px!important;max-width:calc(100vw - 40px)}
+/* ===== v3.6 作品封面 ===== */
+.work-card{flex-direction:row!important;gap:14px;align-items:flex-start}
+.work-cover{width:68px;height:92px;border-radius:6px;flex-shrink:0;background:linear-gradient(135deg,var(--bg3),var(--bg));border:1px solid var(--border);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:1.4em;color:var(--text2);cursor:pointer;overflow:hidden}
+.work-cover:hover{border-color:var(--accent)}
+.work-main{flex:1;min-width:0;display:flex;flex-direction:column;align-self:stretch}
+.work-intro{font-size:.72em;color:var(--text2);line-height:1.55;margin:2px 0 6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.work-edit{position:absolute;top:8px;right:8px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:.78em;display:flex;align-items:center;justify-content:center;z-index:2}
+.work-edit:hover{border-color:var(--accent);color:var(--accent)}
+.continue-cover{width:46px;height:62px;border-radius:6px;flex-shrink:0;background:linear-gradient(135deg,var(--bg3),var(--bg));border:1px solid var(--border);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:1.2em;color:var(--text2)}
+.nw-cover-preview{width:120px;height:160px;border-radius:8px;background:linear-gradient(135deg,var(--bg3),var(--bg));background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:2em;color:var(--text2);border:1px solid var(--border);flex-shrink:0}
+@media(max-width:900px){
+  .work-card{gap:12px}
+  .work-cover{width:58px;height:80px}
+}
+/* ===== v3.6 大纲拖拽 ===== */
+.outline-drag{cursor:grab;color:var(--text2);opacity:.45;font-size:.85em;padding:0 2px;user-select:none}
+.outline-drag:hover{opacity:.9;color:var(--accent)}
+.outline-node-header.outline-dragging{opacity:.4}
+.outline-node-header.outline-drop-before{box-shadow:inset 0 2px 0 var(--accent)}
+.outline-node-header.outline-drop-after{box-shadow:inset 0 -2px 0 var(--accent)}
+.outline-node-header.outline-drop-inside{background:var(--bg3);outline:1px dashed var(--accent);outline-offset:-1px}
+@media(hover:none){.outline-drag{display:none}}
+/* ===== v3.5 大纲交互 ===== */
+.outline-node-header{gap:8px;padding:6px 8px}
+.outline-label{flex:1;cursor:text}
+.outline-label:hover{color:var(--accent)}
+.outline-chapter{font-size:.65em;padding:2px 8px;border-radius:9px;background:var(--bg3);color:var(--accent);cursor:pointer;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.outline-chapter:hover{background:var(--accent);color:#fff}
+.outline-actions{opacity:1}
+.outline-actions button{width:26px;height:26px;font-size:.8em;background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text)}
+.outline-actions button:hover{border-color:var(--accent);color:var(--accent)}
+.outline-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.outline-actions{flex-shrink:0}
+.outline-edit-input{flex:1;min-width:80px;background:var(--bg);border:1px solid var(--accent);border-radius:4px;color:var(--text);padding:3px 7px;font-size:.9em}
+.nw-outline-menu{position:fixed;z-index:6000;background:var(--bg2);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:5px;min-width:160px}
+.nw-outline-menu button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--text);padding:8px 10px;border-radius:5px;font-size:.8em;cursor:pointer}
+.nw-outline-menu button:hover{background:var(--bg3)}
+.nw-outline-menu .danger{color:var(--danger)}
 /* ===== v3.2 章节备忘 / 词条排序 / 引用统计 / 书签 / 侧边栏折叠 ===== */
 .entry-item{position:relative}
 .entry-item.nw-dragging{opacity:.35}
@@ -265,28 +346,48 @@ button{cursor:pointer}
 <div class="home-hero"><h1>📖 我的作品</h1><p>选择一部作品继续创作，或创建新的世界</p>
 <button class="new-work-btn" onclick="createNewWork()">+ 创建新作品</button></div>
 
-<div class="card" style="margin:20px auto;max-width:500px;padding:18px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <h3 style="margin:0;font-size:1em">🎯 今日写作目标</h3>
-        <button class="btn btn-secondary btn-sm" onclick="editDailyGoal()">设定</button>
+<div id="homeContinue"></div>
+
+<div class="home-section">
+    <div class="home-section-head">
+        <h3>📚 我的作品</h3>
+        <button class="btn btn-secondary btn-sm" onclick="createNewWork()">+ 新建作品</button>
     </div>
-    <div id="dailyGoalDisplay"></div>
+    <div class="work-grid" id="workGrid"></div>
 </div>
-<div class="card" style="margin:20px auto;max-width:700px;padding:18px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <h3 style="margin:0;font-size:1em">📊 码字趋势</h3>
-        <div style="display:flex;gap:6px">
-            <button class="btn btn-secondary btn-sm" id="trendBtn7" onclick="switchTrendRange(7)">7天</button>
-            <button class="btn btn-secondary btn-sm" id="trendBtn30" onclick="switchTrendRange(30)">30天</button>
+
+<div class="home-stats">
+    <div class="card home-card">
+        <div class="home-card-head">
+            <h3>🎯 今日写作目标</h3>
+            <button class="btn btn-secondary btn-sm" onclick="editDailyGoal()">设定</button>
         </div>
+        <div id="dailyGoalDisplay"></div>
+        <div class="home-mini" id="homeMiniStats"></div>
     </div>
-    <div id="trendChartDisplay"></div>
+    <div class="card home-card">
+        <div class="home-card-head">
+            <h3>📊 码字趋势</h3>
+            <div style="display:flex;gap:6px">
+                <button class="btn btn-secondary btn-sm" id="trendBtn7" onclick="switchTrendRange(7)">7天</button>
+                <button class="btn btn-secondary btn-sm" id="trendBtn30" onclick="switchTrendRange(30)">30天</button>
+            </div>
+        </div>
+        <div id="trendChartDisplay"></div>
+    </div>
 </div>
-<div class="work-grid" id="workGrid"></div>
+
 <div class="calendar-dashboard" id="dashboardCal">
 <h3>📅 码字日历（本月）<span style="font-size:.65em;color:var(--text2);font-weight:normal;margin-left:6px">按每天新增字数统计</span></h3>
 <div class="stats-row" id="statsRow"></div>
 <div class="daily-grid" id="dailyGrid"></div>
+</div>
+
+<div class="home-quick">
+    <button onclick="goPage('worldview')">🌍 世界观</button>
+    <button onclick="goPage('characters')">👥 人物</button>
+    <button onclick="goPage('tools')">🔧 工具</button>
+    <button onclick="openSyncPanel()">☁️ 同步 / 备份</button>
 </div>
 </div></div>
 </div>
@@ -443,7 +544,6 @@ button{cursor:pointer}
 <div id="calFestivalLegend" style="display:none;margin-top:12px;padding:10px 12px;border:1px dashed var(--border);border-radius:8px;font-size:.75em;color:var(--text2);line-height:1.8"></div>
 </div>
 </div>
-</div></div>
 <div class="wv-content" id="wv-timeline">
     <div class="card" style="margin-bottom:16px;padding:15px 20px;max-width:700px;margin-left:auto;margin-right:auto;position:sticky;top:0;z-index:10;background:var(--bg2);box-shadow:0 2px 10px rgba(0,0,0,0.15)">
         <div style="display:flex;justify-content:space-between;align-items:center">
@@ -457,7 +557,11 @@ button{cursor:pointer}
     <div class="card" style="margin-bottom:16px;padding:15px 20px;max-width:700px;margin-left:auto;margin-right:auto;position:sticky;top:0;z-index:10;background:var(--bg2);box-shadow:0 2px 10px rgba(0,0,0,0.15)">
         <div style="display:flex;justify-content:space-between;align-items:center">
             <h3 style="margin:0;font-size:1em">🗂️ 故事大纲</h3>
-            <button class="btn btn-primary btn-sm" onclick="openOutlineModal(null)">+ 添加根节点</button>
+            <div style="display:flex;gap:6px;align-items:center">
+                <button class="btn btn-secondary btn-sm" onclick="outlineToggleAll(true)" title="展开全部">展开</button>
+                <button class="btn btn-secondary btn-sm" onclick="outlineToggleAll(false)" title="折叠全部">折叠</button>
+                <button class="btn btn-primary btn-sm" onclick="openOutlineModal(null)">+ 添加根节点</button>
+            </div>
         </div>
     </div>
     <div id="outlineContainer" style="max-width:700px;margin:0 auto"></div>
@@ -496,6 +600,8 @@ button{cursor:pointer}
         <canvas id="factionCanvas" style="width:100%;height:420px;background:var(--bg);border:1px solid var(--border);border-radius:8px"></canvas>
     </div>
     <div id="factionListContainer" style="max-width:700px;margin:0 auto"></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -787,6 +893,7 @@ function exitDevMode() {
 }
 
 function goPage(page) {
+    document.querySelectorAll('.nw-outline-menu').forEach(m => m.remove());
     if(page === 'dev' && !devUnlocked) { showToast('请先解锁开发者模式（连续点击Logo 5次）'); return; }
     if(page !== 'home' && page !== 'dev' && !currentWork()) { showToast('请先选择或创建作品'); return; }
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -977,22 +1084,211 @@ function saveCurrentWorkContent() {
     const ch = w.chapters.find(c => c.id === w.currentChapterId) || w.chapters[0];
     if(ch) { ch.content = document.getElementById('editor').value; ch.wordCount = document.getElementById('editor').value.length; }
 }
-function renderHome() {
-    const grid = document.getElementById('workGrid'); grid.innerHTML = '';
-    works.forEach(w => {
-        const card = document.createElement('div'); card.className = 'work-card';
-        const totalWords = w.chapters.reduce((s,c) => s + (c.wordCount||0), 0);
-        const charCount = w.characters.length;
-        const lastMod = w.lastModified ? new Date(w.lastModified).toLocaleDateString('zh-CN') : '未开始';
-        card.innerHTML = `<div class="work-card-title">${w.title}</div><div class="work-card-meta">${totalWords} 字 · ${charCount} 人物 · ${lastMod}</div>
-        <div class="work-card-actions"><button onclick="event.stopPropagation();openWork(${w.id})">继续</button><button onclick="event.stopPropagation();openExportMenu(${w.id})">导出</button><button onclick="event.stopPropagation();deleteWork(${w.id})">删除</button></div>`;
-        card.onclick = () => openWork(w.id);
-        grid.appendChild(card);
-    });
-   renderDailyGoal();
-    renderDashboardCalendar();
-       renderTrendChart();
+function nwRelativeDate(ts) {
+    if(!ts) return '未开始';
+    const diff = Date.now() - ts;
+    if(diff < 0) return '刚刚';
+    const d = Math.floor(diff / 86400000);
+    if(d <= 0) return '今天';
+    if(d === 1) return '昨天';
+    if(d < 7) return d + ' 天前';
+    return new Date(ts).toLocaleDateString('zh-CN');
 }
+function renderHome() {
+    const grid = document.getElementById('workGrid');
+    if(!grid) return;
+    grid.innerHTML = '';
+
+    // 最近编辑的作品 → 继续写作卡
+    const cont = document.getElementById('homeContinue');
+    const latest = works.slice().sort((a, b) => (b.lastModified || 0) - (a.lastModified || 0))[0];
+    if(cont) {
+        if(latest) {
+            const totalWords = latest.chapters.reduce((s, c) => s + (c.wordCount || 0), 0);
+            let idx = latest.chapters.findIndex(c => c.id === latest.currentChapterId);
+            if(idx < 0) idx = 0;
+            const ch = latest.chapters[idx];
+            const coverStyle = latest.cover ? ` style="background-image:url('${latest.cover}')"` : '';
+            cont.innerHTML = `<div class="continue-card" onclick="openWork(${latest.id})">
+                <div style="display:flex;gap:14px;align-items:center;min-width:0">
+                    <div class="continue-cover"${coverStyle}>${latest.cover ? '' : '📖'}</div>
+                    <div style="min-width:0">
+                        <div class="continue-kicker">继 续 写 作</div>
+                        <div class="continue-title">${escapeHtml(latest.title)}</div>
+                        <div class="continue-meta">${ch ? escapeHtml(ch.name) + ' · ' : ''}${totalWords} 字 · 最近编辑 ${nwRelativeDate(latest.lastModified)}</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="event.stopPropagation();openWork(${latest.id})">继续 →</button>
+            </div>`;
+        } else {
+            cont.innerHTML = '';
+        }
+    }
+
+    if(!works.length) {
+        grid.innerHTML = `<div class="work-empty"><p>还没有作品。创建第一本，或从备份导入。</p><button class="btn btn-primary btn-sm" onclick="createNewWork()">+ 创建第一本</button></div>`;
+    } else {
+        works.forEach(w => {
+            const totalWords = w.chapters.reduce((s, c) => s + (c.wordCount || 0), 0);
+            const card = document.createElement('div');
+            card.className = 'work-card';
+            const coverStyle = w.cover ? ` style="background-image:url('${w.cover}')"` : '';
+            const intro = w.intro ? `<div class="work-intro">${escapeHtml(w.intro)}</div>` : '';
+            card.innerHTML = `<button class="work-edit" title="封面与简介" onclick="event.stopPropagation();openWorkInfo(${w.id})">✎</button>
+                <div class="work-cover"${coverStyle} title="编辑封面与简介" onclick="event.stopPropagation();openWorkInfo(${w.id})">${w.cover ? '' : '📖'}</div>
+                <div class="work-main">
+                    <div class="work-card-title">${escapeHtml(w.title)}</div>
+                    ${intro}
+                    <div class="work-card-meta">${w.chapters.length} 章 · ${totalWords} 字</div>
+                    <div class="work-card-meta">${w.characters.length} 人物 · ${nwRelativeDate(w.lastModified)}</div>
+                    <div class="work-card-actions">
+                        <button onclick="event.stopPropagation();openWork(${w.id})">继续</button>
+                        <button onclick="event.stopPropagation();openExportMenu(${w.id})">导出</button>
+                        <button onclick="event.stopPropagation();deleteWork(${w.id})">删除</button>
+                    </div>
+                </div>`;
+            card.onclick = () => openWork(w.id);
+            grid.appendChild(card);
+        });
+    }
+
+    const mini = document.getElementById('homeMiniStats');
+    if(mini) {
+        const weekStart = nwLocalDateKey(new Date(Date.now() - 6 * 86400000));
+        let today = 0, week = 0, total = 0;
+        works.forEach(w => {
+            Object.entries(w.dailyWordCounts || {}).forEach(([d, v]) => {
+                total += v;
+                if(d >= weekStart) week += v;
+                if(d === nwLocalDateKey()) today += v;
+            });
+        });
+        // 连续写作天数（今天没写就从昨天开始算）
+        let streak = 0;
+        for(let i = 0; i < 365; i++) {
+            const key = nwLocalDateKey(new Date(Date.now() - i * 86400000));
+            let dayWords = 0;
+            works.forEach(w => { dayWords += (w.dailyWordCounts || {})[key] || 0; });
+            if(dayWords > 0) streak++;
+            else if(i === 0) continue;
+            else break;
+        }
+        mini.innerHTML = `<div><b>${today}</b>今日</div><div><b>${week}</b>近 7 天</div><div><b>${streak}</b>连续</div><div><b>${total}</b>累计</div>`;
+    }
+
+    renderDailyGoal();
+    renderDashboardCalendar();
+    renderTrendChart();
+}
+
+// ===== 作品封面 / 简介 =====
+let nwPendingCover;
+function nwResizeImage(file, maxW, maxH) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = new Image();
+            img.onload = () => {
+                const ratio = Math.min(maxW / img.width, maxH / img.height, 1);
+                const w = Math.max(1, Math.round(img.width * ratio));
+                const h = Math.max(1, Math.round(img.height * ratio));
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#1a2438';
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(img, 0, 0, w, h);
+                try { resolve(canvas.toDataURL('image/jpeg', 0.8)); }
+                catch(e) { reject(e); }
+            };
+            img.onerror = reject;
+            img.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+function openWorkInfo(id) {
+    const w = works.find(x => x.id === id);
+    if(!w) return;
+    nwPendingCover = undefined;
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwWorkInfoModal';
+    const coverStyle = w.cover ? ` style="background-image:url('${w.cover}')"` : '';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:520px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">📕 作品信息</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap">
+                <div id="nwCoverPreview" class="nw-cover-preview"${coverStyle}>${w.cover ? '' : '📖'}</div>
+                <div style="flex:1;min-width:180px">
+                    <div class="form-group">
+                        <label class="form-label">封面（建议竖版 3:4）</label>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap">
+                            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('nwCoverInput').click()">上传封面</button>
+                            <button class="btn btn-secondary btn-sm" onclick="nwRemoveCover()">移除</button>
+                            <input type="file" id="nwCoverInput" accept="image/*" style="display:none" onchange="nwHandleCover(event)">
+                        </div>
+                        <p style="font-size:.68em;color:var(--text2);margin-top:6px">会自动压缩成 360×480 的缩略图，只存在作品数据里。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">简介（120 字以内）</label>
+                <textarea class="form-textarea" id="nwWorkIntro" maxlength="120" style="min-height:90px" placeholder="一句话介绍这本书…">${escapeHtml(w.intro || '')}</textarea>
+            </div>
+            <div class="btn-row" style="justify-content:flex-end">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveWorkInfo(${id})">保存</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+}
+async function nwHandleCover(ev) {
+    const file = ev.target.files && ev.target.files[0];
+    if(!file) return;
+    try {
+        const data = await nwResizeImage(file, 360, 480);
+        nwPendingCover = data;
+        const prev = document.getElementById('nwCoverPreview');
+        if(prev) {
+            prev.style.backgroundImage = `url('${data}')`;
+            prev.textContent = '';
+        }
+        showToast('封面已选择，点保存生效');
+    } catch(e) {
+        showToast('图片读取失败，换一张试试');
+    }
+}
+function nwRemoveCover() {
+    nwPendingCover = null;
+    const prev = document.getElementById('nwCoverPreview');
+    if(prev) {
+        prev.style.backgroundImage = '';
+        prev.textContent = '📖';
+    }
+}
+function saveWorkInfo(id) {
+    const w = works.find(x => x.id === id);
+    if(!w) return;
+    const introEl = document.getElementById('nwWorkIntro');
+    const intro = introEl ? introEl.value.trim() : '';
+    if(intro) w.intro = intro;
+    else delete w.intro;
+    if(nwPendingCover === null) delete w.cover;
+    else if(typeof nwPendingCover === 'string') w.cover = nwPendingCover;
+    nwPendingCover = undefined;
+    document.querySelector('.modal.active')?.remove();
+    saveAll();
+    renderHome();
+    showToast('作品信息已更新');
+}
+
 function renderDashboardCalendar() {
     const now = new Date();
     const year = now.getFullYear(), month = now.getMonth();
@@ -2906,6 +3202,7 @@ function deleteCharacter() {
     showToast('已移入回收站');
 }
 function switchWvTab(tab, btn) {
+    document.querySelectorAll('.nw-outline-menu').forEach(m => m.remove());
     document.querySelectorAll('.wv-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.querySelectorAll('.wv-content').forEach(c => c.classList.remove('active'));
@@ -4026,58 +4323,145 @@ document.addEventListener('keydown', e => {
     if(e.ctrlKey && e.shiftKey && e.key === 'D') { e.preventDefault(); devUnlocked = true; document.getElementById('devNavBtn').style.display = 'block'; goPage('dev'); showToast('🔓 开发者模式'); }
 });
 // ========== 时间线管理 ==========
+function nwTimelineDisplay(e, w) {
+    w = w || currentWork();
+    if(e.year == null || e.year === 0 || e.year === '') return e.time || '未设定时间';
+    let t = (e.era ? e.era + ' ' : '') + e.year + ' 年';
+    const months = (w && w.calendarData && w.calendarData.months) || [];
+    const name = (e.monthIndex && months[e.monthIndex - 1]) ? months[e.monthIndex - 1].name : (e.monthName || '');
+    if(name) t += ' · ' + name;
+    if(e.day) t += ' ' + e.day + ' 日';
+    return t;
+}
+
+// 兼容旧数据：把自由文本时间补成可排序的字段
+function nwTimelineNormalize(w) {
+    const list = w.globalTimeline || [];
+    list.forEach(e => {
+        if(e.sortValue == null) {
+            const m = String(e.time || '').match(/(\d{1,4})/);
+            if(e.year == null) e.year = m ? parseInt(m[1], 10) : 0;
+            if(e.monthIndex == null) e.monthIndex = 0;
+            if(e.day == null) e.day = 0;
+            if(e.era == null) e.era = m ? String(e.time || '').replace(/[\d].*$/, '').trim() : '';
+            e.sortValue = (e.year || 0) * 10000 + (e.monthIndex || 0) * 100 + (e.day || 0);
+            if(!e.time) e.time = nwTimelineDisplay(e, w);
+        }
+    });
+    return list;
+}
+
 function renderTimeline() {
     const w = currentWork(); if(!w) return;
     const container = document.getElementById('timelineContainer');
     if(!container) return;
-    const timeline = w.globalTimeline || [];
-    
+    const timeline = nwTimelineNormalize(w);
+
     if(timeline.length === 0) {
-        container.innerHTML = '<p style="color:var(--text2);font-size:.9em;text-align:center;padding:20px">暂无时间点，点击上方新增时间点</p>';
+        container.innerHTML = '<p style="color:var(--text2);font-size:.9em;text-align:center;padding:20px">还没有时间点。点击右上角「+ 新增时间点」，按纪元/年份排好序。</p>';
         return;
     }
-    
-    // 按时间排序（简单字符串排序）
-    timeline.sort((a,b) => (a.time || '').localeCompare(b.time || ''));
-    
+
+    timeline.sort((a, b) => {
+        const af = a.year ? 0 : 1, bf = b.year ? 0 : 1;
+        if(af !== bf) return af - bf;   // 有确切年份的排前面，模糊时间排最后
+        return (a.sortValue || 0) - (b.sortValue || 0) || String(a.time || '').localeCompare(String(b.time || ''), 'zh');
+    });
+
     let html = '<div class="timeline-vertical">';
+    let lastGroup = null;
     timeline.forEach((entry, index) => {
+        const group = entry.year
+            ? ((entry.era || '未分纪元') + ' · ' + entry.year + ' 年')
+            : '⏳ 模糊时间';
+        if(group !== lastGroup) {
+            html += `<div class="tl-group-title">${escapeHtml(group)}</div>`;
+            lastGroup = group;
+        }
+        const chapter = entry.chapterId ? w.chapters.find(c => c.id === entry.chapterId) : null;
         html += `
             <div class="timeline-node">
-                <div class="timeline-time">${entry.time || '未设定时间'}</div>
-                <div class="timeline-desc" onclick="openTimelineModal(${index})">${entry.desc || '无描述'}</div>
-            </div>
-            <div class="timeline-insert">
-                <button title="在此处插入时间点" onclick="openTimelineModal(-1, ${index})">+</button>
-            </div>
-        `;
+                <div class="timeline-time">${escapeHtml(nwTimelineDisplay(entry, w))}${chapter ? `<span class="tl-chapter" data-chapter="${chapter.id}">${escapeHtml(chapter.name)}</span>` : ''}</div>
+                <div class="timeline-desc" onclick="openTimelineModal(${index})">${escapeHtml(entry.desc || '无描述').replace(/\n/g, '<br>')}</div>
+            </div>`;
     });
     html += '</div>';
     container.innerHTML = html;
+
+    container.querySelectorAll('.tl-chapter').forEach(b => {
+        b.onclick = function(e) {
+            e.stopPropagation();
+            jumpToChapterFromOutline(parseInt(this.dataset.chapter));
+        };
+    });
 }
 
 function openTimelineModal(editIndex = -1, insertAfter = -1) {
-          // 删除旧弹窗
     document.querySelectorAll('.modal.active').forEach(m => m.remove());
     const w = currentWork(); if(!w) return;
     const timeline = w.globalTimeline || [];
-    
-    // 创建弹窗
+    const editing = editIndex >= 0 ? timeline[editIndex] : null;
+    const months = (w.calendarData && w.calendarData.months) || [];
+    const defaultEra = (w.calendarData && w.calendarData.eraName) || '';
+    const era = editing ? (editing.era || '') : defaultEra;
+    const year = editing && editing.year ? editing.year : '';
+    const monthIndex = editing ? (editing.monthIndex || 0) : 0;
+    const day = editing && editing.day ? editing.day : '';
+    const desc = editing ? (editing.desc || '') : '';
+    const chapterId = editing ? (editing.chapterId || '') : '';
+    const monthOpts = months.map((m, i) =>
+        `<option value="${i + 1}"${monthIndex === i + 1 ? ' selected' : ''}>${escapeHtml(m.name)}</option>`
+    ).join('');
+    const chOpts = w.chapters.map((c, i) =>
+        `<option value="${c.id}"${chapterId === c.id ? ' selected' : ''}>第 ${i + 1} 章 · ${escapeHtml(c.name)}</option>`
+    ).join('');
+
     const modal = document.createElement('div');
     modal.className = 'modal active';
     modal.innerHTML = `
-        <div class="modal-content">
+        <div class="modal-content" style="max-width:560px">
             <div class="modal-header">
                 <h3 style="color:var(--accent)">${editIndex >= 0 ? '✏️ 编辑时间点' : '➕ 新增时间点'}</h3>
                 <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
             </div>
-            <div class="form-group">
-                <label class="form-label">时间</label>
-                <input class="form-input" id="timelineModalTime" placeholder="例如：帝国历245年 / 第三章之后" value="${editIndex >= 0 ? timeline[editIndex].time || '' : ''}">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="form-group">
+                    <label class="form-label">纪元</label>
+                    <input class="form-input" id="tlEra" placeholder="例如：帝国历" value="${escapeHtml(era)}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">年份</label>
+                    <input class="form-input" id="tlYear" type="number" placeholder="245" value="${year}">
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="form-group">
+                    <label class="form-label">月份（可选）</label>
+                    <select class="form-select" id="tlMonth">
+                        <option value="0">不指定</option>
+                        ${monthOpts}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">日期（可选）</label>
+                    <input class="form-input" id="tlDay" type="number" placeholder="3" value="${day}">
+                </div>
             </div>
             <div class="form-group">
-                <label class="form-label">描述</label>
-                <textarea class="form-textarea" id="timelineModalDesc" style="min-height:150px" placeholder="输入事件描述...">${editIndex >= 0 ? timeline[editIndex].desc || '' : ''}</textarea>
+                <label class="form-label">模糊时间（没有确切年份时填这里）</label>
+                <input class="form-input" id="tlFuzzy" placeholder="例如：约 245 年冬 / 第三章之后" value="${editing && !editing.year ? escapeHtml(editing.time || '') : ''}">
+                <p style="font-size:.7em;color:var(--text2);margin-top:4px">填了年份就按年份排序；只填这里会归到「模糊时间」组。</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">事件描述</label>
+                <textarea class="form-textarea" id="timelineModalDesc" style="min-height:120px" placeholder="发生了什么？">${escapeHtml(desc)}</textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">关联章节（可选）</label>
+                <select class="form-select" id="tlChapter">
+                    <option value="">不关联</option>
+                    ${chOpts}
+                </select>
             </div>
             <div class="btn-row" style="justify-content:flex-end">
                 ${editIndex >= 0 ? `<button class="btn btn-danger" onclick="deleteTimelineEntry(${editIndex})">删除</button>` : ''}
@@ -4086,27 +4470,43 @@ function openTimelineModal(editIndex = -1, insertAfter = -1) {
             </div>
         </div>`;
     document.body.appendChild(modal);
-    document.getElementById('timelineModalTime').focus();
+    document.getElementById('tlYear').focus();
 }
 
 function saveTimelineEntry(editIndex, insertAfter) {
     const w = currentWork(); if(!w) return;
-    const time = document.getElementById('timelineModalTime').value.trim();
-    const desc = document.getElementById('timelineModalDesc').value.trim();
-    if(!time && !desc) { showToast('请至少填写时间或描述'); return; }
-    
-    const entry = { time, desc };
-    const timeline = w.globalTimeline || [];
-    
-    if(editIndex >= 0) {
-        timeline[editIndex] = entry;
-    } else if(insertAfter >= 0) {
-        timeline.splice(insertAfter + 1, 0, entry);
+    const era = (document.getElementById('tlEra').value || '').trim();
+    const year = parseInt(document.getElementById('tlYear').value) || 0;
+    const monthIndex = parseInt(document.getElementById('tlMonth').value) || 0;
+    const day = parseInt(document.getElementById('tlDay').value) || 0;
+    const desc = (document.getElementById('timelineModalDesc').value || '').trim();
+    const fuzzyText = (document.getElementById('tlFuzzy').value || '').trim();
+    const chapterId = parseInt(document.getElementById('tlChapter').value) || 0;
+    if(!year && !desc && !fuzzyText) { showToast('请至少填写年份、模糊时间或描述'); return; }
+
+    const months = (w.calendarData && w.calendarData.months) || [];
+    let entry;
+    if(year) {
+        entry = {
+            era, year, monthIndex, day, desc,
+            monthName: (monthIndex && months[monthIndex - 1]) ? months[monthIndex - 1].name : '',
+            sortValue: year * 10000 + monthIndex * 100 + day
+        };
+        entry.time = nwTimelineDisplay(entry, w);
     } else {
-        timeline.push(entry);
+        entry = {
+            era: '', year: 0, monthIndex: 0, day: 0, desc,
+            fuzzy: true, time: fuzzyText || '未定时间', sortValue: 999999999
+        };
     }
-    
+    if(chapterId) entry.chapterId = chapterId;
+
+    const timeline = w.globalTimeline || [];
+    if(editIndex >= 0) timeline[editIndex] = entry;
+    else if(insertAfter >= 0) timeline.splice(insertAfter + 1, 0, entry);
+    else timeline.push(entry);
     w.globalTimeline = timeline;
+
     document.querySelector('.modal.active')?.remove();
     renderTimeline();
     saveAll();
@@ -4128,14 +4528,14 @@ function renderOutline() {
     const container = document.getElementById('outlineContainer');
     if(!container) return;
     const outline = w.outline || [];
-    
+
     if(outline.length === 0) {
         container.innerHTML = '<p style="color:var(--text2);font-size:.9em;text-align:center;padding:20px">暂无大纲节点，点击上方添加根节点</p>';
         return;
     }
-    
+
     container.innerHTML = '<div class="outline-tree">' + outline.map(node => renderOutlineNode(node)).join('') + '</div>';
-    // 绑定操作
+
     container.querySelectorAll('[data-action]').forEach(btn => {
         btn.onclick = function(e) {
             e.stopPropagation();
@@ -4143,44 +4543,305 @@ function renderOutline() {
             const action = this.dataset.action;
             if(action === 'add-child') openOutlineModal(id, 'child');
             else if(action === 'add-sibling') openOutlineModal(id, 'sibling');
-            else if(action === 'edit') openOutlineModal(id, 'edit');
-            else if(action === 'delete') deleteOutlineNode(id);
+            else if(action === 'menu') openOutlineMenu(id, this);
         };
     });
-    
-    // 绑定展开/收起
-    container.querySelectorAll('.outline-toggle').forEach(toggle => {
-        toggle.onclick = function(e) {
+
+    container.querySelectorAll('.outline-toggle').forEach(t => {
+        t.onclick = function(e) {
             e.stopPropagation();
-            const childrenWrapper = this.closest('.outline-node').querySelector('.outline-children');
-            if(childrenWrapper) {
-                childrenWrapper.classList.toggle('collapsed');
-                this.classList.toggle('collapsed');
-            }
+            const f = outlineFind(parseInt(this.dataset.toggle));
+            if(!f) return;
+            f.node.collapsed = !f.node.collapsed;
+            saveAll();
+            renderOutline();
+        };
+    });
+
+    container.querySelectorAll('.outline-label').forEach(lbl => {
+        lbl.onclick = function(e) {
+            e.stopPropagation();
+            startOutlineEdit(parseInt(this.dataset.label));
+        };
+    });
+
+    container.querySelectorAll('.outline-chapter').forEach(badge => {
+        badge.onclick = function(e) {
+            e.stopPropagation();
+            jumpToChapterFromOutline(parseInt(this.dataset.chapter));
         };
     });
 }
 
 function renderOutlineNode(node) {
+    const w = currentWork();
     const hasChildren = node.children && node.children.length > 0;
-    const childrenHtml = hasChildren ? 
-        '<div class="outline-children">' + node.children.map(child => renderOutlineNode(child)).join('') + '</div>' : '';
-    
+    const collapsed = !!node.collapsed;
+    const chapter = (node.chapterId && w) ? w.chapters.find(c => c.id === node.chapterId) : null;
+    const childrenHtml = hasChildren
+        ? '<div class="outline-children' + (collapsed ? ' collapsed' : '') + '">' + node.children.map(child => renderOutlineNode(child)).join('') + '</div>'
+        : '';
     return `
         <div class="outline-node">
-            <div class="outline-node-header">
-                ${hasChildren ? '<span class="outline-toggle">▼</span>' : '<span style="width:18px"></span>'}
-                <span class="outline-label" onclick="openOutlineModal(${node.id}, 'edit')">${node.label || '未命名'}</span>
+            <div class="outline-node-header" data-node="${node.id}" ondragover="outlineDragOver(event, ${node.id})" ondragleave="outlineDragLeave(event)" ondrop="outlineDrop(event, ${node.id})">
+                <span class="outline-drag" draggable="true" data-drag="${node.id}" title="拖动调整位置" ondragstart="outlineDragStart(event, ${node.id})" ondragend="outlineDragEnd(event)">⠿</span>
+                ${hasChildren ? `<span class="outline-toggle${collapsed ? ' collapsed' : ''}" data-toggle="${node.id}">▼</span>` : '<span style="width:18px"></span>'}
+                <span class="outline-label" data-label="${node.id}">${escapeHtml(node.label || '未命名')}</span>
+                ${chapter ? `<span class="outline-chapter" data-chapter="${chapter.id}" title="跳到这一章">${escapeHtml(chapter.name)}</span>` : ''}
                 <span class="outline-actions">
-                    <button data-action="add-child" data-id="${node.id}" title="添加子节点">+</button>
-                    <button data-action="add-sibling" data-id="${node.id}" title="添加同级节点">⤵</button>
-                    <button data-action="edit" data-id="${node.id}" title="编辑">✏️</button>
-                    <button data-action="delete" data-id="${node.id}" title="删除">✕</button>
+                    <button data-action="add-child" data-id="${node.id}" title="添加子节点">＋</button>
+                    <button data-action="menu" data-id="${node.id}" title="更多操作">⋯</button>
                 </span>
             </div>
             ${childrenHtml}
         </div>
     `;
+}
+
+// ===== 大纲拖拽 =====
+let nwOutlineDragId = null;
+function nwOutlineContains(node, id) {
+    if(!node) return false;
+    if(node.id === id) return true;
+    return (node.children || []).some(c => nwOutlineContains(c, id));
+}
+function nwOutlineClearDropMarks() {
+    document.querySelectorAll('.outline-drop-before,.outline-drop-after,.outline-drop-inside').forEach(el => {
+        el.classList.remove('outline-drop-before', 'outline-drop-after', 'outline-drop-inside');
+    });
+    document.querySelectorAll('.outline-dragging').forEach(el => el.classList.remove('outline-dragging'));
+}
+function outlineDragStart(e, id) {
+    nwOutlineDragId = id;
+    try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', String(id)); } catch(err) {}
+    const header = e.currentTarget.closest('.outline-node-header');
+    if(header) header.classList.add('outline-dragging');
+}
+function outlineDragOver(e, id) {
+    if(nwOutlineDragId == null || id === nwOutlineDragId) return;
+    const drag = outlineFind(nwOutlineDragId);
+    if(!drag || nwOutlineContains(drag.node, id)) return;
+    e.preventDefault();
+    try { e.dataTransfer.dropEffect = 'move'; } catch(err) {}
+    const header = e.currentTarget;
+    const rect = header.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const mode = y < rect.height * 0.3 ? 'before' : (y > rect.height * 0.7 ? 'after' : 'inside');
+    header.classList.remove('outline-drop-before', 'outline-drop-after', 'outline-drop-inside');
+    header.classList.add('outline-drop-' + mode);
+}
+function outlineDragLeave(e) {
+    e.currentTarget.classList.remove('outline-drop-before', 'outline-drop-after', 'outline-drop-inside');
+}
+function outlineDrop(e, id) {
+    e.preventDefault();
+    const header = e.currentTarget;
+    let mode = 'inside';
+    if(header.classList.contains('outline-drop-before')) mode = 'before';
+    else if(header.classList.contains('outline-drop-after')) mode = 'after';
+    const dragId = nwOutlineDragId;
+    nwOutlineDragId = null;
+    nwOutlineClearDropMarks();
+    if(dragId == null || dragId === id) return;
+    outlineMoveTo(dragId, id, mode);
+}
+function outlineDragEnd() {
+    nwOutlineDragId = null;
+    nwOutlineClearDropMarks();
+}
+function outlineMoveTo(dragId, targetId, mode) {
+    const drag = outlineFind(dragId);
+    if(!drag) return;
+    if(nwOutlineContains(drag.node, targetId)) return;
+    drag.arr.splice(drag.index, 1);
+    const target = outlineFind(targetId);
+    if(!target) { renderOutline(); return; }
+    if(mode === 'inside') {
+        target.node.children = target.node.children || [];
+        target.node.children.push(drag.node);
+        target.node.collapsed = false;
+    } else {
+        const idx = target.index + (mode === 'after' ? 1 : 0);
+        target.arr.splice(idx, 0, drag.node);
+    }
+    saveAll();
+    renderOutline();
+    showToast('已调整大纲顺序');
+}
+
+function outlineFind(id) {
+    const w = currentWork(); if(!w) return null;
+    const walk = (arr, parent) => {
+        for(let i = 0; i < arr.length; i++) {
+            const n = arr[i];
+            if(n.id === id) return { node: n, parent, arr, index: i };
+            if(n.children && n.children.length) {
+                const r = walk(n.children, n);
+                if(r) return r;
+            }
+        }
+        return null;
+    };
+    return walk(w.outline || [], null);
+}
+
+function startOutlineEdit(id) {
+    const f = outlineFind(id); if(!f) return;
+    const el = document.querySelector('#outlineContainer .outline-label[data-label="' + id + '"]');
+    if(!el) return;
+    const input = document.createElement('input');
+    input.className = 'outline-edit-input';
+    input.value = f.node.label || '';
+    el.replaceWith(input);
+    input.focus();
+    input.select();
+    let done = false;
+    const finish = (save) => {
+        if(done) return;
+        done = true;
+        if(save) {
+            const v = input.value.trim();
+            if(v) f.node.label = v;
+            saveAll();
+        }
+        renderOutline();
+    };
+    input.onkeydown = e => {
+        if(e.key === 'Enter') { e.preventDefault(); finish(true); }
+        else if(e.key === 'Escape') { e.preventDefault(); finish(false); }
+    };
+    input.onblur = () => finish(true);
+}
+
+function outlineMove(id, delta) {
+    const f = outlineFind(id); if(!f) return;
+    const j = f.index + delta;
+    if(j < 0 || j >= f.arr.length) return;
+    const [n] = f.arr.splice(f.index, 1);
+    f.arr.splice(j, 0, n);
+    saveAll();
+    renderOutline();
+}
+
+function outlineIndent(id) {
+    const f = outlineFind(id); if(!f || f.index === 0) return;
+    const prev = f.arr[f.index - 1];
+    f.arr.splice(f.index, 1);
+    prev.children = prev.children || [];
+    prev.children.push(f.node);
+    prev.collapsed = false;
+    saveAll();
+    renderOutline();
+}
+
+function outlineOutdent(id) {
+    const f = outlineFind(id); if(!f || !f.parent) return;
+    const p = outlineFind(f.parent.id); if(!p) return;
+    f.arr.splice(f.index, 1);
+    p.arr.splice(p.index + 1, 0, f.node);
+    saveAll();
+    renderOutline();
+}
+
+function outlineToggleAll(expand) {
+    const w = currentWork(); if(!w) return;
+    const walk = arr => arr.forEach(n => {
+        if(n.children && n.children.length) {
+            n.collapsed = !expand;
+            walk(n.children);
+        }
+    });
+    walk(w.outline || []);
+    saveAll();
+    renderOutline();
+}
+
+function jumpToChapterFromOutline(chapterId) {
+    const w = currentWork(); if(!w) return;
+    if(!w.chapters.some(c => c.id === chapterId)) { showToast('章节已不存在'); return; }
+    goPage('writing');
+    switchChapter(chapterId);
+}
+
+function openOutlineMenu(id, anchor) {
+    document.querySelectorAll('.nw-outline-menu').forEach(m => m.remove());
+    if(!outlineFind(id)) return;
+    const menu = document.createElement('div');
+    menu.className = 'nw-outline-menu';
+    menu.innerHTML = `
+        <button data-m="sibling">＋ 添加同级节点</button>
+        <button data-m="up">↑ 上移</button>
+        <button data-m="down">↓ 下移</button>
+        <button data-m="indent">⇥ 降一级（变成子节点）</button>
+        <button data-m="outdent">⇤ 升一级</button>
+        <button data-m="chapter">🔗 关联章节…</button>
+        <button data-m="delete" class="danger">🗑 删除节点</button>`;
+    document.body.appendChild(menu);
+    const r = anchor.getBoundingClientRect();
+    const mw = menu.offsetWidth, mh = menu.offsetHeight;
+    let left = Math.min(r.right - mw, window.innerWidth - mw - 8);
+    left = Math.max(8, left);
+    let top = r.bottom + 6;
+    if(top + mh > window.innerHeight - 8) top = Math.max(8, r.top - mh - 6);
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+    menu.querySelectorAll('button').forEach(b => {
+        b.onclick = (e) => {
+            e.stopPropagation();
+            const m = b.dataset.m;
+            menu.remove();
+            if(m === 'sibling') openOutlineModal(id, 'sibling');
+            else if(m === 'up') outlineMove(id, -1);
+            else if(m === 'down') outlineMove(id, 1);
+            else if(m === 'indent') outlineIndent(id);
+            else if(m === 'outdent') outlineOutdent(id);
+            else if(m === 'chapter') openOutlineChapterPicker(id);
+            else if(m === 'delete') deleteOutlineNode(id);
+        };
+    });
+    setTimeout(() => document.addEventListener('click', () => menu.remove(), { once: true }), 0);
+}
+
+function openOutlineChapterPicker(id) {
+    const w = currentWork(); if(!w) return;
+    const f = outlineFind(id); if(!f) return;
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const opts = w.chapters.map((c, i) =>
+        `<option value="${c.id}"${f.node.chapterId === c.id ? ' selected' : ''}>第 ${i + 1} 章 · ${escapeHtml(c.name)}</option>`
+    ).join('');
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:480px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">🔗 关联章节</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">这个大纲节点对应哪一章？</label>
+                <select class="form-select" id="outlineChapterSelect">
+                    <option value="">不关联</option>
+                    ${opts}
+                </select>
+            </div>
+            <div class="btn-row" style="justify-content:flex-end">
+                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button>
+                <button class="btn btn-primary" onclick="saveOutlineChapter(${id})">保存</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+}
+
+function saveOutlineChapter(id) {
+    const f = outlineFind(id); if(!f) return;
+    const sel = document.getElementById('outlineChapterSelect');
+    const val = sel ? parseInt(sel.value) : NaN;
+    if(val) f.node.chapterId = val;
+    else delete f.node.chapterId;
+    document.querySelector('.modal.active')?.remove();
+    saveAll();
+    renderOutline();
+    showToast(val ? '已关联章节' : '已取消关联');
 }
 
 function findOutlineNode(id, nodes) {
@@ -5645,7 +6306,7 @@ function renderDailyGoal() {
         <div style="width:100%;height:10px;background:var(--bg3);border-radius:5px;overflow:hidden">
             <div style="width:${percent}%;height:100%;background:${barColor};transition:width .3s;border-radius:5px"></div>
         </div>
-        ${isComplete ? '<p style="text-align:center;margin-top:8px;font-size:.85em;color:var(--success)">🎉 今日目标已达成！</p>' : ''}
+        ${isComplete ? '<p style="text-align:center;margin-top:8px;font-size:.82em;color:var(--success)">🎉 今日目标已达成</p>' : '<p style="margin-top:8px;font-size:.72em;color:var(--text2)">还差 ' + (goal - todayCount) + ' 字</p>'}
     `;
 }
 // ========== 码字趋势图 ==========
