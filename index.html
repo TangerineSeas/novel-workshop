@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>西幻创作工坊 v3.6.0</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,interactive-widget=resizes-content">
+<title>西幻创作工坊 v3.7.1</title>
 <link rel="stylesheet" href="themes.css">
    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="knowledge.js"></script>
@@ -323,6 +323,107 @@ button{cursor:pointer}
   .nw-collapse-btn{display:none!important}
   .nw-drag-handle{display:none!important}
 }
+
+/* 修复：themes.css 的 .page.active{height:100%} 会把固定定位页面撑高 56px，导致底部内容点不到 */
+.page.active{height:auto!important}
+/* ===== v3.7 手机端适配 ===== */
+.nw-mobile-only{display:none}
+.nw-sidebar-close{display:none}
+.nw-sidebar-backdrop{display:none}
+@media(max-width:900px){
+  .page-scroll{padding:14px 12px calc(16px + env(safe-area-inset-bottom,0px))}
+  .page-container{max-width:100%}
+  h2{font-size:1.28em!important}
+  button,a{touch-action:manipulation}
+  .form-input,.form-textarea,.form-select,.toolbar select{font-size:16px!important}
+  .btn{padding:8px 12px}
+  .btn-sm{padding:6px 10px;font-size:.78em}
+
+  /* 头部 */
+  .header{padding:0 8px;gap:6px}
+  .logo{font-size:1.02em!important}
+  .theme-btn{width:34px;height:34px;font-size:.9em}
+
+  /* 写作工具栏：默认只留主操作 */
+  .toolbar{padding:6px 8px;gap:6px;row-gap:6px}
+  .toolbar .nw-style,.toolbar .nw-extra,.toolbar .nw-spacer{display:none}
+  .toolbar.show-style .nw-style{display:inline-flex;align-items:center;font-size:.74em}
+  .toolbar.show-style select.nw-style{flex:1 1 96px;min-width:0;max-width:140px}
+  .toolbar.show-style #paperBg{max-width:116px}
+  .toolbar.show-style input[type=color]{width:36px;height:30px;padding:0}
+  .toolbar .nw-mobile-only{display:inline-flex}
+  .toolbar .nw-status{display:flex;flex-basis:100%;justify-content:flex-end;align-items:center;gap:12px}
+  .toolbar .timer-display{font-size:.72em;margin-left:0}
+  .toolbar.show-style #mobileStyleBtn{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .editor-wrap{padding:12px 10px calc(12px + env(safe-area-inset-bottom,0px))}
+  .editor-paper{padding:18px 14px;border-radius:4px}
+
+  /* 写作工具弹层 */
+  .nw-sheet-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .nw-sheet-grid button{padding:15px 8px;border:1px solid var(--border);border-radius:10px;background:var(--bg3);color:var(--text);font-size:.84em;cursor:pointer}
+  .nw-sheet-grid button:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* 手机侧栏 */
+  .nw-sidebar-backdrop{display:none;position:fixed;top:56px;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:49}
+  .nw-sidebar-backdrop.show{display:block}
+  .nw-sidebar-close{display:inline-flex;background:none;border:none;color:var(--text);font-size:1.1em;padding:2px 8px;cursor:pointer}
+  .nw-hide-mobile{display:none!important}
+  /* 章节状态徽章可点 */
+  .chapter-status-badge{cursor:pointer}
+
+  /* 日历导航 */
+  .cal-month-nav{flex-wrap:wrap;gap:6px;justify-content:space-between}
+  .cal-month-nav #calMonthTitle{order:-1;flex-basis:100%;text-align:center;font-size:.85em}
+  .cal-month-nav button{white-space:nowrap;padding:7px 10px;font-size:.78em;flex:0 0 auto}
+  #calYearInput{width:72px!important}
+  .calendar-grid{gap:2px}
+  .cal-day{padding:4px 2px;min-height:46px;font-size:.7em}
+  .cal-day .festival-name{font-size:.5em}
+
+  /* 世界观 tabs */
+  .wv-tabs{padding:8px 0;gap:5px;margin-bottom:12px}
+  .wv-tab{padding:6px 10px;font-size:.76em}
+
+  /* 首页 */
+  .home-hero{padding:18px 10px 4px}
+  .home-hero h1{font-size:1.5em}
+  .home-hero p{font-size:.8em}
+  .continue-card{padding:14px;gap:10px}
+  .continue-title{font-size:1.05em}
+  .work-card{padding:12px}
+  .work-cover{width:54px;height:74px}
+  .work-card-actions button{padding:6px 10px}
+  .home-quick{grid-template-columns:repeat(2,1fr)}
+
+  /* 大纲 */
+  .outline-node-header{padding:8px 4px;gap:5px}
+  .outline-actions button{width:30px;height:30px}
+  .outline-chapter{max-width:88px}
+  .outline-drag{display:none}
+  .nw-sidebar-close{display:inline-flex}
+  body.touch-device .outline-drag{display:none}
+
+  /* 时间线 */
+  .tl-group-title{margin-left:-24px;padding:6px 10px;font-size:.72em}
+  #timelineContainer{padding-right:0}
+
+  /* 集合 */
+  .entry-item{padding:12px}
+  #collType{min-width:92px}
+  #collName{flex:1;min-width:110px}
+
+  /* 弹窗改成底部抽屉 */
+  .modal.active{align-items:flex-end!important}
+  .modal-content{width:100%!important;max-width:100%!important;margin:0!important;max-height:92dvh!important;border-radius:18px 18px 0 0!important;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))!important;border-left:none!important;border-right:none!important;border-bottom:none!important;animation:nwSheetUp .2s ease}
+  .modal-header h3{font-size:1.02em}
+  .modal-close{font-size:1.45em;padding:4px 8px}
+  @keyframes nwSheetUp{from{transform:translateY(24px);opacity:.6}to{transform:translateY(0);opacity:1}}
+
+  /* 提示条 */
+  .save-toast{bottom:calc(16px + env(safe-area-inset-bottom,0px))!important}
+}
+@media(max-width:360px){ .toolbar .btn{padding:6px 8px;font-size:.74em} .toolbar .nw-mobile-only{padding:6px 9px} }
+.nw-status{display:contents}
 </style>
 </head>
 <body>
@@ -400,6 +501,7 @@ button{cursor:pointer}
         <span style="display:flex;gap:6px;align-items:center">
             <button class="nw-collapse-btn" onclick="openChapterHistory()" title="历史版本">🕘</button>
             <button class="nw-collapse-btn" onclick="toggleWritingSidebar()" title="折叠侧边栏（Ctrl+反斜杠）">«</button>
+            <button class="nw-sidebar-close" onclick="closeMobileSidebar()" title="关闭">✕</button>
         </span>
     </div>
     <div id="workTitleDisplay" style="font-size:.75em;color:var(--accent);font-weight:bold;margin-bottom:8px;padding:4px 8px;background:var(--bg);border-radius:4px"></div>
@@ -419,9 +521,10 @@ button{cursor:pointer}
 <div class="sb-item" onclick="openExportMenu(currentWorkId)"><div class="sb-item-title">📤 导出作品</div><div class="sb-item-desc">TXT / Markdown / HTML</div></div>
 </div>
 </aside>
+<div id="nwSidebarBackdrop" class="nw-sidebar-backdrop" onclick="closeMobileSidebar()"></div>
 <main class="writing-main">
 <div class="toolbar">
-<label>字体</label><select id="fontFamily" onchange="updateStyle()">
+<label class="nw-style">字体</label><select id="fontFamily" class="nw-style" onchange="updateStyle()">
     <option value="'Georgia',serif">Georgia</option>
     <option value="'Times New Roman',serif">Times</option>
     <option value="'Arial',sans-serif">Arial</option>
@@ -432,28 +535,33 @@ button{cursor:pointer}
     <option value="'Noto Serif SC',serif">宋体·思源宋</option>
     <option value="'Noto Sans SC',sans-serif">黑体·思源黑</option>
 </select>
-<label>字号</label><select id="fontSize" onchange="updateStyle()"><option value="14px">小</option><option value="16px" selected>中</option><option value="18px">大</option><option value="20px">特大</option></select>
-<label>颜色</label><input type="color" id="fontColor" value="#e0e0e0" onchange="updateStyle()">
-<label>行距</label><select id="lineHeight" onchange="updateStyle()"><option value="1.5">紧凑</option><option value="1.8" selected>标准</option><option value="2.0">宽松</option><option value="2.5">很宽</option></select>
-<label>字距</label><select id="letterSpacing" onchange="updateStyle()"><option value="0px" selected>标准</option><option value="1px">加宽</option><option value="2px">很宽</option><option value="-0.5px">紧凑</option></select>
-<label>稿纸</label><select id="paperBg" onchange="updateStyle()"><option value="default" selected>默认</option><option value="parchment">羊皮纸</option><option value="lined">横线</option><option value="grid">网格</option></select>
-<button class="btn btn-secondary btn-sm" onclick="copyCurrentChapter()">📋 复制</button>
-<button class="btn btn-secondary btn-sm" onclick="formatCurrentChapter()">🎨 排版</button>
-<button class="btn btn-secondary btn-sm" onclick="searchInWork()">🔍 搜索</button>
-<button class="btn btn-secondary btn-sm" onclick="replaceInWork()">🔄 替换</button>
-   <span style="flex:1"></span>
-<button class="upload-btn-small" onclick="document.getElementById('customBgInput').click()">🖼️ 背景</button>
+<label class="nw-style">字号</label><select id="fontSize" class="nw-style" onchange="updateStyle()"><option value="14px">小</option><option value="16px" selected>中</option><option value="18px">大</option><option value="20px">特大</option></select>
+<label class="nw-style">颜色</label><input type="color" id="fontColor" class="nw-style" value="#e0e0e0" onchange="updateStyle()">
+<label class="nw-style">行距</label><select id="lineHeight" class="nw-style" onchange="updateStyle()"><option value="1.5">紧凑</option><option value="1.8" selected>标准</option><option value="2.0">宽松</option><option value="2.5">很宽</option></select>
+<label class="nw-style">字距</label><select id="letterSpacing" class="nw-style" onchange="updateStyle()"><option value="0px" selected>标准</option><option value="1px">加宽</option><option value="2px">很宽</option><option value="-0.5px">紧凑</option></select>
+<label class="nw-style">稿纸</label><select id="paperBg" class="nw-style" onchange="updateStyle()"><option value="default" selected>默认</option><option value="parchment">羊皮纸</option><option value="lined">横线</option><option value="grid">网格</option></select>
+<button class="btn btn-secondary btn-sm nw-extra" onclick="copyCurrentChapter()">📋 复制</button>
+<button class="btn btn-secondary btn-sm nw-extra" onclick="formatCurrentChapter()">🎨 排版</button>
+<button class="btn btn-secondary btn-sm nw-extra" onclick="searchInWork()">🔍 搜索</button>
+<button class="btn btn-secondary btn-sm nw-extra" onclick="replaceInWork()">🔄 替换</button>
+   <span class="nw-spacer" style="flex:1"></span>
+<button class="upload-btn-small nw-extra" onclick="document.getElementById('customBgInput').click()">🖼️ 背景</button>
 <input type="file" id="customBgInput" accept="image/*" style="display:none" onchange="importCustomBg(event)">
-<button class="upload-btn-small" onclick="document.getElementById('customFontInput').click()">✍️ 字体</button>
+<button class="upload-btn-small nw-extra" onclick="document.getElementById('customFontInput').click()">✍️ 字体</button>
 <input type="file" id="customFontInput" accept=".ttf,.otf,.woff,.woff2" style="display:none" onchange="importCustomFont(event)">
-<button class="btn btn-secondary btn-sm" onclick="toggleTimer()" id="timerBtn">⏱ 开始计时</button>
+<button class="btn btn-secondary btn-sm nw-extra" onclick="toggleTimer()" id="timerBtn">⏱ 开始计时</button>
+<button class="btn btn-secondary btn-sm nw-mobile-only" onclick="openMobileSidebar()">📖 章节</button>
 <button class="btn btn-primary btn-sm" onclick="manualSave()">💾 手动保存</button>
-<button class="btn btn-secondary btn-sm" onclick="toggleFocusMode()">🎯 专注</button>
-<button class="btn btn-secondary btn-sm" onclick="openChapterNote()" id="chapterNoteBtn">📌 备忘</button>
-<button class="btn btn-secondary btn-sm" onclick="openBookmarkPanel()" id="bookmarkBtn">🔖 书签</button>
+<button class="btn btn-secondary btn-sm nw-extra" onclick="toggleFocusMode()">🎯 专注</button>
+<button class="btn btn-secondary btn-sm nw-hide-mobile" onclick="openChapterNote()" id="chapterNoteBtn">📌 备忘</button>
+<button class="btn btn-secondary btn-sm nw-hide-mobile" onclick="openBookmarkPanel()" id="bookmarkBtn">🔖 书签</button>
 <button class="btn btn-secondary btn-sm" onclick="openChapterHistory()" id="historyBtn">🕘 历史</button>
+<button class="btn btn-secondary btn-sm nw-mobile-only" onclick="toggleMobileStyleBar()" id="mobileStyleBtn" title="字体与稿纸">Aa</button>
+<button class="btn btn-secondary btn-sm nw-mobile-only" onclick="openWritingMenu()" title="更多写作工具">⋯</button>
+<span class="nw-status">
 <span class="timer-display" id="timerDisplay">00:00:00</span>
-<span style="font-size:.72em;color:var(--text2)">字数：<span id="wordCount">0</span></span>
+<span class="nw-wordcount" style="font-size:.72em;color:var(--text2)">字数：<span id="wordCount">0</span></span>
+</span>
 </div>
 <div class="editor-wrap"><div class="editor-paper" id="editorPaper"><textarea class="editor-textarea" id="editor" placeholder="开始你的奇幻史诗..." oninput="updateWordCount()"></textarea></div></div>
 </main>
@@ -594,7 +702,7 @@ button{cursor:pointer}
                 <button class="btn btn-secondary btn-sm" onclick="renderFactionGraph()">🔄 刷新</button>
             </div>
         </div>
-        <p style="font-size:.75em;color:var(--text2);margin-top:8px">点击节点查看/编辑势力，点击连线查看关系。可将鼠标悬停在连线上高亮。</p>
+        <p style="font-size:.75em;color:var(--text2);margin-top:8px">点击节点查看/编辑势力，点击连线查看关系。</p>
     </div>
        <div id="factionGraphContainer" style="max-width:800px;margin:0 auto 16px;height:420px;overflow:hidden"> 
         <canvas id="factionCanvas" style="width:100%;height:420px;background:var(--bg);border:1px solid var(--border);border-radius:8px"></canvas>
@@ -894,6 +1002,7 @@ function exitDevMode() {
 
 function goPage(page) {
     document.querySelectorAll('.nw-outline-menu').forEach(m => m.remove());
+    closeMobileSidebar();
     if(page === 'dev' && !devUnlocked) { showToast('请先解锁开发者模式（连续点击Logo 5次）'); return; }
     if(page !== 'home' && page !== 'dev' && !currentWork()) { showToast('请先选择或创建作品'); return; }
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1672,6 +1781,75 @@ function manualSave() {
     showToast('已手动保存');
 }
 
+// 手机端：折叠字体/稿纸控件
+function toggleMobileStyleBar() {
+    const tb = document.querySelector('.toolbar');
+    if(!tb) return;
+    tb.classList.toggle('show-style');
+}
+// 手机端：写作工具面板
+function openWritingMenu() {
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwWritingMenu';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:520px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">写作工具</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="nw-sheet-grid">
+                <button onclick="nwWritingAction('chapters')">📖 章节列表</button>
+                <button onclick="nwWritingAction('note')">📌 章节备忘</button>
+                <button onclick="nwWritingAction('bookmark')">🔖 书签</button>
+                <button onclick="nwWritingAction('history')">🕘 历史版本</button>
+                <button onclick="nwWritingAction('format')">🎨 排版</button>
+                <button onclick="nwWritingAction('search')">🔍 搜索</button>
+                <button onclick="nwWritingAction('replace')">🔄 替换</button>
+                <button onclick="nwWritingAction('copy')">📋 复制本章</button>
+                <button onclick="nwWritingAction('focus')">🎯 专注</button>
+                <button onclick="nwWritingAction('bg')">🖼️ 背景</button>
+                <button onclick="nwWritingAction('font')">✍️ 字体</button>
+                <button onclick="nwWritingAction('timer')">⏱ 计时</button>
+                <button onclick="nwWritingAction('style')">Aa 字体与稿纸</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+}
+function nwWritingAction(action) {
+    document.getElementById('nwWritingMenu')?.remove();
+    if(action === 'chapters') openMobileSidebar();
+    else if(action === 'note') openChapterNote();
+    else if(action === 'bookmark') openBookmarkPanel();
+    else if(action === 'history') openChapterHistory();
+    else if(action === 'format') formatCurrentChapter();
+    else if(action === 'search') searchInWork();
+    else if(action === 'replace') replaceInWork();
+    else if(action === 'copy') copyCurrentChapter();
+    else if(action === 'focus') toggleFocusMode();
+    else if(action === 'bg') document.getElementById('customBgInput').click();
+    else if(action === 'font') document.getElementById('customFontInput').click();
+    else if(action === 'timer') toggleTimer();
+    else if(action === 'style') {
+        const tb = document.querySelector('.toolbar');
+        if(tb) tb.classList.add('show-style');
+    }
+}
+
+function moveChapter(id, delta) {
+    const w = currentWork(); if(!w) return;
+    const i = w.chapters.findIndex(c => c.id === id);
+    const j = i + delta;
+    if(i < 0 || j < 0 || j >= w.chapters.length) { showToast('已经到边界了'); return; }
+    const [ch] = w.chapters.splice(i, 1);
+    w.chapters.splice(j, 0, ch);
+    renderChapters();
+    saveAll();
+    document.querySelector('.modal.active')?.remove();
+    showToast('章节顺序已调整');
+}
+
 // ===== 云同步面板 =====
 function nwSyncStatusHtml() {
     const dot = (color, text) => `<span style="color:${color};font-weight:bold">● ${text}</span>`;
@@ -1888,6 +2066,7 @@ function addChapter() {
     w.chapters.push(ch); w.currentChapterId = ch.id;
     document.getElementById('editor').value = '';
     renderChapters(); updateWordCount(); saveAll();
+    closeMobileSidebar();
 }
 function switchChapter(id) {
     const w = currentWork(); if(!w) return;
@@ -1899,7 +2078,13 @@ function switchChapter(id) {
     }
     w.currentChapterId = id;
     const ch = w.chapters.find(c => c.id === id);
-    if(ch) { document.getElementById('editor').value = ch.content || ''; renderChapters(); updateWordCount(); }
+    if(ch) {
+        const ed = document.getElementById('editor');
+        ed.value = ch.content || '';
+        ed.scrollTop = 0;
+        renderChapters(); updateWordCount();
+    }
+    closeMobileSidebar();
 }
 function renderChapters() {
     const w = currentWork();
@@ -1936,7 +2121,7 @@ function renderChapters() {
         d.innerHTML = `
             <div class="sb-item-title" style="display:flex;justify-content:space-between;align-items:center;gap:5px">
                 <span>${ch.name}${hasNote ? ` <span title="章节备忘：${escapeHtml(ch.note.replace(/\s+/g,' ').slice(0,80))}" style="font-size:.9em">📌</span>` : ''}</span>
-                <span style="font-size:.7em;padding:2px 6px;border-radius:8px;background:${statusInfo.color};color:#fff;white-space:nowrap">${statusInfo.label}</span>
+                <span class="chapter-status-badge" title="章节状态 / 排序" onclick="event.stopPropagation(); openChapterStatusMenu(${ch.id})" style="font-size:.7em;padding:2px 6px;border-radius:8px;background:${statusInfo.color};color:#fff;white-space:nowrap">${statusInfo.label}</span>
             </div>
             <div class="sb-item-desc">${ch.wordCount||0} 字${bmCount ? ' · 🔖' + bmCount : ''}</div>
         `;
@@ -2361,6 +2546,19 @@ function applyWritingSidebarCollapse(collapsed, persist = true) {
     if(persist) { try { localStorage.setItem(NW_SIDEBAR_KEY, collapsed ? '1' : '0'); } catch(e) {} }
     updateSidebarCollapseUI();
 }
+function openMobileSidebar() {
+    if(window.innerWidth > 900) return;
+    const sb = document.getElementById('sidebar');
+    const bd = document.getElementById('nwSidebarBackdrop');
+    if(sb) sb.classList.add('open');
+    if(bd) bd.classList.add('show');
+}
+function closeMobileSidebar() {
+    const sb = document.getElementById('sidebar');
+    const bd = document.getElementById('nwSidebarBackdrop');
+    if(sb) sb.classList.remove('open');
+    if(bd) bd.classList.remove('show');
+}
 function toggleWritingSidebar() {
     if(window.innerWidth <= 900) { showToast('手机上请用左上角 ☰ 打开章节列表'); return; }
     applyWritingSidebarCollapse(!isWritingSidebarCollapsed());
@@ -2416,7 +2614,12 @@ function openChapterStatusMenu(chapterId) {
                     </button>
                 `).join('')}
             </div>
-            <p style="font-size:.75em;color:var(--text2);margin-top:12px;text-align:center">💡 在章节列表上右键也可快速切换</p>
+            <p style="font-size:.75em;color:var(--text2);margin-top:12px;text-align:center">💡 也可以在章节列表上右键 / 点状态徽章</p>
+            <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="btn btn-secondary btn-sm" style="flex:1" onclick="this.closest('.modal').remove(); renameChapter(${chapterId})">✏️ 重命名</button>
+                <button class="btn btn-secondary btn-sm" style="flex:1" onclick="moveChapter(${chapterId},-1)">↑ 上移</button>
+                <button class="btn btn-secondary btn-sm" style="flex:1" onclick="moveChapter(${chapterId},1)">↓ 下移</button>
+            </div>
             <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
                 <button class="btn btn-secondary btn-sm" style="color:var(--danger);border-color:var(--danger)" onclick="this.closest('.modal').remove(); deleteChapter(${chapterId})">🗑️ 删除本章</button>
                 <span style="font-size:.7em;color:var(--text2)">删除后可在回收站恢复</span>
@@ -3207,6 +3410,8 @@ function switchWvTab(tab, btn) {
     btn.classList.add('active');
     document.querySelectorAll('.wv-content').forEach(c => c.classList.remove('active'));
     document.getElementById('wv-' + tab).classList.add('active');
+    const wvScroll = document.querySelector('#page-worldview .page-scroll');
+    if(wvScroll) wvScroll.scrollTop = 0;
     if(tab === 'collection') renderCollection();
     if(tab === 'calendar') renderCalendar();
     if(tab === 'questionnaire') renderDynamicQuestionnaire();
@@ -6385,6 +6590,9 @@ function clearTrash() {
     renderTrash();
     showToast('回收站已清空');
 }
+try {
+    if(window.matchMedia && window.matchMedia('(pointer: coarse)').matches) document.body.classList.add('touch-device');
+} catch(e) {}
 window.addEventListener('load', () => { 
     loadSavedTheme();
     // 侧边栏折叠状态要尽早恢复，不能等云端数据加载完
@@ -6410,6 +6618,7 @@ window.addEventListener('beforeunload', function() {
         overlay.innerHTML = `
             <button class="nav-btn" onclick="goPage('home');closeMobileMenu()">🏠 主页</button>
             <button class="nav-btn" onclick="goPage('writing');closeMobileMenu()">✍️ 写作</button>
+            <button class="nav-btn" onclick="closeMobileMenu(); openMobileSidebar()">📖 章节列表</button>
             <button class="nav-btn" onclick="goPage('worldview');closeMobileMenu()">🌍 世界观</button>
             <button class="nav-btn" onclick="goPage('characters');closeMobileMenu()">👥 人设</button>
             <button class="nav-btn" onclick="goPage('tools');closeMobileMenu()">🔧 工具</button>
