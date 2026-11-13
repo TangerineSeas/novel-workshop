@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,interactive-widget=resizes-content">
-<title>西幻创作工坊 v3.8.0</title>
+<title>西幻创作工坊 v3.8.1</title>
 <link rel="stylesheet" href="themes.css">
    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="knowledge.js"></script>
@@ -7575,6 +7575,8 @@ async function nwSharedPublish(workOrId) {
     if(!nwSharedReady) { showToast('共享功能还没启用，请先执行数据库脚本'); return; }
     const work = (workOrId && typeof workOrId === 'object') ? workOrId : works.find(w => String(w.id) === String(workOrId));
     if(!work || work._shared) return;
+    if(work._publishing) return; // 防连点：避免重复发布成两个共享作品
+    work._publishing = true;
     if(!confirm('发布为共享作品？\n\n发布后：章节可以多人编辑；人物、世界观等设定只有你能改；你的本地原稿会保留。')) return;
     const sharedId = 'sw_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
     const meta = nwSharedMetaFromWork(work);
@@ -7613,6 +7615,8 @@ async function nwSharedPublish(workOrId) {
     } catch(e) {
         console.error(e);
         showToast('发布失败：' + ((e && e.message) || e));
+    } finally {
+        work._publishing = false;
     }
 }
 async function nwSharedJoin(code) {
@@ -7652,13 +7656,18 @@ async function openSharePanel(workId) {
     const w = works.find(x => String(x.id) === String(workId)) || currentWork();
     if(!w) return;
     nwSharePanelWorkId = w.id;
-    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    // 关键：旧面板要从 DOM 移除，不能只去掉 active。
+    // 否则同 id 的旧节点会被 getElementById 命中，新面板变成空壳且无法关闭。
+    document.querySelectorAll('#nwSharePanel').forEach(m => m.remove());
+    document.querySelectorAll('.modal.active').forEach(m => m.remove());
     const modal = document.createElement('div');
     modal.className = 'modal active';
     modal.id = 'nwSharePanel';
     modal.innerHTML = `<div class="modal-content" style="max-width:620px" id="nwSharePanelBody"></div>`;
+    // 点空白遮罩也能关闭，避免内容初始化失败时被锁死
+    modal.addEventListener('click', e => { if(e.target === modal) modal.remove(); });
     document.body.appendChild(modal);
-    const body = document.getElementById('nwSharePanelBody');
+    const body = modal.querySelector('.modal-content');
     if(!nwSharedReady) {
         body.innerHTML = `<div class="modal-header"><h3 style="color:var(--accent)">👥 共享作品</h3><button class="modal-close" onclick="this.closest('.modal').remove()">✕</button></div>
             <p style="font-size:.85em;line-height:1.8">共享功能还没有启用。需要先在 Supabase 执行 <code>supabase-collab.sql</code>（再执行 <code>supabase-collab-v1.1.sql</code>），刷新后即可使用。</p>
@@ -7673,7 +7682,7 @@ async function openSharePanel(workId) {
     }
     body.innerHTML = `<div class="modal-header"><h3 style="color:var(--accent)">👥 共享《${escapeHtml(w.title)}》</h3><button class="modal-close" onclick="this.closest('.modal').remove()">✕</button></div>
         <div id="nwSharePanelInner"><p style="color:var(--text2)">加载中…</p></div>`;
-    const inner = document.getElementById('nwSharePanelInner');
+    const inner = body.querySelector('#nwSharePanelInner');
     const role = w._sharedRole || 'viewer';
     let members = [], invites = [];
     try { members = await nwSharedApiListMembers(w._sharedId); } catch(e) { console.warn(e); }
