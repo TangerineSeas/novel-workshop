@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,interactive-widget=resizes-content">
-<title>西幻创作工坊 v3.7.1</title>
+<title>西幻创作工坊 v3.8.0</title>
 <link rel="stylesheet" href="themes.css">
    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="knowledge.js"></script>
@@ -324,6 +324,35 @@ button{cursor:pointer}
   .nw-drag-handle{display:none!important}
 }
 
+/* ===== 共享写作 ===== */
+.shared-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:7px 12px;background:rgba(74,122,181,.14);border-bottom:1px solid var(--border);font-size:.76em;color:var(--text)}
+.nw-share-banner-main{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.nw-share-banner-actions{display:flex;gap:6px}
+.nw-role-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:.72em;font-weight:bold;white-space:nowrap;vertical-align:middle}
+.nw-role-badge.owner{background:rgba(243,156,18,.18);color:#f39c12;border:1px solid rgba(243,156,18,.45)}
+.nw-role-badge.editor{background:rgba(76,175,80,.16);color:#5fd36a;border:1px solid rgba(76,175,80,.4)}
+.nw-role-badge.viewer{background:rgba(149,165,166,.16);color:#aab7b8;border:1px solid rgba(149,165,166,.4)}
+.shared-card{border-left:3px solid var(--accent)}
+.nw-shared-meta-banner{padding:10px 12px;margin-bottom:14px;border-radius:8px;background:rgba(243,156,18,.1);border:1px solid rgba(243,156,18,.3);font-size:.78em;color:var(--text2);line-height:1.6}
+.nw-shared-meta-readonly .wv-content .btn-primary,
+.nw-shared-meta-readonly .wv-content .btn-danger{display:none!important}
+.nw-shared-meta-readonly .wv-content,
+.nw-shared-meta-readonly .char-grid,
+.nw-shared-meta-readonly .char-topbar,
+.nw-shared-meta-readonly #relationCanvas{pointer-events:none;opacity:.9}
+.nw-share-block{margin-top:16px;padding-top:12px;border-top:1px solid var(--border)}
+.nw-share-block h4{margin:0 0 10px;font-size:.88em;color:var(--accent)}
+.nw-invite-form{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.nw-invite-form select{width:auto;min-width:82px;padding:7px 8px;font-size:.8em}
+.nw-invite-row,.nw-member-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px dashed var(--border);flex-wrap:wrap}
+.nw-invite-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.05em;letter-spacing:2px;color:var(--accent);background:var(--bg);padding:3px 8px;border-radius:5px}
+.nw-share-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.nw-share-actions{display:flex;gap:8px;flex-wrap:wrap}
+.nw-share-remote-preview{margin-top:10px;padding:9px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:.78em;color:var(--text2);white-space:pre-wrap;max-height:90px;overflow:hidden}
+.nw-shared-viewer .editor-textarea{opacity:.92;cursor:default}
+.nw-shared-viewer [onclick="manualSave()"],
+.nw-shared-viewer [onclick="formatCurrentChapter()"],
+.nw-shared-viewer .sb-add{display:none!important}
 /* 修复：themes.css 的 .page.active{height:100%} 会把固定定位页面撑高 56px，导致底部内容点不到 */
 .page.active{height:auto!important}
 /* ===== v3.7 手机端适配 ===== */
@@ -457,6 +486,14 @@ button{cursor:pointer}
     <div class="work-grid" id="workGrid"></div>
 </div>
 
+<div class="home-section" id="sharedSection" style="display:none">
+    <div class="home-section-head">
+        <h3>👥 共享给我的</h3>
+        <button class="btn btn-secondary btn-sm" onclick="nwJoinSharedPrompt()">输入邀请码</button>
+    </div>
+    <div class="work-grid" id="sharedGrid"></div>
+</div>
+
 <div class="home-stats">
     <div class="card home-card">
         <div class="home-card-head">
@@ -518,11 +555,13 @@ button{cursor:pointer}
 <div class="sb-section"><div class="sb-title">🔧 快捷工具</div>
 <div class="sb-item" onclick="goPage('tools')"><div class="sb-item-title">姓氏生成器</div><div class="sb-item-desc">贵族/平民姓氏</div></div>
 <div class="sb-item" onclick="goPage('tools')"><div class="sb-item-title">知识库</div><div class="sb-item-desc">西方文化参考</div></div>
+<div class="sb-item" onclick="openSharePanel(currentWorkId)"><div class="sb-item-title">👥 共享与成员</div><div class="sb-item-desc">邀请码 / 编辑权限</div></div>
 <div class="sb-item" onclick="openExportMenu(currentWorkId)"><div class="sb-item-title">📤 导出作品</div><div class="sb-item-desc">TXT / Markdown / HTML</div></div>
 </div>
 </aside>
 <div id="nwSidebarBackdrop" class="nw-sidebar-backdrop" onclick="closeMobileSidebar()"></div>
 <main class="writing-main">
+<div id="sharedBanner" class="shared-banner" style="display:none"></div>
 <div class="toolbar">
 <label class="nw-style">字体</label><select id="fontFamily" class="nw-style" onchange="updateStyle()">
     <option value="'Georgia',serif">Georgia</option>
@@ -556,6 +595,7 @@ button{cursor:pointer}
 <button class="btn btn-secondary btn-sm nw-hide-mobile" onclick="openChapterNote()" id="chapterNoteBtn">📌 备忘</button>
 <button class="btn btn-secondary btn-sm nw-hide-mobile" onclick="openBookmarkPanel()" id="bookmarkBtn">🔖 书签</button>
 <button class="btn btn-secondary btn-sm" onclick="openChapterHistory()" id="historyBtn">🕘 历史</button>
+<button class="btn btn-secondary btn-sm nw-extra" onclick="openSharePanel(currentWorkId)" title="共享与成员">👥 共享</button>
 <button class="btn btn-secondary btn-sm nw-mobile-only" onclick="toggleMobileStyleBar()" id="mobileStyleBtn" title="字体与稿纸">Aa</button>
 <button class="btn btn-secondary btn-sm nw-mobile-only" onclick="openWritingMenu()" title="更多写作工具">⋯</button>
 <span class="nw-status">
@@ -1026,6 +1066,7 @@ function goPage(page) {
     if(page === 'tools') { renderNameResults(); renderKnowledgeBase(); renderUploadedBooks(); }
     if(page === 'dev') { renderDevQuestionList(); renderDevNameList(); renderDevKbList(); }
     updateSidebarCollapseUI();
+    nwSharedUpdateBanner();
 }
 
 const themes = ['dark', 'light', 'parchment', 'deepsea', 'black', 'pink', 'retrogreen', 'cherry'];
@@ -1167,7 +1208,7 @@ function openWork(id) {
     const prevWork = currentWork();
     if(prevWork) {
         const prevCh = prevWork.chapters.find(c => c.id === prevWork.currentChapterId);
-        if(prevCh) nwSnapshotChapter(prevCh, 'switch');
+        if(prevCh) { nwSnapshotChapter(prevCh, 'switch'); if(prevWork._shared) nwSharedFlushChapter(prevWork, prevCh); }
     }
     currentWorkId = id;
     const w = currentWork();
@@ -1182,7 +1223,32 @@ function openWork(id) {
     }
     goPage('writing');
 }
-function deleteWork(id) {
+async function deleteWork(id) {
+    const w = works.find(x => String(x.id) === String(id));
+    if(w && w._shared) {
+        if(w._sharedRole === 'owner') {
+            if(!confirm('删除这部共享作品？\n\n云端共享版本会被删除，所有协作者将失去访问；本地也会删除。')) return;
+            try {
+                await nwSharedApiDeleteWork(w._sharedId);
+                works = works.filter(x => !(x._shared && String(x._sharedId) === String(w._sharedId)));
+                if(String(currentWorkId) === String(id)) currentWorkId = null;
+                nwSharedSaveCache();
+                await saveAll(); renderHome(); goPage('home');
+                showToast('共享作品已删除');
+            } catch(e) { showToast('删除失败：' + ((e && e.message) || e)); }
+        } else {
+            if(!confirm('离开这部共享作品？\n\n本地缓存会删除，之后需要新的邀请码才能再加入。')) return;
+            try {
+                await nwSharedApiLeave(w._sharedId);
+                works = works.filter(x => !(x._shared && String(x._sharedId) === String(w._sharedId)));
+                if(String(currentWorkId) === String(id)) currentWorkId = null;
+                nwSharedSaveCache();
+                await saveAll(); renderHome(); goPage('home');
+                showToast('已离开共享作品');
+            } catch(e) { showToast('离开失败：' + ((e && e.message) || e)); }
+        }
+        return;
+    }
     if(!confirm('确定删除此作品？')) return;
     works = works.filter(w => w.id !== id);
     if(currentWorkId === id) currentWorkId = null;
@@ -1207,6 +1273,7 @@ function renderHome() {
     const grid = document.getElementById('workGrid');
     if(!grid) return;
     grid.innerHTML = '';
+    const personalWorks = works.filter(w => !w._shared || w._sharedRole === 'owner');
 
     // 最近编辑的作品 → 继续写作卡
     const cont = document.getElementById('homeContinue');
@@ -1222,8 +1289,8 @@ function renderHome() {
                 <div style="display:flex;gap:14px;align-items:center;min-width:0">
                     <div class="continue-cover"${coverStyle}>${latest.cover ? '' : '📖'}</div>
                     <div style="min-width:0">
-                        <div class="continue-kicker">继 续 写 作</div>
-                        <div class="continue-title">${escapeHtml(latest.title)}</div>
+                        <div class="continue-kicker">继 续 写 作${latest._shared ? ' · 共享' : ''}</div>
+                        <div class="continue-title">${escapeHtml(latest.title)}${latest._shared ? ` <span class="nw-role-badge ${latest._sharedRole}">${NW_SHARED_ROLE_LABEL[latest._sharedRole] || ''}</span>` : ''}</div>
                         <div class="continue-meta">${ch ? escapeHtml(ch.name) + ' · ' : ''}${totalWords} 字 · 最近编辑 ${nwRelativeDate(latest.lastModified)}</div>
                     </div>
                 </div>
@@ -1234,25 +1301,27 @@ function renderHome() {
         }
     }
 
-    if(!works.length) {
-        grid.innerHTML = `<div class="work-empty"><p>还没有作品。创建第一本，或从备份导入。</p><button class="btn btn-primary btn-sm" onclick="createNewWork()">+ 创建第一本</button></div>`;
+    if(!personalWorks.length) {
+        grid.innerHTML = `<div class="work-empty"><p>还没有自己的作品。创建第一本，或从备份导入。</p><button class="btn btn-primary btn-sm" onclick="createNewWork()">+ 创建第一本</button></div>`;
     } else {
-        works.forEach(w => {
+        personalWorks.forEach(w => {
             const totalWords = w.chapters.reduce((s, c) => s + (c.wordCount || 0), 0);
             const card = document.createElement('div');
-            card.className = 'work-card';
+            card.className = 'work-card' + (w._shared ? ' shared-card' : '');
             const coverStyle = w.cover ? ` style="background-image:url('${w.cover}')"` : '';
             const intro = w.intro ? `<div class="work-intro">${escapeHtml(w.intro)}</div>` : '';
+            const sharedBadge = w._shared ? ` <span class="nw-role-badge ${w._sharedRole}">${NW_SHARED_ROLE_LABEL[w._sharedRole] || '共享'}</span>` : '';
             card.innerHTML = `<button class="work-edit" title="封面与简介" onclick="event.stopPropagation();openWorkInfo(${w.id})">✎</button>
                 <div class="work-cover"${coverStyle} title="编辑封面与简介" onclick="event.stopPropagation();openWorkInfo(${w.id})">${w.cover ? '' : '📖'}</div>
                 <div class="work-main">
-                    <div class="work-card-title">${escapeHtml(w.title)}</div>
+                    <div class="work-card-title">${escapeHtml(w.title)}${sharedBadge}</div>
                     ${intro}
                     <div class="work-card-meta">${w.chapters.length} 章 · ${totalWords} 字</div>
                     <div class="work-card-meta">${w.characters.length} 人物 · ${nwRelativeDate(w.lastModified)}</div>
                     <div class="work-card-actions">
                         <button onclick="event.stopPropagation();openWork(${w.id})">继续</button>
                         <button onclick="event.stopPropagation();openExportMenu(${w.id})">导出</button>
+                        <button onclick="event.stopPropagation();openSharePanel(${w.id})">共享</button>
                         <button onclick="event.stopPropagation();deleteWork(${w.id})">删除</button>
                     </div>
                 </div>`;
@@ -1288,6 +1357,7 @@ function renderHome() {
     renderDailyGoal();
     renderDashboardCalendar();
     renderTrendChart();
+    nwSharedRenderHome();
 }
 
 // ===== 作品封面 / 简介 =====
@@ -1319,8 +1389,9 @@ function nwResizeImage(file, maxW, maxH) {
     });
 }
 function openWorkInfo(id) {
-    const w = works.find(x => x.id === id);
+    const w = works.find(x => String(x.id) === String(id));
     if(!w) return;
+    if(w._shared && w._sharedRole !== 'owner') { showToast('封面和简介由拥有者维护'); return; }
     nwPendingCover = undefined;
     document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
     const modal = document.createElement('div');
@@ -1383,7 +1454,8 @@ function nwRemoveCover() {
     }
 }
 function saveWorkInfo(id) {
-    const w = works.find(x => x.id === id);
+    if(!nwSharedRequireMeta()) return;
+    const w = works.find(x => String(x.id) === String(id));
     if(!w) return;
     const introEl = document.getElementById('nwWorkIntro');
     const intro = introEl ? introEl.value.trim() : '';
@@ -1512,6 +1584,7 @@ function copyCurrentChapter() {
 
 // 一键排版
 function formatCurrentChapter() {
+    if(!nwSharedRequireChapters()) return;
     const editor = document.getElementById('editor');
     let text = editor.value;
     if(!text.trim()) { showToast('没有内容可排版'); return; }
@@ -1568,6 +1641,7 @@ function searchInWork() {
 
 // 全文替换
 function replaceInWork() {
+    if(!nwSharedRequireChapters()) return;
     const w = currentWork(); if(!w) return;
     const wordA = prompt('请输入要替换的词：');
     if(!wordA || !wordA.trim()) return;
@@ -1674,6 +1748,7 @@ function updateWordCount() {
                 w.dailyWordCounts[today] = (w.dailyWordCounts[today] || 0) + delta;
             }
             w.lastModified = Date.now();
+            if(w._shared && nwSharedCanEditChapters()) nwSharedScheduleChapterSave(w, ch);
             if(document.getElementById('dailyGoalDisplay')) {
                 renderDailyGoal();
             }
@@ -1741,8 +1816,11 @@ async function nwInitAuth() {
 // ===== 云同步 =====
 function saveLocalSnapshot() {
     try {
-        localStorage.setItem('novelWorkshop', JSON.stringify({ works, currentWorkId, savedAt: Date.now() }));
+        // 共享作品不进个人云备份；它们有独立的缓存和 shared_* 表
+        const personalWorks = works.filter(w => !w._shared);
+        localStorage.setItem('novelWorkshop', JSON.stringify({ works: personalWorks, currentWorkId, savedAt: Date.now() }));
         localStorage.setItem('devData', JSON.stringify(devData));
+        try { nwSharedSaveCache(); } catch(e) {}
     } catch(e) {
         console.error('本地保存失败:', e);
     }
@@ -1750,6 +1828,7 @@ function saveLocalSnapshot() {
 async function saveAll(opts) {
     opts = opts || {};
     saveLocalSnapshot();
+    if(!opts.localOnly) nwSharedQueueSync();
     if(opts.localOnly) { nwUpdateSyncUI(); return; }
     if(!db || !currentUserId) {
         nwCloudReachable = false;
@@ -1762,7 +1841,7 @@ async function saveAll(opts) {
             .from('user_data')
             .upsert({
                 user_id: currentUserId,
-                data: { works, currentWorkId, devData, savedAt: Date.now() },
+                data: { works: works.filter(w => !w._shared), currentWorkId, devData, savedAt: Date.now() },
                 updated_at: new Date().toISOString()
             }, { onConflict: 'user_id' });
         if(error) throw error;
@@ -1777,7 +1856,9 @@ async function saveAll(opts) {
     nwUpdateSyncUI();
 }
 function manualSave() {
+    if(nwSharedCurrent() && nwSharedCurrent()._sharedRole === 'viewer') { showToast('只读共享作品，不能保存'); return; }
     saveAll();
+    if(nwSharedCurrent()) nwSharedSyncAll();
     showToast('已手动保存');
 }
 
@@ -1801,6 +1882,7 @@ function openWritingMenu() {
             </div>
             <div class="nw-sheet-grid">
                 <button onclick="nwWritingAction('chapters')">📖 章节列表</button>
+                <button onclick="nwWritingAction('share')">👥 共享与成员</button>
                 <button onclick="nwWritingAction('note')">📌 章节备忘</button>
                 <button onclick="nwWritingAction('bookmark')">🔖 书签</button>
                 <button onclick="nwWritingAction('history')">🕘 历史版本</button>
@@ -1820,6 +1902,7 @@ function openWritingMenu() {
 function nwWritingAction(action) {
     document.getElementById('nwWritingMenu')?.remove();
     if(action === 'chapters') openMobileSidebar();
+    else if(action === 'share') openSharePanel(currentWorkId);
     else if(action === 'note') openChapterNote();
     else if(action === 'bookmark') openBookmarkPanel();
     else if(action === 'history') openChapterHistory();
@@ -1839,6 +1922,7 @@ function nwWritingAction(action) {
 
 function moveChapter(id, delta) {
     const w = currentWork(); if(!w) return;
+    if(!nwSharedRequireChapters()) return;
     const i = w.chapters.findIndex(c => c.id === id);
     const j = i + delta;
     if(i < 0 || j < 0 || j >= w.chapters.length) { showToast('已经到边界了'); return; }
@@ -2024,7 +2108,7 @@ function exportFullBackup() {
         app: 'novel-workshop',
         schema: 2,
         exportedAt: new Date().toISOString(),
-        works,
+        works: works.filter(w => !w._shared),
         currentWorkId,
         devData,
         dailyGoal: getDailyGoal()
@@ -2046,8 +2130,9 @@ async function importFullBackup(ev) {
             if(input) input.value = '';
             return;
         }
-        works = data.works;
-        const keepId = data.currentWorkId && data.works.some(w => w.id === data.currentWorkId);
+        const sharedWorks = works.filter(w => w._shared);
+        works = [...data.works, ...sharedWorks];
+        const keepId = data.currentWorkId && works.some(w => w.id === data.currentWorkId);
         currentWorkId = keepId ? data.currentWorkId : data.works[0].id;
         if(data.devData && typeof data.devData === 'object') devData = data.devData;
         if(data.dailyGoal) setDailyGoal(data.dailyGoal);
@@ -2061,6 +2146,7 @@ async function importFullBackup(ev) {
 }
 function addChapter() {
     const w = currentWork(); if(!w) return;
+    if(!nwSharedRequireChapters()) return;
     const name = prompt('章节名称：'); if(!name) return;
    const ch = { id: Date.now(), name, content:'', wordCount:0, characters: [], status: 'draft' };
     w.chapters.push(ch); w.currentChapterId = ch.id;
@@ -2075,6 +2161,7 @@ function switchChapter(id) {
         cur.content = document.getElementById('editor').value;
         cur.wordCount = document.getElementById('editor').value.length;
         nwSnapshotChapter(cur, 'switch');
+        if(w._shared) nwSharedFlushChapter(w, cur);
     }
     w.currentChapterId = id;
     const ch = w.chapters.find(c => c.id === id);
@@ -2109,7 +2196,7 @@ function renderChapters() {
     w.chapters.forEach((ch, index) => {
         const d = document.createElement('div');
         d.className = 'sb-item' + (ch.id === w.currentChapterId ? ' active' : '');
-        d.draggable = true;
+        d.draggable = nwSharedCanEditChapters();
         d.dataset.chapterId = ch.id;
         d.dataset.index = index;
         
@@ -2139,6 +2226,7 @@ function renderChapters() {
         el.appendChild(d);
     });
     updateChapterToolButtons();
+    nwSharedUpdateBanner();
 }
 
 // 同步工具栏上「备忘 / 书签」按钮的状态
@@ -2340,6 +2428,7 @@ async function nwPreviewSnapshot(id) {
 }
 
 async function nwRestoreSelected() {
+    if(!nwSharedRequireChapters()) return;
     if(!nwHistSelected) return;
     const snap = await nwHistoryGet(nwHistSelected);
     if(!snap) { showToast('读取版本失败'); return; }
@@ -2630,6 +2719,7 @@ function openChapterStatusMenu(chapterId) {
 
 function setChapterStatus(chapterId, status) {
     const w = currentWork(); if(!w) return;
+    if(!nwSharedRequireChapters()) return;
     const ch = w.chapters.find(c => c.id === chapterId);
     if(!ch) return;
     ch.status = status;
@@ -2641,9 +2731,34 @@ function setChapterStatus(chapterId, status) {
 }
 function deleteChapter(chapterId) {
     const w = currentWork(); if(!w) return;
+    if(!nwSharedRequireChapters()) return;
     const index = w.chapters.findIndex(c => c.id === chapterId);
     if(index < 0) return;
     const ch = w.chapters[index];
+    if(w._shared) {
+        if(!confirm(`从共享作品删除「${ch.name}」？\n\n协作者也会看不到这一章，且不能从回收站恢复。`)) return;
+        const baseRev = (w._sharedChapterRevs && w._sharedChapterRevs[chapterId] != null)
+            ? w._sharedChapterRevs[chapterId]
+            : (ch._sharedRev != null ? ch._sharedRev : ((w._sharedSnapshot && w._sharedSnapshot.chapters[chapterId]) ? w._sharedSnapshot.chapters[chapterId].rev : null));
+        w._sharedDeleted = w._sharedDeleted || [];
+        w._sharedDeleted.push({ id: chapterId, rev: baseRev });
+        w.chapters.splice(index, 1);
+        if(w.currentChapterId === chapterId) {
+            if(w.chapters.length > 0) {
+                w.currentChapterId = w.chapters[0].id;
+                document.getElementById('editor').value = w.chapters[0].content || '';
+            } else {
+                const newCh = { id: Date.now(), name: '第一章', content: '', wordCount: 0, characters: [], status: 'draft', _sharedRev: null };
+                w.chapters.push(newCh);
+                w.currentChapterId = newCh.id;
+                document.getElementById('editor').value = '';
+            }
+        }
+        renderChapters();
+        saveAll();
+        showToast('已从共享作品删除');
+        return;
+    }
     if(!confirm(`确定删除「${ch.name}」吗？可从回收站恢复。`)) return;
     
     const removed = w.chapters.splice(index, 1)[0];
@@ -2735,6 +2850,7 @@ function renumberChapters() {
     });
 }
 function renameWork() {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const name = prompt('修改作品名称：', w.title);
     if(name && name.trim()) {
@@ -2748,6 +2864,7 @@ function renameWork() {
 
 function renameChapter(chapterId) {
     const w = currentWork(); if(!w) return;
+    if(!nwSharedRequireChapters()) return;
     const ch = w.chapters.find(c => c.id === chapterId);
     if(!ch) return;
     const name = prompt('修改章节名称：', ch.name);
@@ -2799,6 +2916,7 @@ function renderSidebarChars() {
     });
 }
 function openChapterCharsManager() {
+    if(!nwSharedRequireChapters()) return;
     const w = currentWork(); if(!w) return;
     const ch = w.chapters.find(c => c.id === w.currentChapterId);
     if(!ch) { showToast('请先创建章节'); return; }
@@ -2853,6 +2971,7 @@ function openChapterCharsManager() {
 
 function saveChapterChars() {
     const w = currentWork(); if(!w) return;
+    if(!nwSharedRequireChapters()) return;
     const ch = w.chapters.find(c => c.id === w.currentChapterId);
     if(!ch) return;
     
@@ -3077,6 +3196,7 @@ function toggleCustomRace() {
 }
 
 function openCharEditor(index) {
+    if(!nwSharedRequireMeta()) return;
     document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
     const charModalEl = document.getElementById('charModal');
     if(!charModalEl) { showToast('人物弹窗不存在'); return; }
@@ -3286,6 +3406,7 @@ function selectPersonalityOption(qid, value) {
 }
 
 function savePersonality() {
+    if(!nwSharedRequireMeta()) return;
     let index = parseInt(document.getElementById('cEditIndex').value);
     const w = currentWork(); if(!w) return;
     
@@ -3362,6 +3483,7 @@ function removePersonalityTag(key) {
     }
 }
 function saveCharacter() {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const index = parseInt(document.getElementById('cEditIndex').value);
     const timeline = [];
@@ -3381,6 +3503,7 @@ function saveCharacter() {
     saveAll(); showToast('人物已保存');
 }
 function deleteCharacter() {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const index = parseInt(document.getElementById('cEditIndex').value);
     if(index < 0 || !w.characters[index]) {
@@ -3500,6 +3623,7 @@ function getDefaultQuestions() {
     ];
 }
 function saveWorldview() {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     w.worldview = w.worldview || {};
     const allQuestions = [...getDefaultQuestions(), ...(devData.questionnaire || [])];
@@ -3680,6 +3804,7 @@ async function copyWorldviewDoc() {
     }
 }
 function addCollectionEntry() {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const type = getEffectiveCollType();
 if(!type) return;
@@ -3994,6 +4119,7 @@ function showRefOverview() {
     }
 }
    function deleteCollectionEntry(type, name) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     if(!confirm(`确定删除词条「${name}」吗？可从回收站恢复。`)) return;
     const entries = w.collectionEntries[type];
@@ -4032,6 +4158,7 @@ function getEffectiveCollType() {
     return collType.value;
 }
     function openCollectionModal(entry, type, presetName) {
+    if(!nwSharedRequireMeta()) return;
     const modal = document.createElement('div');
     modal.className = 'modal active';
     modal.innerHTML = `
@@ -4090,6 +4217,7 @@ function saveCollectionEntry(type, isEdit) {
 let calViewMonth = 0;
 let calViewYear = new Date().getFullYear();
 function saveCalendar() {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const existingNotes = (w.calendarData && w.calendarData.notes) || {};
     w.calendarData = {
@@ -4602,6 +4730,7 @@ function renderTimeline() {
 }
 
 function openTimelineModal(editIndex = -1, insertAfter = -1) {
+    if(!nwSharedRequireMeta()) return;
     document.querySelectorAll('.modal.active').forEach(m => m.remove());
     const w = currentWork(); if(!w) return;
     const timeline = w.globalTimeline || [];
@@ -4679,6 +4808,7 @@ function openTimelineModal(editIndex = -1, insertAfter = -1) {
 }
 
 function saveTimelineEntry(editIndex, insertAfter) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const era = (document.getElementById('tlEra').value || '').trim();
     const year = parseInt(document.getElementById('tlYear').value) || 0;
@@ -4719,6 +4849,7 @@ function saveTimelineEntry(editIndex, insertAfter) {
 }
 
 function deleteTimelineEntry(index) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     if(!confirm('确定删除此时间点？')) return;
     w.globalTimeline.splice(index, 1);
@@ -5038,6 +5169,7 @@ function openOutlineChapterPicker(id) {
 }
 
 function saveOutlineChapter(id) {
+    if(!nwSharedRequireMeta()) return;
     const f = outlineFind(id); if(!f) return;
     const sel = document.getElementById('outlineChapterSelect');
     const val = sel ? parseInt(sel.value) : NaN;
@@ -5113,6 +5245,7 @@ function openOutlineModal(targetId, mode = 'edit') {
 }
 
 function saveOutlineNode(targetId, mode) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const label = document.getElementById('outlineModalLabel').value.trim();
     if(!label) { showToast('请输入节点名称'); return; }
@@ -5162,6 +5295,7 @@ function findParentOutlineNode(id, arr, parent = null) {
 }
 
 function deleteOutlineNode(id) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     if(!confirm('确定删除此节点及其子节点？')) return;
     
@@ -5298,6 +5432,7 @@ function renderMap() {
 }
 
 function uploadMap(event) {
+    if(!nwSharedRequireMeta()) return;
     const file = event.target.files[0];
     if(!file) return;
     const reader = new FileReader();
@@ -5344,6 +5479,7 @@ function resetMapView() {
 }
 
 function clearMap() {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     if(!confirm('确定清除地图及所有标记吗？')) return;
     w.map = {};
@@ -5414,6 +5550,7 @@ function openMarkerModal(index) {
 }
 
 function saveMarker(x, y, editIndex) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const name = document.getElementById('markerName').value.trim();
     const desc = document.getElementById('markerDesc').value.trim();
@@ -5435,6 +5572,7 @@ function saveMarker(x, y, editIndex) {
 }
 
 function deleteMarker(index) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     if(!confirm('确定删除此标记？')) return;
     w.map.markers.splice(index, 1);
@@ -5540,6 +5678,7 @@ function renderFactionList() {
 }
 
 function openFactionEditor(id) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
     
@@ -5590,6 +5729,7 @@ function toggleCustomFactionType() {
 }
 
 function saveFaction(id) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const name = document.getElementById('factionName').value.trim();
     if(!name) { showToast('请输入势力名称'); return; }
@@ -5615,6 +5755,7 @@ function saveFaction(id) {
 }
 
 function deleteFaction(id) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const faction = (w.factions || []).find(f => f.id === id);
     if(!faction) return;
@@ -5682,6 +5823,7 @@ function toggleCustomRelType() {
 }
 
 function saveFactionRelation(index) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const from = parseInt(document.getElementById('relFrom').value);
     const to = parseInt(document.getElementById('relTo').value);
@@ -5706,6 +5848,7 @@ function saveFactionRelation(index) {
 }
 
 function deleteFactionRelation(index) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     if(!confirm('确定删除此关系？')) return;
     w.factionRelations.splice(index, 1);
@@ -5927,6 +6070,14 @@ async function init() {
     if(devData.knowledge.length === 0 && savedDev.knowledge) devData.knowledge = savedDev.knowledge;
     if(devData.customBackgrounds.length === 0 && savedDev.customBackgrounds) devData.customBackgrounds = savedDev.customBackgrounds;
     if(devData.customFonts.length === 0 && savedDev.customFonts) devData.customFonts = savedDev.customFonts;
+
+    // 共享作品：先加载缓存/云端；失败不阻断启动
+    try {
+        await nwWithTimeout(nwSharedInit(), 8000, '加载共享作品');
+    } catch(e) {
+        console.warn('共享作品加载超时，使用本地缓存：', e);
+    }
+    if(!currentWork() && works.length) currentWorkId = works[0].id;
     if(works.length === 0) {
         const sample = { id: Date.now(), title: '示例作品', worldview: {}, characters: [], chapters: [{ id: Date.now()+1, name: '第一章', content:'', wordCount:0, characters: [] }], collectionEntries: { places:[], families:[], history:[], races:[], magic:[], festivals:[] }, calendarData: { eraName:'', weekDays:7, months:[], festivals:[] }, editorSettings: { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' }, writingSessions: [], dailyWordCounts: {}, statsVersion: 2, createdAt: new Date().toISOString() };
         works.push(sample); currentWorkId = sample.id;
@@ -6408,6 +6559,7 @@ function renderTrash() {
 }
 
 function restoreTrash(type, index) {
+    if(!nwSharedRequireMeta()) return;
     const w = currentWork(); if(!w) return;
     const trash = w.trash;
     if(!trash) return;
@@ -6590,6 +6742,1061 @@ function clearTrash() {
     renderTrash();
     showToast('回收站已清空');
 }
+// ============================================================
+// 共享写作 v1（客户端）
+// 章节协作、设定只读、按章保存、冲突提示、邀请码
+// ============================================================
+const NW_SHARED_CACHE_KEY = 'nwSharedCacheV1';
+const NW_SHARED_IDS_KEY = 'nwSharedLocalIdsV1';
+const NW_SHARED_META_FIELDS = ['title','intro','cover','worldview','characters','collectionEntries','calendarData','outline','globalTimeline','factions','factionRelations','map'];
+const NW_SHARED_ROLE_LABEL = { owner:'拥有者', editor:'编辑', viewer:'只读' };
+
+let nwSharedReady = false;
+let nwSharedDisabledReason = '';
+let nwSharedCache = {};
+let nwSharedLocalIds = {};
+let nwSharedSyncTimer = null;
+let nwSharedSyncRunning = false;
+let nwActiveSharedConflict = null;
+let nwSharedInitDone = false;
+let nwSharePanelWorkId = null;
+
+function nwSharedMock() { return window.__NW_SHARED_MOCK__ || null; }
+function nwSharedUid() { return currentUserId || (nwAuthUser && nwAuthUser.id) || null; }
+function nwSharedCurrent() { const w = currentWork(); return (w && w._shared) ? w : null; }
+function nwSharedCanEditChapters() {
+    const w = nwSharedCurrent();
+    return !w || w._sharedRole === 'owner' || w._sharedRole === 'editor';
+}
+function nwSharedCanEditMeta() {
+    const w = nwSharedCurrent();
+    return !w || w._sharedRole === 'owner';
+}
+function nwSharedRequireChapters() {
+    if(nwSharedCanEditChapters()) return true;
+    showToast('这是只读共享作品，不能编辑章节');
+    return false;
+}
+function nwSharedRequireMeta() {
+    if(nwSharedCanEditMeta()) return true;
+    showToast('设定部分只读，只有拥有者可以修改');
+    return false;
+}
+function nwSharedDefaultEditorSettings() {
+    return { fontFamily:"'Georgia',serif", fontSize:'16px', fontColor:'#e0e0e0', lineHeight:'1.8', letterSpacing:'0px', paperBg:'default' };
+}
+
+// ---------- 稳定 ID / 缓存 ----------
+function nwSharedNumericId(chapterId) {
+    const raw = String(chapterId == null ? '' : chapterId).trim();
+    const n = Number(raw);
+    if(raw !== '' && Number.isFinite(n) && String(n) === raw) return n;
+    let h = 0;
+    for(let i = 0; i < raw.length; i++) h = ((h << 5) - h + raw.charCodeAt(i)) | 0;
+    return -Math.abs(h) - 1000000;
+}
+function nwSharedLocalId(sharedId) {
+    try { nwSharedLocalIds = JSON.parse(localStorage.getItem(NW_SHARED_IDS_KEY) || '{}') || {}; } catch(e) { nwSharedLocalIds = {}; }
+    if(nwSharedLocalIds[sharedId]) return Number(nwSharedLocalIds[sharedId]);
+    let id = -Date.now();
+    while(works.some(w => String(w.id) === String(id))) id--;
+    nwSharedLocalIds[sharedId] = id;
+    try { localStorage.setItem(NW_SHARED_IDS_KEY, JSON.stringify(nwSharedLocalIds)); } catch(e) {}
+    return id;
+}
+function nwSharedMetaFromWork(w) {
+    const meta = {};
+    NW_SHARED_META_FIELDS.forEach(k => { if(w[k] !== undefined) meta[k] = w[k]; });
+    return meta;
+}
+function nwSharedApplyMeta(w, meta) {
+    if(!meta) return;
+    // 远端为准：字段被删除（如封面/简介）时也要跟着清掉
+    NW_SHARED_META_FIELDS.forEach(k => { w[k] = meta[k]; });
+    if(meta.title) w.title = meta.title;
+}
+function nwSharedMetaHash(w) { return JSON.stringify(nwSharedMetaFromWork(w)); }
+function nwSharedChapterContentHash(ch) {
+    return JSON.stringify({ n: ch.name || '', c: ch.content || '', s: ch.status || 'draft', x: ch.characters || [] });
+}
+function nwSharedChapterHash(ch, index) {
+    return JSON.stringify({
+        n: ch.name || '', c: ch.content || '', w: ch.wordCount || 0,
+        s: ch.status || 'draft', x: ch.characters || [], i: index
+    });
+}
+function nwSharedSaveCache() {
+    const out = {};
+    works.filter(w => w._shared).forEach(w => {
+        out[w._sharedId] = {
+            role: w._sharedRole,
+            local: {
+                currentChapterId: w.currentChapterId,
+                editorSettings: w.editorSettings,
+                dailyWordCounts: w.dailyWordCounts,
+                writingSessions: w.writingSessions,
+                trash: w.trash
+            },
+            work: {
+                id: w._sharedId,
+                title: w.title,
+                meta: nwSharedMetaFromWork(w),
+                rev: w._sharedRev || 1,
+                owner_id: w._sharedOwnerId || null,
+                updated_at: new Date(w.lastModified || Date.now()).toISOString()
+            },
+            chapters: (w.chapters || []).map((c, i) => ({
+                chapter_id: String(c.id), name: c.name || '', content: c.content || '',
+                word_count: c.wordCount || 0, order_index: i, status: c.status || 'draft',
+                characters: c.characters || [], rev: (c._sharedRev == null ? null : c._sharedRev), deleted: false,
+                base: (w._sharedSnapshot && w._sharedSnapshot.chapters[c.id] && w._sharedSnapshot.chapters[c.id].hash) || null
+            })),
+            deleted: (w._sharedDeleted || []).map(d => ({ id: String(d.id), rev: d.rev }))
+        };
+    });
+    nwSharedCache = out;
+    try { localStorage.setItem(NW_SHARED_CACHE_KEY, JSON.stringify(out)); } catch(e) { console.warn('共享缓存写入失败（可能超出本地存储）：', e); }
+}
+function nwSharedLoadCache() {
+    try { nwSharedCache = JSON.parse(localStorage.getItem(NW_SHARED_CACHE_KEY) || '{}') || {}; } catch(e) { nwSharedCache = {}; }
+}
+
+// ---------- 数据适配层（真实 Supabase / 测试 Mock） ----------
+async function nwSharedApiMemberships() {
+    const mock = nwSharedMock(); if(mock) return mock.memberships();
+    const { data, error } = await db.from('shared_members').select('work_id, role').eq('user_id', nwSharedUid());
+    if(error) throw error;
+    return data || [];
+}
+async function nwSharedApiFetch(sharedId) {
+    const mock = nwSharedMock(); if(mock) return mock.fetch(sharedId);
+    const [workRes, chRes] = await Promise.all([
+        db.from('shared_works').select('*').eq('id', sharedId).single(),
+        db.from('shared_chapters').select('*').eq('work_id', sharedId).eq('deleted', false).order('order_index', { ascending: true })
+    ]);
+    if(workRes.error) throw workRes.error;
+    if(chRes.error) throw chRes.error;
+    return { work: workRes.data, chapters: chRes.data || [] };
+}
+async function nwSharedApiFetchChapter(sharedId, chapterId) {
+    const mock = nwSharedMock(); if(mock) return mock.fetchChapter(sharedId, chapterId);
+    const { data, error } = await db.from('shared_chapters').select('*').eq('work_id', sharedId).eq('chapter_id', String(chapterId)).single();
+    if(error) throw error;
+    return data;
+}
+function nwSharedMissingCharactersColumn(error) {
+    const msg = String((error && (error.message || error.details || error.hint)) || '');
+    return (error && error.code === '42703') || /characters/i.test(msg) && /column|does not exist/i.test(msg);
+}
+async function nwSharedApiCreate(payload) {
+    const mock = nwSharedMock(); if(mock) return mock.create(payload);
+    const { error: e1 } = await db.from('shared_works').insert(payload.work);
+    if(e1) throw e1;
+    const { error: e2 } = await db.from('shared_members').insert(payload.member);
+    if(e2) { await db.from('shared_works').delete().eq('id', payload.work.id); throw e2; }
+    if(payload.chapters && payload.chapters.length) {
+        let rows = payload.chapters.map((c, i) => ({ ...c, work_id: payload.work.id, order_index: i, rev: 1 }));
+        let { error: e3 } = await db.from('shared_chapters').insert(rows);
+        if(e3 && nwSharedMissingCharactersColumn(e3)) {
+            rows = rows.map(({ characters, ...rest }) => rest);
+            const retry = await db.from('shared_chapters').insert(rows);
+            e3 = retry.error;
+        }
+        if(e3) { await db.from('shared_works').delete().eq('id', payload.work.id); throw e3; }
+    }
+}
+async function nwSharedApiSaveChapter(sharedId, ch, index, baseRev) {
+    const mock = nwSharedMock(); if(mock) return mock.saveChapter(sharedId, ch, index, baseRev);
+    const payload = {
+        name: ch.name || '', content: ch.content || '', word_count: ch.wordCount || 0,
+        order_index: index, status: ch.status || 'draft', characters: ch.characters || [],
+        updated_at: new Date().toISOString(), updated_by: nwSharedUid()
+    };
+    if(baseRev == null) {
+        let res = await db.from('shared_chapters')
+            .insert({ work_id: sharedId, chapter_id: String(ch.id), ...payload, rev: 1 }).select();
+        if(res.error && nwSharedMissingCharactersColumn(res.error)) {
+            const { characters, ...rest } = payload;
+            res = await db.from('shared_chapters')
+                .insert({ work_id: sharedId, chapter_id: String(ch.id), ...rest, rev: 1 }).select();
+        }
+        if(res.error) {
+            if(res.error.code === '23505') return { conflict: true };
+            throw res.error;
+        }
+        return { row: res.data && res.data[0] };
+    }
+    let res = await db.from('shared_chapters')
+        .update({ ...payload, rev: baseRev + 1 })
+        .eq('work_id', sharedId).eq('chapter_id', String(ch.id)).eq('rev', baseRev).select();
+    if(res.error && nwSharedMissingCharactersColumn(res.error)) {
+        const { characters, ...rest } = payload;
+        res = await db.from('shared_chapters')
+            .update({ ...rest, rev: baseRev + 1 })
+            .eq('work_id', sharedId).eq('chapter_id', String(ch.id)).eq('rev', baseRev).select();
+    }
+    if(res.error) throw res.error;
+    if(!res.data || !res.data.length) return { conflict: true };
+    return { row: res.data[0] };
+}
+async function nwSharedApiDeleteChapter(sharedId, chapterId, baseRev) {
+    const mock = nwSharedMock(); if(mock) return mock.deleteChapter(sharedId, chapterId, baseRev);
+    const { data, error } = await db.from('shared_chapters')
+        .update({ deleted: true, rev: baseRev + 1, updated_at: new Date().toISOString(), updated_by: nwSharedUid() })
+        .eq('work_id', sharedId).eq('chapter_id', String(chapterId)).eq('rev', baseRev).select();
+    if(error) throw error;
+    return { ok: !!(data && data.length) };
+}
+async function nwSharedApiSaveMeta(sharedId, meta, title, baseRev) {
+    const mock = nwSharedMock(); if(mock) return mock.saveMeta(sharedId, meta, title, baseRev);
+    const { data, error } = await db.from('shared_works')
+        .update({ title: title || '未命名作品', meta, rev: baseRev + 1, updated_at: new Date().toISOString(), updated_by: nwSharedUid() })
+        .eq('id', sharedId).eq('rev', baseRev).select();
+    if(error) throw error;
+    if(!data || !data.length) return { conflict: true };
+    return { row: data[0] };
+}
+async function nwSharedApiListMembers(sharedId) {
+    const mock = nwSharedMock(); if(mock) return mock.listMembers(sharedId);
+    const { data, error } = await db.from('shared_members').select('user_id, role, joined_at').eq('work_id', sharedId).order('joined_at', { ascending: true });
+    if(error) throw error;
+    return data || [];
+}
+async function nwSharedApiListInvites(sharedId) {
+    const mock = nwSharedMock(); if(mock) return mock.listInvites(sharedId);
+    const { data, error } = await db.from('shared_invites').select('*').eq('work_id', sharedId).order('created_at', { ascending: false });
+    if(error) throw error;
+    return data || [];
+}
+async function nwSharedApiCreateInvite(invite) {
+    const mock = nwSharedMock(); if(mock) return mock.createInvite(invite);
+    const { data, error } = await db.from('shared_invites').insert(invite).select();
+    if(error) throw error;
+    return data && data[0];
+}
+async function nwSharedApiRevokeInvite(code) {
+    const mock = nwSharedMock(); if(mock) return mock.revokeInvite(code);
+    const { error } = await db.from('shared_invites').update({ revoked: true }).eq('code', code);
+    if(error) throw error;
+}
+async function nwSharedApiRedeem(code) {
+    const mock = nwSharedMock(); if(mock) return mock.redeem(code);
+    const { data, error } = await db.rpc('redeem_shared_invite', { p_code: code });
+    if(error) throw error;
+    return Array.isArray(data) ? data[0] : data;
+}
+async function nwSharedApiSetMemberRole(sharedId, userId, role) {
+    const mock = nwSharedMock(); if(mock) return mock.setMemberRole(sharedId, userId, role);
+    const { error } = await db.from('shared_members').update({ role }).eq('work_id', sharedId).eq('user_id', userId);
+    if(error) throw error;
+}
+async function nwSharedApiRemoveMember(sharedId, userId) {
+    const mock = nwSharedMock(); if(mock) return mock.removeMember(sharedId, userId);
+    const { error } = await db.from('shared_members').delete().eq('work_id', sharedId).eq('user_id', userId);
+    if(error) throw error;
+}
+async function nwSharedApiLeave(sharedId) {
+    const mock = nwSharedMock(); if(mock) return mock.leave(sharedId);
+    const { error } = await db.from('shared_members').delete().eq('work_id', sharedId).eq('user_id', nwSharedUid());
+    if(error) throw error;
+}
+async function nwSharedApiStop(sharedId, mode) {
+    const mock = nwSharedMock(); if(mock) return mock.stop(sharedId, mode);
+    if(mode === 'readonly') {
+        const { error } = await db.from('shared_members').update({ role: 'viewer' }).eq('work_id', sharedId).neq('role', 'owner');
+        if(error) throw error;
+    } else {
+        const { error } = await db.from('shared_members').delete().eq('work_id', sharedId).neq('role', 'owner');
+        if(error) throw error;
+    }
+    const { error: ie } = await db.from('shared_invites').update({ revoked: true }).eq('work_id', sharedId);
+    if(ie) throw ie;
+}
+async function nwSharedApiDeleteWork(sharedId) {
+    const mock = nwSharedMock(); if(mock) return mock.deleteWork(sharedId);
+    const { error } = await db.from('shared_works').delete().eq('id', sharedId);
+    if(error) throw error;
+}
+
+// ---------- 合并远程数据 ----------
+function nwSharedMerge(sharedId, role, data, existing, fromCache) {
+    if(!data || !data.work) return null;
+    const workRow = data.work || {};
+    const meta = workRow.meta || {};
+    let w = existing || works.find(x => x._shared && String(x._sharedId) === String(sharedId));
+    if(!w && meta.sourceWorkId != null && String(workRow.owner_id || '') === String(nwSharedUid())) {
+        w = works.find(x => !x._shared && String(x.id) === String(meta.sourceWorkId));
+    }
+    if(!w) {
+        w = {
+            id: nwSharedLocalId(sharedId),
+            title: workRow.title || meta.title || '共享作品',
+            chapters: [], characters: [], collectionEntries: {},
+            calendarData: { eraName:'', weekDays:7, months:[], festivals:[], notes:{} },
+            worldview: {}, outline: [], globalTimeline: [], factions: [], factionRelations: [], map: null,
+            editorSettings: nwSharedDefaultEditorSettings(), writingSessions: [], dailyWordCounts: {},
+            statsVersion: 2, createdAt: Date.now(), lastModified: Date.now(),
+            trash: { characters: [], chapters: [], collectionEntries: [] }
+        };
+        works.push(w);
+    }
+    w._shared = true;
+    w._sharedId = sharedId;
+    w._sharedRole = role;
+    w._sharedRev = workRow.rev || 1;
+    w._sharedOwnerId = workRow.owner_id || w._sharedOwnerId || null;
+    w._sharedOffline = !!fromCache;
+    if(data.local) {
+        if(data.local.currentChapterId != null) w.currentChapterId = data.local.currentChapterId;
+        if(data.local.editorSettings) w.editorSettings = data.local.editorSettings;
+        if(data.local.dailyWordCounts) w.dailyWordCounts = data.local.dailyWordCounts;
+        if(data.local.writingSessions) w.writingSessions = data.local.writingSessions;
+        if(data.local.trash) w.trash = data.local.trash;
+    }
+    if(!w.editorSettings) w.editorSettings = nwSharedDefaultEditorSettings();
+    if(!w.dailyWordCounts) w.dailyWordCounts = {};
+    if(!w.writingSessions) w.writingSessions = [];
+    if(!w.trash) w.trash = { characters: [], chapters: [], collectionEntries: [] };
+    if(!w.characters) w.characters = [];
+    if(!w.collectionEntries) w.collectionEntries = {};
+    nwSharedApplyMeta(w, meta);
+    if(workRow.title) w.title = workRow.title;
+
+    const oldChapters = w.chapters || [];
+    const oldById = {};
+    oldChapters.forEach((c, i) => { oldById[c.id] = { ch: c, index: i }; });
+    if(Array.isArray(data.deleted)) {
+        w._sharedDeleted = data.deleted.map(d => ({ id: nwSharedNumericId(d.id), rev: d.rev }));
+    } else if(!Array.isArray(w._sharedDeleted)) {
+        w._sharedDeleted = [];
+    }
+    const rows = (data.chapters || []).filter(r => {
+        if(r.deleted) return false;
+        return !w._sharedDeleted.some(d => String(d.id) === String(nwSharedNumericId(r.chapter_id)));
+    });
+    const snapOverride = {};
+    const conflicts = {};
+    w.chapters = rows.map((r, index) => {
+        const id = nwSharedNumericId(r.chapter_id);
+        const oldRec = oldById[id];
+        let ch = {
+            id,
+            name: r.name || '未命名章节',
+            content: r.content || '',
+            wordCount: r.word_count || 0,
+            status: r.status || 'draft',
+            characters: r.characters || [],
+            note: oldRec ? oldRec.ch.note : '',
+            bookmarks: oldRec ? oldRec.ch.bookmarks : [],
+            _sharedRev: (r.rev == null ? null : r.rev)
+        };
+        if(oldRec) {
+            const local = oldRec.ch;
+            const localHash = nwSharedChapterContentHash(local);
+            const remoteHash = nwSharedChapterContentHash(ch);
+            if(fromCache) {
+                // 缓存里保留本地内容；如果和上次服务端确认的版本不同，标记为待保存
+                if(r.base && r.base !== nwSharedChapterHash({ ...local, _sharedRev: r.rev }, oldRec.index)) {
+                    snapOverride[id] = r.base;
+                }
+                ch = {
+                    ...ch,
+                    name: local.name || ch.name,
+                    content: local.content != null ? local.content : ch.content,
+                    wordCount: local.wordCount || 0,
+                    status: local.status || ch.status,
+                    characters: local.characters || ch.characters,
+                    note: local.note,
+                    bookmarks: local.bookmarks
+                };
+            } else if(localHash !== remoteHash) {
+                const localRev = local._sharedRev || 0;
+                const remoteRev = r.rev || 0;
+                if(localRev === remoteRev) {
+                    // 本地是未保存的修改：保留本地，下一次同步再写上去
+                    ch = {
+                        ...ch,
+                        name: local.name || ch.name,
+                        content: local.content != null ? local.content : ch.content,
+                        wordCount: local.wordCount || 0,
+                        status: local.status || ch.status,
+                        characters: local.characters || ch.characters,
+                        note: local.note,
+                        bookmarks: local.bookmarks
+                    };
+                    snapOverride[id] = nwSharedChapterHash({ name:r.name, content:r.content, status:r.status, characters:r.characters, wordCount:r.word_count }, index);
+                } else if(localRev < remoteRev) {
+                    // 线上已经更新过：保留本地，标记冲突，等用户决定
+                    ch = {
+                        ...ch,
+                        name: local.name || ch.name,
+                        content: local.content != null ? local.content : ch.content,
+                        wordCount: local.wordCount || 0,
+                        status: local.status || ch.status,
+                        characters: local.characters || ch.characters,
+                        note: local.note,
+                        bookmarks: local.bookmarks
+                    };
+                    conflicts[id] = r;
+                    snapOverride[id] = nwSharedChapterHash({ name:r.name, content:r.content, status:r.status, characters:r.characters, wordCount:r.word_count }, index);
+                }
+            }
+        }
+        return ch;
+    });
+    // 本地新建、还没同步过的章节：远端没有，也要保留并补传
+    const remoteIds = new Set(w.chapters.map(c => String(c.id)));
+    oldChapters.forEach(old => {
+        if(old._sharedRev == null && !remoteIds.has(String(old.id)) && !(w._sharedDeleted || []).some(d => String(d.id) === String(old.id))) {
+            w.chapters.push({ ...old });
+            snapOverride[old.id] = '__new__';
+        }
+    });
+    if(w.chapters.length === 0) {
+        w.chapters.push({ id: Date.now(), name: '第一章', content: '', wordCount: 0, characters: [], status: 'draft', _sharedRev: null });
+    }
+    w._sharedChapterRevs = {};
+    w._sharedSnapshot = { meta: nwSharedMetaHash(w), chapters: {} };
+    w.chapters.forEach((c, i) => {
+        w._sharedChapterRevs[c.id] = c._sharedRev;
+        w._sharedSnapshot.chapters[c.id] = { hash: snapOverride[c.id] || nwSharedChapterHash(c, i), rev: c._sharedRev };
+    });
+    w._sharedConflict = conflicts;
+    w.lastModified = Date.parse(workRow.updated_at || '') || w.lastModified || Date.now();
+    if(!w.currentChapterId || !w.chapters.some(c => c.id === w.currentChapterId)) {
+        w.currentChapterId = w.chapters[0].id;
+    }
+    return w;
+}
+
+async function nwSharedInit() {
+    nwSharedLoadCache();
+    // 先应用本地缓存，保证离线/慢网也能打开
+    Object.entries(nwSharedCache).forEach(([sid, c]) => {
+        if(c && c.work) nwSharedMerge(sid, c.role, c, null, true);
+    });
+    if(nwSharedMock()) {
+        nwSharedReady = true;
+        try {
+            const memberships = await nwSharedApiMemberships();
+            for(const m of (memberships || [])) {
+                const data = await nwSharedApiFetch(m.work_id);
+                nwSharedMerge(m.work_id, m.role, data, works.find(w => w._shared && String(w._sharedId) === String(m.work_id)), false);
+            }
+        } catch(e) { console.warn('共享 Mock 加载失败：', e); }
+        nwSharedInitDone = true;
+        return;
+    }
+    if(!db || !nwSharedUid()) { nwSharedInitDone = true; return; }
+    try {
+        const memberships = await nwSharedApiMemberships();
+        nwSharedReady = true;
+        const ids = new Set((memberships || []).map(m => String(m.work_id)));
+        works = works.filter(w => !w._shared || ids.has(String(w._sharedId)));
+        for(const m of (memberships || [])) {
+            try {
+                const data = await nwSharedApiFetch(m.work_id);
+                nwSharedMerge(m.work_id, m.role, data, works.find(w => w._shared && String(w._sharedId) === String(m.work_id)), false);
+            } catch(e) {
+                console.warn('共享作品加载失败：', m.work_id, e);
+                const cached = works.find(w => w._shared && String(w._sharedId) === String(m.work_id));
+                if(cached) cached._sharedOffline = true;
+            }
+        }
+        nwSharedSaveCache();
+    } catch(e) {
+        nwSharedReady = false;
+        nwSharedDisabledReason = String((e && e.message) || e || '');
+        console.warn('共享功能不可用（可能还没建表）：', e);
+    }
+    nwSharedInitDone = true;
+}
+
+// ---------- 保存 / 同步 ----------
+function nwSharedQueueSync() {
+    if(!nwSharedReady) return;
+    clearTimeout(nwSharedSyncTimer);
+    nwSharedSyncTimer = setTimeout(() => { nwSharedSyncTimer = null; nwSharedSyncAll(); }, 500);
+}
+async function nwSharedSyncAll() {
+    if(!nwSharedReady) return;
+    if(nwSharedSyncRunning) { nwSharedQueueSync(); return; }
+    nwSharedSyncRunning = true;
+    try {
+        for(const w of works.filter(x => x._shared)) {
+            if(w._sharedRole === 'viewer') continue;
+            await nwSharedSyncWork(w);
+        }
+    } finally {
+        nwSharedSyncRunning = false;
+        nwSharedSaveCache();
+    }
+    nwSharedUpdateBanner();
+}
+async function nwSharedSyncWork(w) {
+    if(!w || !w._shared || w._sharedOffline) return;
+    if(w._syncPromise) { w._syncAgain = true; return w._syncPromise; }
+    w._syncPromise = (async () => {
+        do {
+            w._syncAgain = false;
+            await nwSharedSyncMeta(w);
+            for(let i = 0; i < w.chapters.length; i++) {
+                await nwSharedSyncChapter(w, w.chapters[i], i);
+            }
+            for(const item of (w._sharedDeleted || []).slice()) {
+                await nwSharedSyncDelete(w, item);
+            }
+        } while(w._syncAgain);
+    })().catch(e => {
+        console.warn('共享作品保存失败：', e);
+        nwSharedToastOnce('共享作品保存失败，内容已存在本机，稍后重试');
+    }).finally(() => { w._syncPromise = null; });
+    return w._syncPromise;
+}
+async function nwSharedSyncMeta(w) {
+    if(w._sharedRole !== 'owner' || !w._sharedSnapshot) return;
+    const hash = nwSharedMetaHash(w);
+    if(hash === w._sharedSnapshot.meta) return;
+    const res = await nwSharedApiSaveMeta(w._sharedId, nwSharedMetaFromWork(w), w.title, w._sharedRev);
+    if(res && res.conflict) {
+        try {
+            const remote = await nwSharedApiFetch(w._sharedId);
+            if(remote && remote.work) nwSharedShowMetaConflict(w, remote.work);
+        } catch(e) { console.warn(e); }
+        return;
+    }
+    if(res && res.row) {
+        w._sharedRev = res.row.rev;
+        w._sharedSnapshot.meta = hash;
+    }
+}
+async function nwSharedSyncChapter(w, ch, index) {
+    if(!w || w._sharedRole === 'viewer') return;
+    if(!w._sharedSnapshot || (w._sharedConflict && w._sharedConflict[ch.id])) return;
+    const hash = nwSharedChapterHash(ch, index);
+    const snap = w._sharedSnapshot.chapters[ch.id];
+    if(snap && snap.hash === hash) return;
+    const res = await nwSharedApiSaveChapter(w._sharedId, ch, index, snap ? snap.rev : null);
+    if(res && res.conflict) {
+        try {
+            const remote = await nwSharedApiFetchChapter(w._sharedId, ch.id);
+            if(remote) {
+                w._sharedConflict[ch.id] = remote;
+                nwSharedShowConflict(w, ch, remote);
+            }
+        } catch(e) { console.warn('拉取冲突章节失败：', e); }
+        return;
+    }
+    if(res && res.row) {
+        ch._sharedRev = res.row.rev;
+        w._sharedChapterRevs[ch.id] = res.row.rev;
+        w._sharedSnapshot.chapters[ch.id] = { hash, rev: res.row.rev };
+        nwSharedSaveCache();
+    }
+}
+async function nwSharedSyncDelete(w, item) {
+    if(!item || !item.id) return;
+    if(item.rev == null) {
+        try {
+            const remote = await nwSharedApiFetchChapter(w._sharedId, item.id);
+            if(!remote) {
+                w._sharedDeleted = (w._sharedDeleted || []).filter(x => x.id !== item.id);
+                return;
+            }
+            item.rev = remote.rev;
+        } catch(e) {
+            console.warn('删除前读取章节失败：', e);
+            return;
+        }
+    }
+    const res = await nwSharedApiDeleteChapter(w._sharedId, item.id, item.rev);
+    if(res && res.ok) {
+        w._sharedDeleted = (w._sharedDeleted || []).filter(x => x.id !== item.id);
+        if(w._sharedSnapshot) delete w._sharedSnapshot.chapters[item.id];
+        nwSharedSaveCache();
+    }
+}
+function nwSharedScheduleChapterSave(w, ch) {
+    if(!w || !w._shared || w._sharedRole === 'viewer') return;
+    if(!w._sharedSnapshot || (w._sharedConflict && w._sharedConflict[ch.id])) return;
+    clearTimeout(w._sharedChapterTimer);
+    w._sharedChapterTimer = setTimeout(() => {
+        w._sharedChapterTimer = null;
+        nwSharedSyncWork(w);
+    }, 1200);
+}
+function nwSharedFlushChapter(w, ch) {
+    if(!w || !w._shared || w._sharedRole === 'viewer' || !ch) return;
+    if(!w._sharedSnapshot || (w._sharedConflict && w._sharedConflict[ch.id])) return;
+    nwSharedSyncWork(w);
+}
+
+// ---------- 冲突 ----------
+function nwSharedShowConflict(w, ch, remote) {
+    document.querySelectorAll('.nw-shared-conflict-modal').forEach(m => m.remove());
+    nwActiveSharedConflict = { work: w, chapter: ch, remote };
+    const modal = document.createElement('div');
+    modal.className = 'modal active nw-shared-conflict-modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:560px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">⚠️ 这一章有更新</h3>
+                <button class="modal-close" onclick="nwCloseSharedConflict()">✕</button>
+            </div>
+            <p style="font-size:.85em;color:var(--text2);line-height:1.7">
+                「${escapeHtml(ch.name)}」在你编辑期间被其他人改过。<br>
+                你的修改还在本机，<strong>没有被覆盖</strong>。请选择怎么处理。
+            </p>
+            <div class="nw-share-remote-preview">${escapeHtml((remote.content || '').slice(0, 160))}${(remote.content || '').length > 160 ? '…' : ''}</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+                <button class="btn btn-primary" onclick="nwSharedConflictUseRemote()">用对方的</button>
+                <button class="btn btn-secondary" onclick="nwSharedConflictViewRemote()">查看对方内容</button>
+                <button class="btn btn-danger" onclick="nwSharedConflictKeepMine()">保留我的</button>
+            </div>
+            <p style="font-size:.72em;color:var(--text2);margin-top:10px">“保留我的”会覆盖对方刚保存的版本；建议先查看对方内容。</p>
+        </div>`;
+    document.body.appendChild(modal);
+}
+function nwCloseSharedConflict() {
+    document.querySelectorAll('.nw-shared-conflict-modal').forEach(m => m.remove());
+    nwActiveSharedConflict = null;
+}
+function nwSharedShowNextConflict() {
+    const w = nwSharedCurrent();
+    if(!w || !w._sharedConflict) return;
+    const id = Object.keys(w._sharedConflict)[0];
+    if(id == null) return;
+    const ch = w.chapters.find(c => String(c.id) === String(id));
+    const remote = w._sharedConflict[id];
+    if(ch && remote) nwSharedShowConflict(w, ch, remote);
+}
+function nwSharedConflictUseRemote() {
+    const c = nwActiveSharedConflict; if(!c) return;
+    const { work, chapter, remote } = c;
+    chapter.name = remote.name || chapter.name;
+    chapter.content = remote.content || '';
+    chapter.wordCount = remote.word_count || 0;
+    chapter.status = remote.status || 'draft';
+    chapter.characters = remote.characters || [];
+    chapter._sharedRev = remote.rev;
+    const idx = work.chapters.indexOf(chapter);
+    work._sharedSnapshot.chapters[chapter.id] = { hash: nwSharedChapterHash(chapter, idx), rev: remote.rev };
+    delete work._sharedConflict[chapter.id];
+    if(work.currentChapterId === chapter.id) {
+        document.getElementById('editor').value = chapter.content;
+    }
+    renderChapters();
+    nwSharedSaveCache();
+    nwCloseSharedConflict();
+    showToast('已使用对方的版本');
+}
+async function nwSharedConflictKeepMine() {
+    const c = nwActiveSharedConflict; if(!c) return;
+    const { work, chapter, remote } = c;
+    const idx = work.chapters.indexOf(chapter);
+    try {
+        const res = await nwSharedApiSaveChapter(work._sharedId, chapter, idx, remote.rev);
+        if(res && res.conflict) {
+            nwCloseSharedConflict();
+            showToast('对方又改了一次，请重新处理');
+            return;
+        }
+        if(res && res.row) {
+            chapter._sharedRev = res.row.rev;
+            work._sharedChapterRevs[chapter.id] = res.row.rev;
+            work._sharedSnapshot.chapters[chapter.id] = { hash: nwSharedChapterHash(chapter, idx), rev: res.row.rev };
+        }
+        delete work._sharedConflict[chapter.id];
+        nwSharedSaveCache();
+        nwCloseSharedConflict();
+        showToast('已保留你的版本');
+    } catch(e) {
+        showToast('保存失败：' + ((e && e.message) || e));
+    }
+}
+function nwSharedConflictViewRemote() {
+    const c = nwActiveSharedConflict; if(!c) return;
+    const { remote } = c;
+    const modal = document.querySelector('.nw-shared-conflict-modal');
+    if(!modal) return;
+    modal.querySelector('.modal-content').innerHTML = `
+        <div class="modal-header">
+            <h3 style="color:var(--accent)">对方保存的版本</h3>
+            <button class="modal-close" onclick="nwCloseSharedConflict()">✕</button>
+        </div>
+        <textarea class="form-textarea" readonly style="min-height:260px;font-size:14px">${escapeHtml(remote.content || '')}</textarea>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+<button class="btn btn-secondary" onclick="nwSharedCopy(nwActiveSharedConflict && nwActiveSharedConflict.remote.content)">复制对方内容</button>
+            <button class="btn btn-primary" onclick="nwSharedConflictUseRemote()">用对方的</button>
+            <button class="btn btn-danger" onclick="nwSharedConflictKeepMine()">保留我的</button>
+        </div>`;
+}
+function nwSharedShowMetaConflict(w, remoteWork) {
+    document.querySelectorAll('.nw-shared-conflict-modal').forEach(m => m.remove());
+    nwActiveSharedConflict = { work: w, metaRemote: remoteWork };
+    const modal = document.createElement('div');
+    modal.className = 'modal active nw-shared-conflict-modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:520px">
+            <div class="modal-header">
+                <h3 style="color:var(--accent)">⚠️ 设定有更新</h3>
+                <button class="modal-close" onclick="nwCloseSharedConflict()">✕</button>
+            </div>
+            <p style="font-size:.85em;color:var(--text2);line-height:1.7">这部作品的设定（人物/世界观等）刚在别处被改过。你的本机修改还没有覆盖。</p>
+            <div style="display:flex;gap:8px;margin-top:14px">
+                <button class="btn btn-primary" onclick="nwSharedMetaUseRemote()">用对方的</button>
+                <button class="btn btn-danger" onclick="nwSharedMetaKeepMine()">保留我的</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+}
+function nwSharedMetaUseRemote() {
+    const c = nwActiveSharedConflict; if(!c || !c.metaRemote) return;
+    const { work, metaRemote } = c;
+    nwSharedApplyMeta(work, metaRemote.meta || {});
+    work.title = metaRemote.title || work.title;
+    work._sharedRev = metaRemote.rev;
+    work._sharedSnapshot.meta = nwSharedMetaHash(work);
+    nwSharedSaveCache();
+    nwCloseSharedConflict();
+    renderHome(); renderChapters(); nwSharedUpdateBanner();
+    showToast('已使用对方的设定');
+}
+async function nwSharedMetaKeepMine() {
+    const c = nwActiveSharedConflict; if(!c || !c.metaRemote) return;
+    const { work, metaRemote } = c;
+    try {
+        const res = await nwSharedApiSaveMeta(work._sharedId, nwSharedMetaFromWork(work), work.title, metaRemote.rev);
+        if(res && res.conflict) { showToast('对方又改了一次，请重新处理'); return; }
+        if(res && res.row) {
+            work._sharedRev = res.row.rev;
+            work._sharedSnapshot.meta = nwSharedMetaHash(work);
+        }
+        nwSharedSaveCache();
+        nwCloseSharedConflict();
+        showToast('已保留你的设定');
+    } catch(e) { showToast('保存失败：' + ((e && e.message) || e)); }
+}
+
+// ---------- 界面 ----------
+function nwSharedUpdateBanner() {
+    const banner = document.getElementById('sharedBanner');
+    if(!banner) return;
+    const w = currentWork();
+    if(!w || !w._shared) {
+        banner.style.display = 'none'; banner.innerHTML = '';
+        const ed = document.getElementById('editor');
+        if(ed) ed.readOnly = false;
+        const page = document.getElementById('page-writing');
+        if(page) page.classList.remove('nw-shared-viewer');
+        nwSharedApplyMetaMode();
+        return;
+    }
+    const role = w._sharedRole || 'viewer';
+    const label = NW_SHARED_ROLE_LABEL[role] || role;
+    const offline = w._sharedOffline ? ' · 离线缓存，暂时不能保存' : '';
+    const roleHint = role === 'viewer' ? '只读，不能修改正文' : (role === 'owner' ? '你是拥有者，可以编辑章节和设定' : '可以编辑章节，设定由拥有者维护');
+    banner.style.display = 'flex';
+    banner.innerHTML = `<div class="nw-share-banner-main">
+        <span class="nw-role-badge ${role}">${label}</span>
+        <span>共享作品 · ${roleHint}${offline}</span>
+    </div>
+    <div class="nw-share-banner-actions">
+        ${Object.keys(w._sharedConflict || {}).length ? `<button class="btn btn-danger btn-sm" onclick="nwSharedShowNextConflict()">处理冲突（${Object.keys(w._sharedConflict).length}）</button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick="openSharePanel(currentWorkId)">共享设置</button>
+    </div>`;
+    const ed = document.getElementById('editor');
+    if(ed) ed.readOnly = role === 'viewer';
+    const page = document.getElementById('page-writing');
+    if(page) page.classList.toggle('nw-shared-viewer', role === 'viewer');
+    const addBtn = document.querySelector('.sb-add');
+    if(addBtn) addBtn.style.display = role === 'viewer' ? 'none' : '';
+    nwSharedApplyMetaMode();
+}
+function nwSharedApplyMetaMode() {
+    const w = currentWork();
+    const lock = !!(w && w._shared && (w._sharedRole !== 'owner' || w._sharedOffline));
+    ['page-worldview','page-characters'].forEach(id => {
+        const page = document.getElementById(id);
+        if(!page) return;
+        page.classList.toggle('nw-shared-meta-readonly', lock);
+        let banner = page.querySelector('.nw-shared-meta-banner');
+        if(lock && !banner) {
+            banner = document.createElement('div');
+            banner.className = 'nw-shared-meta-banner';
+            banner.innerHTML = (w && w._sharedOffline)
+                ? '📡 离线缓存 · 暂时不能修改设定，恢复网络后刷新页面再试。'
+                : '🔒 共享作品的设定部分只读，只有拥有者可以修改；你仍然可以查看所有资料。';
+            const scroll = page.querySelector('.page-scroll');
+            if(scroll) scroll.insertBefore(banner, scroll.firstChild);
+        } else if(!lock && banner) {
+            banner.remove();
+        }
+    });
+}
+function nwSharedRenderHome() {
+    const section = document.getElementById('sharedSection');
+    const grid = document.getElementById('sharedGrid');
+    if(!section || !grid) return;
+    const shared = works.filter(w => w._shared && w._sharedRole !== 'owner');
+    if(!nwSharedReady && !shared.length) { section.style.display = 'none'; return; }
+    section.style.display = '';
+    if(!shared.length) {
+        grid.innerHTML = `<div class="work-empty"><p>还没有别人共享给你的作品。输入邀请码，加入别人正在写的世界。</p><button class="btn btn-primary btn-sm" onclick="nwJoinSharedPrompt()">输入邀请码</button></div>`;
+        return;
+    }
+    grid.innerHTML = '';
+    shared.forEach(w => {
+        const totalWords = w.chapters.reduce((s, c) => s + (c.wordCount || 0), 0);
+        const role = w._sharedRole || 'viewer';
+        const card = document.createElement('div');
+        card.className = 'work-card shared-card';
+        const canEditInfo = role === 'owner';
+        card.innerHTML = `${canEditInfo ? `<button class="work-edit" title="封面与简介" onclick="event.stopPropagation();openWorkInfo(${w.id})">✎</button>` : ''}
+            <div class="work-cover">📖</div>
+            <div class="work-main">
+                <div class="work-card-title">${escapeHtml(w.title)} <span class="nw-role-badge ${role}">${NW_SHARED_ROLE_LABEL[role] || role}</span></div>
+                <div class="work-card-meta">${w.chapters.length} 章 · ${totalWords} 字 · ${w._sharedOffline ? '离线缓存' : '共享中'}</div>
+                <div class="work-card-meta">${(w.characters || []).length} 人物 · ${nwRelativeDate(w.lastModified)}</div>
+                <div class="work-card-actions">
+                    <button onclick="event.stopPropagation();openWork(${w.id})">继续</button>
+                    <button onclick="event.stopPropagation();openExportMenu(${w.id})">导出</button>
+                    <button onclick="event.stopPropagation();openSharePanel(${w.id})">共享</button>
+                    <button onclick="event.stopPropagation();deleteWork(${w.id})">${role === 'owner' ? '删除' : '离开'}</button>
+                </div>
+            </div>`;
+        card.onclick = () => openWork(w.id);
+        grid.appendChild(card);
+    });
+}
+
+// ---------- 发布 / 加入 ----------
+async function nwSharedPublish(workOrId) {
+    if(!nwSharedReady) { showToast('共享功能还没启用，请先执行数据库脚本'); return; }
+    const work = (workOrId && typeof workOrId === 'object') ? workOrId : works.find(w => String(w.id) === String(workOrId));
+    if(!work || work._shared) return;
+    if(!confirm('发布为共享作品？\n\n发布后：章节可以多人编辑；人物、世界观等设定只有你能改；你的本地原稿会保留。')) return;
+    const sharedId = 'sw_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+    const meta = nwSharedMetaFromWork(work);
+    meta.sourceWorkId = work.id;
+    const payload = {
+        work: { id: sharedId, owner_id: nwSharedUid(), title: work.title || '未命名作品', meta, rev: 1, updated_by: nwSharedUid() },
+        member: { work_id: sharedId, user_id: nwSharedUid(), role: 'owner' },
+        chapters: work.chapters.map((ch, i) => ({
+            chapter_id: String(ch.id), name: ch.name || '', content: ch.content || '',
+            word_count: ch.wordCount || 0, order_index: i, status: ch.status || 'draft',
+            characters: ch.characters || []
+        }))
+    };
+    try {
+        await nwSharedApiCreate(payload);
+        work._shared = true;
+        work._sharedId = sharedId;
+        work._sharedRole = 'owner';
+        work._sharedOwnerId = nwSharedUid();
+        work._sharedRev = 1;
+        work._sharedChapterRevs = {};
+        work._sharedSnapshot = { meta: nwSharedMetaHash(work), chapters: {} };
+        work.chapters.forEach((c, i) => {
+            c._sharedRev = 1;
+            work._sharedChapterRevs[c.id] = 1;
+            work._sharedSnapshot.chapters[c.id] = { hash: nwSharedChapterHash(c, i), rev: 1 };
+        });
+        work._sharedDeleted = [];
+        work._sharedConflict = {};
+        work._sharedOffline = false;
+        nwSharedSaveCache();
+        await saveAll();
+        renderHome();
+        showToast('已发布为共享作品，可以生成邀请码了');
+        openSharePanel(work.id);
+    } catch(e) {
+        console.error(e);
+        showToast('发布失败：' + ((e && e.message) || e));
+    }
+}
+async function nwSharedJoin(code) {
+    code = String(code || '').trim().toUpperCase();
+    if(!code) return;
+    try {
+        const row = await nwSharedApiRedeem(code);
+        if(!row || !row.work_id) throw new Error('邀请码没有返回作品');
+        const data = await nwSharedApiFetch(row.work_id);
+        const w = nwSharedMerge(row.work_id, row.role, data, works.find(x => x._shared && String(x._sharedId) === String(row.work_id)), false);
+        nwSharedSaveCache();
+        await saveAll();
+        renderHome();
+        document.querySelectorAll('.modal.active').forEach(m => m.remove());
+        if(w) openWork(w.id);
+        showToast('已加入共享作品');
+    } catch(e) {
+        showToast('加入失败：' + ((e && e.message) || e));
+    }
+}
+function nwJoinSharedPrompt() {
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.innerHTML = `<div class="modal-content" style="max-width:420px">
+        <div class="modal-header"><h3 style="color:var(--accent)">👥 加入共享作品</h3><button class="modal-close" onclick="this.closest('.modal').remove()">✕</button></div>
+        <p style="font-size:.82em;color:var(--text2);line-height:1.7">输入拥有者给你的 8 位邀请码。加入后，章节按你的角色可编辑或只读。</p>
+        <div class="form-group"><input class="form-input" id="nwJoinCode" placeholder="例如：AB3D7K9M" style="text-transform:uppercase;letter-spacing:2px" maxlength="16"></div>
+        <div class="btn-row" style="justify-content:flex-end"><button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button><button class="btn btn-primary" onclick="nwSharedJoin(document.getElementById('nwJoinCode').value)">加入</button></div>
+    </div>`;
+    document.body.appendChild(modal);
+    setTimeout(() => { const el = document.getElementById('nwJoinCode'); if(el) el.focus(); }, 80);
+}
+
+// ---------- 共享面板 ----------
+async function openSharePanel(workId) {
+    const w = works.find(x => String(x.id) === String(workId)) || currentWork();
+    if(!w) return;
+    nwSharePanelWorkId = w.id;
+    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    const modal = document.createElement('div');
+    modal.className = 'modal active';
+    modal.id = 'nwSharePanel';
+    modal.innerHTML = `<div class="modal-content" style="max-width:620px" id="nwSharePanelBody"></div>`;
+    document.body.appendChild(modal);
+    const body = document.getElementById('nwSharePanelBody');
+    if(!nwSharedReady) {
+        body.innerHTML = `<div class="modal-header"><h3 style="color:var(--accent)">👥 共享作品</h3><button class="modal-close" onclick="this.closest('.modal').remove()">✕</button></div>
+            <p style="font-size:.85em;line-height:1.8">共享功能还没有启用。需要先在 Supabase 执行 <code>supabase-collab.sql</code>（再执行 <code>supabase-collab-v1.1.sql</code>），刷新后即可使用。</p>
+            ${nwSharedDisabledReason ? `<p style="font-size:.75em;color:var(--danger);word-break:break-all">最近一次错误：${escapeHtml(nwSharedDisabledReason)}</p>` : ''}`;
+        return;
+    }
+    if(!w._shared) {
+        body.innerHTML = `<div class="modal-header"><h3 style="color:var(--accent)">👥 共享《${escapeHtml(w.title)}》</h3><button class="modal-close" onclick="this.closest('.modal').remove()">✕</button></div>
+            <p style="font-size:.85em;color:var(--text2);line-height:1.8">发布为共享作品后，你可以发邀请码让别人一起写。<br><strong>章节</strong>：拥有者和编辑都能改；<strong>人物/世界观/设定</strong>：只有拥有者能改；只读成员只能看。</p>
+            <div class="btn-row" style="justify-content:flex-end"><button class="btn btn-secondary" onclick="this.closest('.modal').remove()">取消</button><button class="btn btn-primary" onclick="nwSharedPublish(nwSharePanelWorkId)">发布为共享作品</button></div>`;
+        return;
+    }
+    body.innerHTML = `<div class="modal-header"><h3 style="color:var(--accent)">👥 共享《${escapeHtml(w.title)}》</h3><button class="modal-close" onclick="this.closest('.modal').remove()">✕</button></div>
+        <div id="nwSharePanelInner"><p style="color:var(--text2)">加载中…</p></div>`;
+    const inner = document.getElementById('nwSharePanelInner');
+    const role = w._sharedRole || 'viewer';
+    let members = [], invites = [];
+    try { members = await nwSharedApiListMembers(w._sharedId); } catch(e) { console.warn(e); }
+    if(role === 'owner') { try { invites = await nwSharedApiListInvites(w._sharedId); } catch(e) { console.warn(e); } }
+    const memberHtml = members.length ? members.map(m => {
+        const isMe = String(m.user_id) === String(nwSharedUid());
+        const roleSel = role === 'owner' && m.role !== 'owner'
+            ? `<select class="form-select" style="width:auto;padding:5px 8px;font-size:.8em" onchange="nwSharedSetMemberRole('${w._sharedId}','${m.user_id}',this.value)"><option value="editor"${m.role==='editor'?' selected':''}>编辑</option><option value="viewer"${m.role==='viewer'?' selected':''}>只读</option></select>`
+            : `<span class="nw-role-badge ${m.role}">${NW_SHARED_ROLE_LABEL[m.role] || m.role}</span>`;
+        return `<div class="nw-member-row"><span>${isMe ? '我' : '协作者 ' + String(m.user_id).slice(-4)}${isMe ? '' : ' <span style="font-size:.75em;color:var(--text2)">' + String(m.user_id).slice(0, 8) + '</span>'}</span><span style="display:flex;gap:8px;align-items:center">${roleSel}${role === 'owner' && m.role !== 'owner' ? `<button class="btn btn-secondary btn-sm" onclick="nwSharedRemoveMember('${w._sharedId}','${m.user_id}')">移除</button>` : ''}</span></div>`;
+    }).join('') : '<p style="font-size:.8em;color:var(--text2)">暂无成员</p>';
+
+    let inviteHtml = '';
+    if(role === 'owner') {
+        inviteHtml = `<div class="nw-share-block"><h4>🔗 邀请码</h4>
+            <div class="nw-invite-form">
+                <select class="form-select" id="nwInviteRole"><option value="editor">编辑</option><option value="viewer">只读</option></select>
+                <select class="form-select" id="nwInviteDays"><option value="7">7 天</option><option value="30">30 天</option><option value="">永久</option></select>
+                <select class="form-select" id="nwInviteUses"><option value="1">1 次</option><option value="5">5 次</option><option value="">不限</option></select>
+                <button class="btn btn-primary btn-sm" onclick="nwSharedCreateInvite('${w._sharedId}')">生成邀请码</button>
+            </div>
+            <div id="nwInviteList">${invites.length ? invites.map(inv => {
+                const dead = inv.revoked || (inv.expires_at && Date.parse(inv.expires_at) < Date.now()) || (inv.max_uses && inv.uses >= inv.max_uses);
+                return `<div class="nw-invite-row"><code class="nw-invite-code">${escapeHtml(inv.code)}</code><span style="font-size:.75em;color:var(--text2)">${inv.role === 'editor' ? '编辑' : '只读'} · ${inv.max_uses ? inv.uses + '/' + inv.max_uses + ' 次' : '不限次数'} · ${inv.expires_at ? '至 ' + new Date(inv.expires_at).toLocaleDateString('zh-CN') : '永久'}${dead ? ' · 已失效' : ''}</span><span style="display:flex;gap:6px">${dead ? '' : `<button class="btn btn-secondary btn-sm" onclick="nwSharedCopy('${escapeHtml(inv.code)}')">复制</button>`}<button class="btn btn-secondary btn-sm" onclick="nwSharedRevokeInvite('${escapeHtml(inv.code)}','${w._sharedId}')">撤销</button></span></div>`;
+            }).join('') : '<p style="font-size:.78em;color:var(--text2)">还没有邀请码</p>'}</div>
+        </div>`;
+    }
+
+    inner.innerHTML = `
+        <div class="nw-share-status"><span class="nw-role-badge ${role}">${NW_SHARED_ROLE_LABEL[role] || role}</span> <span style="font-size:.8em;color:var(--text2)">作品 ID：${escapeHtml(w._sharedId)}</span></div>
+        <div class="nw-share-block"><h4>👥 成员（${members.length}）</h4>${memberHtml}</div>
+        ${inviteHtml}
+        <div class="nw-share-block">
+            <h4>⚙️ 共享设置</h4>
+            ${role === 'owner' ? `<div class="nw-share-actions">
+                <button class="btn btn-secondary btn-sm" onclick="nwSharedStop('${w._sharedId}','readonly')">停止共享 · 转为只读</button>
+                <button class="btn btn-danger btn-sm" onclick="nwSharedStop('${w._sharedId}','revoke')">停止共享 · 立即收回</button>
+            </div><p style="font-size:.72em;color:var(--text2);margin-top:8px">转为只读：成员保留访问，但不能再改章节；立即收回：成员立刻失去访问。</p>`
+            : `<button class="btn btn-danger btn-sm" onclick="nwSharedLeave('${w._sharedId}')">离开共享作品</button>`}
+        </div>`;
+}
+async function nwSharedCreateInvite(sharedId) {
+    if(!nwSharedReady) return;
+    const role = document.getElementById('nwInviteRole').value;
+    const days = document.getElementById('nwInviteDays').value;
+    const uses = document.getElementById('nwInviteUses').value;
+    const code = nwSharedGenCode();
+    const invite = {
+        code, work_id: sharedId, role, created_by: nwSharedUid(),
+        expires_at: days ? new Date(Date.now() + Number(days) * 86400000).toISOString() : null,
+        max_uses: uses ? Number(uses) : null
+    };
+    try {
+        await nwSharedApiCreateInvite(invite);
+        showToast('邀请码已生成：' + code);
+        openSharePanel(nwSharePanelWorkId);
+    } catch(e) {
+        showToast('生成失败：' + ((e && e.message) || e));
+    }
+}
+async function nwSharedRevokeInvite(code, sharedId) {
+    if(!confirm('撤销这个邀请码？撤销后不能再加入。')) return;
+    try { await nwSharedApiRevokeInvite(code); showToast('已撤销'); openSharePanel(nwSharePanelWorkId); }
+    catch(e) { showToast('撤销失败：' + ((e && e.message) || e)); }
+}
+async function nwSharedSetMemberRole(sharedId, userId, role) {
+    try { await nwSharedApiSetMemberRole(sharedId, userId, role); showToast('角色已更新'); }
+    catch(e) { showToast('修改失败：' + ((e && e.message) || e)); }
+}
+async function nwSharedRemoveMember(sharedId, userId) {
+    if(!confirm('移除这个成员？')) return;
+    try { await nwSharedApiRemoveMember(sharedId, userId); showToast('已移除'); openSharePanel(nwSharePanelWorkId); }
+    catch(e) { showToast('移除失败：' + ((e && e.message) || e)); }
+}
+async function nwSharedStop(sharedId, mode) {
+    const text = mode === 'readonly'
+        ? '停止共享并转为只读？所有成员还能查看，但不能再修改章节；邀请码全部失效。'
+        : '停止共享并立即收回？所有非拥有者成员会立刻失去访问；邀请码全部失效。';
+    if(!confirm(text)) return;
+    try {
+        await nwSharedApiStop(sharedId, mode);
+        showToast(mode === 'readonly' ? '已转为只读共享' : '已停止共享');
+        openSharePanel(nwSharePanelWorkId);
+    } catch(e) { showToast('操作失败：' + ((e && e.message) || e)); }
+}
+async function nwSharedLeave(sharedId) {
+    if(!confirm('离开这部共享作品？本地缓存会删除。')) return;
+    try {
+        await nwSharedApiLeave(sharedId);
+        works = works.filter(w => !(w._shared && String(w._sharedId) === String(sharedId)));
+        if(!works.some(w => String(w.id) === String(currentWorkId))) currentWorkId = works.length ? works[0].id : null;
+        nwSharedSaveCache();
+        await saveAll();
+        renderHome();
+        document.querySelectorAll('.modal.active').forEach(m => m.remove());
+        goPage('home');
+        showToast('已离开共享作品');
+    } catch(e) { showToast('离开失败：' + ((e && e.message) || e)); }
+}
+function nwSharedGenCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    try {
+        const arr = new Uint32Array(8); crypto.getRandomValues(arr);
+        for(let i = 0; i < 8; i++) out += chars[arr[i] % chars.length];
+    } catch(e) {
+        for(let i = 0; i < 8; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return out;
+}
+function nwSharedCopy(text) {
+    if(!text) return;
+    try {
+        navigator.clipboard.writeText(text).then(() => showToast('已复制：' + text)).catch(() => prompt('复制内容：', text));
+    } catch(e) { prompt('复制内容：', text); }
+}
+function nwSharedToastOnce(msg) {
+    if(nwSharedToastOnce._last === msg && Date.now() - (nwSharedToastOnce._at || 0) < 5000) return;
+    nwSharedToastOnce._last = msg; nwSharedToastOnce._at = Date.now();
+    showToast(msg);
+}
+
+
 try {
     if(window.matchMedia && window.matchMedia('(pointer: coarse)').matches) document.body.classList.add('touch-device');
 } catch(e) {}
@@ -6607,7 +7814,7 @@ window.addEventListener('beforeunload', function() {
         pauseTimer();
     }
     // 避免最后 10 秒自动保存间隔内丢字
-    try { saveCurrentWorkContent(); saveLocalSnapshot(); } catch(e) {}
+    try { saveCurrentWorkContent(); saveLocalSnapshot(); nwSharedSaveCache(); } catch(e) {}
 });
     function toggleMobileMenu() {
     let overlay = document.getElementById('mobileNavOverlay');
