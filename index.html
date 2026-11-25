@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,interactive-widget=resizes-content">
-<title>西幻创作工坊 v3.8.1</title>
+<title>西幻创作工坊 v3.9.1</title>
 <link rel="stylesheet" href="themes.css">
    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap">
 <script src="knowledge.js"></script>
@@ -324,6 +324,9 @@ button{cursor:pointer}
   .nw-drag-handle{display:none!important}
 }
 
+/* ===== 内容包 / 名字文化标签 ===== */
+.nw-culture-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:9px;font-size:.68em;font-weight:normal;color:var(--accent);background:rgba(74,122,181,.14);border:1px solid rgba(74,122,181,.28);vertical-align:middle}
+.nw-list-summary{font-size:.75em;color:var(--text2);margin-bottom:8px}
 /* ===== 共享写作 ===== */
 .shared-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:7px 12px;background:rgba(74,122,181,.14);border-bottom:1px solid var(--border);font-size:.76em;color:var(--text)}
 .nw-share-banner-main{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
@@ -788,8 +791,9 @@ button{cursor:pointer}
 <div class="tools-content active" id="tools-names">
 <div class="card"><h3>👑 姓氏/名字生成器</h3>
 <div class="btn-row" style="margin-bottom:10px">
-<select class="form-select" id="nameTypeSelect" style="width:auto" onchange="renderNameResults()"><option value="surname">姓氏</option><option value="male">男名</option><option value="female">女名</option></select>
-<input class="form-input" id="meaningSearch" placeholder="🔍 按寓意搜索..." style="width:auto;min-width:150px" oninput="renderNameResults()">
+<select class="form-select" id="nameTypeSelect" style="width:auto" onchange="nwResetNameLimit();renderNameResults()"><option value="surname">姓氏</option><option value="male">男名</option><option value="female">女名</option></select>
+<select class="form-select" id="nameCultureFilter" style="width:auto" onchange="nwResetNameLimit();renderNameResults()"><option value="">全部文化</option></select>
+<input class="form-input" id="meaningSearch" placeholder="🔍 按寓意/名字搜索..." style="width:auto;min-width:150px" oninput="nwResetNameLimit();renderNameResults()">
 <button class="btn btn-primary btn-sm" onclick="generateRandomName()">🎲 随机生成</button>
 </div>
 <div id="nameResults" class="entry-list"></div>
@@ -798,8 +802,8 @@ button{cursor:pointer}
 <div class="tools-content" id="tools-knowledge">
 <div class="card"><h3>📚 西方文化知识库</h3>
 <div class="btn-row" style="margin-bottom:10px">
-<select class="form-select" id="kbCategoryFilter" style="width:auto" onchange="renderKnowledgeBase()"><option value="">全部分类</option></select>
-<input class="form-input" id="kbSearch" placeholder="🔍 搜索关键词..." style="width:auto;min-width:150px" oninput="renderKnowledgeBase()">
+<select class="form-select" id="kbCategoryFilter" style="width:auto" onchange="nwResetKbLimit();renderKnowledgeBase()"><option value="">全部分类</option></select>
+<input class="form-input" id="kbSearch" placeholder="🔍 搜索关键词..." style="width:auto;min-width:150px" oninput="nwResetKbLimit();renderKnowledgeBase()">
 </div>
 <div id="kbResults" class="entry-list"></div>
 </div>
@@ -4295,45 +4299,82 @@ function openCalendarNote(dateKey, existingNote) {
     saveAll();
     renderCalendar();
 }
+let nwNameLimit = 50;
+let nwKbLimit = 100;
+
+function nwResetNameLimit() { nwNameLimit = 50; }
+function nwMoreNames() { nwNameLimit += 50; renderNameResults(); }
+function nwResetKbLimit() { nwKbLimit = 100; }
+function nwMoreKnowledge() { nwKbLimit += 100; renderKnowledgeBase(); }
+
+function nwNamePool(type) {
+    let all;
+    if(type === 'surname') all = [...(typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []), ...(devData.surnames || [])];
+    else if(type === 'male') all = [...(typeof GIVEN_NAME_DATA_MALE !== 'undefined' ? GIVEN_NAME_DATA_MALE : []), ...(devData.givenNamesMale || [])];
+    else all = [...(typeof GIVEN_NAME_DATA_FEMALE !== 'undefined' ? GIVEN_NAME_DATA_FEMALE : []), ...(devData.givenNamesFemale || [])];
+    // 去掉内置数据里的偶发重复（按英文名）
+    const seen = new Set();
+    return all.filter(n => {
+        const k = String(n.en || '').toLowerCase();
+        if(!k || seen.has(k)) return false;
+        seen.add(k); return true;
+    });
+}
+function nwNameCulture() {
+    const el = document.getElementById('nameCultureFilter');
+    return el ? el.value : '';
+}
+function nwNameCultureLabel(n) {
+    return n.culture ? `<span class="nw-culture-tag">${escapeHtml(n.culture)}</span>` : '';
+}
+function nwRefreshNameCultureFilter() {
+    const sel = document.getElementById('nameCultureFilter');
+    if(!sel) return;
+    const current = sel.value;
+    const cultures = [...new Set([
+        ...(typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []),
+        ...(typeof GIVEN_NAME_DATA_MALE !== 'undefined' ? GIVEN_NAME_DATA_MALE : []),
+        ...(typeof GIVEN_NAME_DATA_FEMALE !== 'undefined' ? GIVEN_NAME_DATA_FEMALE : [])
+    ].map(n => n.culture).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-CN'));
+    sel.innerHTML = '<option value="">全部文化</option>' + cultures.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    sel.value = cultures.includes(current) ? current : '';
+}
 function renderNameResults() {
     const container = document.getElementById('nameResults');
+    if(!container) return;
     container.innerHTML = '';
     const typeSelect = document.getElementById('nameTypeSelect');
     const type = typeSelect ? typeSelect.value : 'surname';
     const q = (document.getElementById('meaningSearch').value || '').toLowerCase().trim();
-    let data = [];
-    if(type === 'surname') {
-        data = [...(typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []), ...(devData.surnames || [])];
-    } else if(type === 'male') {
-        data = [...(typeof GIVEN_NAME_DATA_MALE !== 'undefined' ? GIVEN_NAME_DATA_MALE : []), ...(devData.givenNamesMale || [])];
-    } else {
-        data = [...(typeof GIVEN_NAME_DATA_FEMALE !== 'undefined' ? GIVEN_NAME_DATA_FEMALE : []), ...(devData.givenNamesFemale || [])];
-    }
+    const culture = nwNameCulture();
+    let data = nwNamePool(type);
     data.sort((a, b) => (a.en || '').localeCompare(b.en || ''));
-    const filtered = data.filter(n => !q || (n.meaning||'').toLowerCase().includes(q) || (n.cn||'').toLowerCase().includes(q) || (n.en||'').toLowerCase().includes(q));
-    if(filtered.length === 0) { container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无数据</p>'; return; }
-    let html = '';
-    filtered.slice(0, 50).forEach(n => {
-        html += `<div class="entry-item"><div class="entry-name">${n.cn} <span style="font-size:.8em;color:var(--text2)">(${n.en})</span></div><div class="entry-desc">寓意：${n.meaning || '未标注'}</div></div>`;
+    const filtered = data.filter(n => {
+        if(culture && n.culture !== culture) return false;
+        return !q || (n.meaning||'').toLowerCase().includes(q) || (n.cn||'').toLowerCase().includes(q) || (n.en||'').toLowerCase().includes(q);
     });
+    if(filtered.length === 0) { container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无数据</p>'; return; }
+    let html = `<div class="nw-list-summary">共 ${filtered.length} 条${culture ? ' · ' + escapeHtml(culture) : ''}${q ? ' · 搜索「' + escapeHtml(q) + '」' : ''}</div>`;
+    filtered.slice(0, nwNameLimit).forEach(n => {
+        html += `<div class="entry-item"><div class="entry-name">${escapeHtml(n.cn)} <span style="font-size:.8em;color:var(--text2)">(${escapeHtml(n.en)})</span>${nwNameCultureLabel(n)}</div><div class="entry-desc">寓意：${escapeHtml(n.meaning || '未标注')}</div></div>`;
+    });
+    if(filtered.length > nwNameLimit) {
+        html += `<button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="nwMoreNames()">加载更多（还有 ${filtered.length - nwNameLimit} 条）</button>`;
+    }
     container.innerHTML = html;
 }
 function generateRandomName() {
     const typeSelect = document.getElementById('nameTypeSelect');
     const type = typeSelect ? typeSelect.value : 'surname';
-    let data = [];
-    if(type === 'surname') {
-        data = [...(typeof SURNAME_DATA !== 'undefined' ? SURNAME_DATA : []), ...(devData.surnames || [])];
-    } else if(type === 'male') {
-        data = [...(typeof GIVEN_NAME_DATA_MALE !== 'undefined' ? GIVEN_NAME_DATA_MALE : []), ...(devData.givenNamesMale || [])];
-    } else {
-        data = [...(typeof GIVEN_NAME_DATA_FEMALE !== 'undefined' ? GIVEN_NAME_DATA_FEMALE : []), ...(devData.givenNamesFemale || [])];
-    }
+    const culture = nwNameCulture();
+    let data = nwNamePool(type);
+    if(culture) data = data.filter(n => n.culture === culture);
     if(data.length === 0) { alert('暂无数据'); return; }
     const pick = data[Math.floor(Math.random() * data.length)];
     const typeLabel = type === 'surname' ? '姓氏' : type === 'male' ? '男名' : '女名';
-    alert(`🎲 随机${typeLabel}：\n\n${pick.cn} (${pick.en})\n\n寓意：${pick.meaning || '未标注'}`);
+    alert(`🎲 随机${typeLabel}：\n\n${pick.cn} (${pick.en})${pick.culture ? '\n文化：' + pick.culture : ''}\n\n寓意：${pick.meaning || '未标注'}`);
 }
+
 function getAllKnowledge() {
     const publicData = (typeof KNOWLEDGE_DATA !== 'undefined') ? KNOWLEDGE_DATA : [];
     const localData = devData.knowledge || [];
@@ -4362,7 +4403,9 @@ function renderKnowledgeBase() {
     if(q) filtered = filtered.filter(k => (k.title||'').toLowerCase().includes(q) || (k.content||'').toLowerCase().includes(q) || (k.subcategory||'').toLowerCase().includes(q));
     if(filtered.length === 0) { container.innerHTML = '<p style="color:var(--text2);font-size:.85em">暂无知识条目</p>'; return; }
 
-    filtered.forEach((k, indexInFiltered) => {
+    let kbHtml = `<div class="nw-list-summary">共 ${filtered.length} 条${catFilter ? ' · ' + escapeHtml(catFilter) : ''}${q ? ' · 搜索「' + escapeHtml(q) + '」' : ''}</div>`;
+    const kbSlice = filtered.slice(0, nwKbLimit);
+    kbSlice.forEach((k, indexInFiltered) => {
         const d = document.createElement('div');
         d.className = 'entry-item';
         d.style.cursor = 'pointer';
@@ -4376,6 +4419,15 @@ function renderKnowledgeBase() {
         d.onclick = () => viewKnowledgeDetail(k);
         container.appendChild(d);
     });
+    if(kbHtml) container.insertAdjacentHTML('afterbegin', kbHtml);
+    if(filtered.length > nwKbLimit) {
+        const more = document.createElement('button');
+        more.className = 'btn btn-secondary btn-sm';
+        more.style.marginTop = '10px';
+        more.textContent = `加载更多（还有 ${filtered.length - nwKbLimit} 条）`;
+        more.onclick = nwMoreKnowledge;
+        container.appendChild(more);
+    }
 }
 
 // 查看知识详情弹窗
@@ -6124,6 +6176,8 @@ async function init() {
     if(statsMigrated) {
         setTimeout(() => showToast('码字统计已改为按每日新增字数计算，历史数据已归档'), 1200);
     }
+    // 数据已直接并入 names.js / knowledge.js，只需初始化文化筛选
+    nwRefreshNameCultureFilter();
     setTimeout(nwMaybeShowWelcome, 1000);
 }
 // ========== 专注模式 ==========

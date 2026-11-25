@@ -1460,4 +1460,788 @@ const KNOWLEDGE_DATA = [
     content: "中世纪欧洲的政治格局中，国王与教宗之间的权力斗争贯穿始终。最著名的冲突是“叙任权之争”（11至12世纪），围绕主教任命权展开。国王主张主教应由世俗君主任命，教宗主张主教只能由教会任命。这一斗争最终以《沃尔姆斯协约》（1122年）达成妥协，教会获得主教任命权，国王保留一定的政治影响。国王与教宗的博弈深刻影响了中世纪欧洲的政治结构和教会改革。",
     references: ["福西耶, R. 这些中世纪的人：中世纪的日常生活. 上海社会科学院出版社, 2011."]
   },
+  {
+    category: "爵位与头衔",
+    subcategory: "贵族/头衔",
+    title: "公爵",
+    content: "Duke 源自拉丁语 dux（领袖）。中世纪早期它多是军事统帅的头衔，到中世纪后期逐渐固定为最高等级的世俗贵族。公爵通常拥有广大领地、城堡和私人武装，并可能享有铸币、司法、征税等特权；在王室宗亲中尤其常见。\n\n公爵的权力大小取决于王权强弱和领地是否连片，并非所有公爵都同样富有。",
+    references: ["Crouch, D. The Birth of Nobility: Constructing Aristocracy in England and France, 900-1300. Routledge, 2005.", "Given-Wilson, C. The English Nobility in the Late Middle Ages. Routledge, 1987."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "贵族/头衔",
+    title: "伯爵",
+    content: "Count 在西欧源于罗马晚期的 comes（同伴、侍从），后来指受国王委托治理某一地区的官员；英格兰的 Earl 则保留日耳曼传统。伯爵通常控制一个伯爵领，负责征税、召集军队和主持地方法庭，是王权与地方之间的关键阶层。\n\n随着采邑世袭化，伯爵逐渐从国王的官员变成半独立的地方领主。",
+    references: ["Bloch, M. Feudal Society. Routledge, 1961.", "Given-Wilson, C. The English Nobility in the Late Middle Ages. Routledge, 1987."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "贵族/头衔",
+    title: "男爵",
+    content: "Baron 最初泛指国王的直属封臣，后来在某些王国成为固定的贵族等级。男爵通常直接从国王手中持有土地，有义务提供骑士役和参加御前会议。英格兰的男爵在13世纪逐渐形成议会中的独立群体，是“贵族”中最底层但人数最多的一级。\n\n男爵与骑士的界线并不总是清晰，财富和与王室的关系往往比头衔本身更重要。",
+    references: ["Given-Wilson, C. The English Nobility in the Late Middle Ages. Routledge, 1987.", "Crouch, D. The Birth of Nobility: Constructing Aristocracy in England and France, 900-1300. Routledge, 2005."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "军事/头衔",
+    title: "骑士",
+    content: "Knight 是经过册封、承担骑马作战义务的战士。骑士通常自备战马、盔甲和武器，为领主服役；册封仪式包括守夜、宣誓、授剑和拍肩等环节。骑士身份可以世袭，也可以由君主或高级领主授予，是贵族阶层中人数最多、地位最低的一层。\n\n到中世纪后期，骑士头衔越来越多地成为荣誉和行政身份，而不再只是战场角色。",
+    references: ["Keen, M. Chivalry. Yale University Press, 1984.", "Flori, J. Chevaliers et chevalerie au Moyen Age. Hachette, 1998."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "军事/头衔",
+    title: "侍从",
+    content: "Esquire（侍从）原指骑士的随从，后来成为介于骑士与绅士之间的身份。侍从通常出身较好，在贵族家庭中学习骑术、礼仪和武器使用，等待被册封为骑士。英格兰的“esquire”在14世纪以后逐渐固定为一种可继承的社会称号，地位低于骑士而高于普通绅士。\n\n侍从也是贵族家庭培养下一代封臣和官员的重要方式。",
+    references: ["Saul, N. Knights and Esquires: The Gloucestershire Gentry in the Fourteenth Century. Oxford University Press, 1981.", "Keen, M. Chivalry. Yale University Press, 1984."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "封建/契约",
+    title: "封臣",
+    content: "Vassal 指通过效忠仪式（homage）从领主那里获得封地的人。封臣要向领主宣誓效忠、提供军事服务和咨询，领主则承诺保护封臣并授予土地。封臣可以同时是更高一级领主的领主，形成层层嵌套的封建关系；同一块土地也可能同时向多个领主承担义务。\n\n封臣关系并不等于完全的人身依附，违约和反抗在中世纪并不罕见。",
+    references: ["Bloch, M. Feudal Society. Routledge, 1961.", "Crouch, D. The Birth of Nobility: Constructing Aristocracy in England and France, 900-1300. Routledge, 2005."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "封建/权力",
+    title: "领主",
+    content: "Lord 是对拥有领主权者的泛称，可能包括国王、公爵、伯爵、男爵、主教或城堡主。领主权不仅是土地所有权，还包括司法、征税、征兵、磨坊和森林等特权。领主对佃户的权力大小不一，取决于习惯法、特许状和王权的约束。\n\n“领主”不是单一等级，而是一组权利的集合。",
+    references: ["Bloch, M. Feudal Society. Routledge, 1961.", "Crouch, D. The Birth of Nobility: Constructing Aristocracy in England and France, 900-1300. Routledge, 2005."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "宫廷/纹章",
+    title: "纹章官",
+    content: "Herald（纹章官）负责管理纹章、谱系和骑士比武中的身份识别。他们记录哪些家族使用何种盾徽，裁定纹章纠纷，并在比武和仪式中宣读骑士的姓名与战绩。中世纪后期，纹章官逐渐成为王室的正式官员，负责巡查地方纹章使用情况。\n\n纹章官的知识依赖记忆和卷册，是口头与文书传统结合的典型职业。",
+    references: ["Woodcock, T. & Robinson, J.M. The Oxford Guide to Heraldry. Oxford University Press, 1988.", "Fox-Davies, A.C. A Complete Guide to Heraldry. T.C. & E.C. Jack, 1909."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "宫廷/行政",
+    title: "王室管家",
+    content: "Seneschal（王室管家/总管）原指管理王室或大贵族家宅的高级官员，后来也指代表领主管理领地、法庭和财政的地方长官。在法国，王室总管一度是仅次于国王的军事和行政首长；在英格兰，类似的职位更多与贵族 household 的管理有关。\n\n管家权力来自委托，既能强化领主的控制，也可能成为地方势力坐大的起点。",
+    references: ["Woolgar, C.M. The Great Household in Late Medieval England. Yale University Press, 1999.", "Mertes, K. The English Noble Household, 1250-1600. Blackwell, 1988."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "军事/城堡",
+    title: "城堡主",
+    content: "Castellan（城堡主）是受领主委托守卫和管理城堡的人。他负责城防、驻军、粮草、武器维护和周边地区的治安，有时还代行司法和征税。城堡主可以是世袭贵族，也可以是领取薪俸的职业军官；在边境地区，这一职位往往拥有很大的自主权。\n\n城堡主若长期掌握城堡，可能形成独立于领主的地方权力。",
+    references: ["Kaufmann, J.E. & Kaufmann, H.W. The Medieval Fortress. Da Capo Press, 2001.", "Liddiard, R. (ed.) Late Medieval Castles. Boydell & Brewer, 2016."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "宗教/军事",
+    title: "骑士团",
+    content: "骑士团是兼具修道团体和军事组织性质的团体，成员宣誓守贫、守贞、服从，同时承担武装保卫基督教世界的任务。圣殿骑士团、医院骑士团和条顿骑士团是最著名的例子。骑士团拥有自己的规则、等级、地产和军事指挥体系，直接受教宗或君主保护。\n\n骑士团的财富和特权也使其成为王权与教会争夺的对象。",
+    references: ["Riley-Smith, J. The Crusades: A History. Yale University Press, 2005.", "Tyerman, C. God's War: A New History of the Crusades. Harvard University Press, 2006."]
+  },
+  {
+    category: "爵位与头衔",
+    subcategory: "性别/贵族",
+    title: "贵族妇女",
+    content: "贵族妇女并非只是婚姻中的附属品。她们可以继承领地、代表家族管理庄园、在丈夫出征时主持城堡防务，甚至以寡妇身份独立行使领主权。修女院院长、王室女眷和女继承人也能掌握相当大的政治与经济资源。\n\n但她们的权利仍受父权继承规则、婚姻安排和教会法的限制。",
+    references: ["Ward, J.C. English Noblewomen in the Later Middle Ages. Longman, 1992.", "Bennett, J.M. Women in the Medieval English Countryside. Oxford University Press, 1987."]
+  },
+  {
+    category: "纹章与标识",
+    subcategory: "纹章/构成",
+    title: "盾徽",
+    content: "Coat of arms（盾徽）是13世纪以后在欧洲贵族、城市、行会和教会中广泛使用的身份标记。它通常以盾形为底，包含底色、分割线、图案（charge）和头盔、冠饰等外饰。盾徽最初用于战场和比武中识别身份，后来成为家族、领地和机构的永久标志。\n\n盾徽的使用逐渐受到纹章官和习惯规则的约束。",
+    references: ["Fox-Davies, A.C. A Complete Guide to Heraldry. T.C. & E.C. Jack, 1909.", "Woodcock, T. & Robinson, J.M. The Oxford Guide to Heraldry. Oxford University Press, 1988."]
+  },
+  {
+    category: "纹章与标识",
+    subcategory: "纹章/规则",
+    title: "纹章颜色",
+    content: "中世纪纹章学把颜色分为“金属色”（金、银）和“彩色”（红、蓝、绿、黑、紫）。基本规则是金属色上不放金属色、彩色上不放彩色，以保证远距离可辨。这条规则并非法律，但在大多数地区被广泛遵守，违反者会被视为“伪纹章”。\n\n颜色也承载象征意义，但具体含义因家族和时代而异，不能机械对应。",
+    references: ["Fox-Davies, A.C. A Complete Guide to Heraldry. T.C. & E.C. Jack, 1909.", "Woodcock, T. & Robinson, J.M. The Oxford Guide to Heraldry. Oxford University Press, 1988."]
+  },
+  {
+    category: "纹章与标识",
+    subcategory: "纹章/图案",
+    title: "纹章动物",
+    content: "狮、鹰、狼、熊、鹿、野猪和龙是常见纹章动物。狮子象征勇武和王权，鹰象征权威与帝国，狼和野猪常与凶猛、狩猎或地方传说相关。动物的姿态（passant、rampant、couchant 等）有严格术语，同一动物因姿态不同而代表不同图案。\n\n动物纹章常与家族传说、封地地名或婚姻联盟有关。",
+    references: ["Fox-Davies, A.C. A Complete Guide to Heraldry. T.C. & E.C. Jack, 1909.", "Woodcock, T. & Robinson, J.M. The Oxford Guide to Heraldry. Oxford University Press, 1988."]
+  },
+  {
+    category: "纹章与标识",
+    subcategory: "纹章/文字",
+    title: "箴言",
+    content: "Motto（箴言）是附在盾徽下方或周围的短句，通常使用拉丁语、法语或地方语言。箴言不是纹章的必需部分，也不像盾徽图案那样受严格继承规则约束；同一个家族的不同支系可以使用不同箴言。\n\n箴言往往表达虔诚、忠诚、勇气或家族自嘲，是研究贵族自我形象的有趣材料。",
+    references: ["Fox-Davies, A.C. A Complete Guide to Heraldry. T.C. & E.C. Jack, 1909.", "Woodcock, T. & Robinson, J.M. The Oxford Guide to Heraldry. Oxford University Press, 1988."]
+  },
+  {
+    category: "纹章与标识",
+    subcategory: "纹章/继承",
+    title: "纹章继承",
+    content: "盾徽通常由家族男性后裔继承，但并非简单复制：长子继承完整纹章，幼子需加“区别标记”（cadency）——如横线、星、新月等。女儿和女继承人可以把家族纹章带入婚姻，与丈夫的纹章合并。纹章继承因此是研究家族谱系和婚姻网络的重要线索。\n\n不同地区的继承规则并不统一，纹章官的解释具有很大权威。",
+    references: ["Fox-Davies, A.C. A Complete Guide to Heraldry. T.C. & E.C. Jack, 1909.", "Woodcock, T. & Robinson, J.M. The Oxford Guide to Heraldry. Oxford University Press, 1988."]
+  },
+  {
+    category: "纹章与标识",
+    subcategory: "纹章/制度",
+    title: "纹章巡查",
+    content: "Heraldic visitation 是纹章官对某一地区家族纹章使用情况的定期巡查。纹章官会记录谁在使用什么盾徽、是否有权使用、谱系是否成立，并据此登记或罚款。英格兰在16至17世纪进行了多次系统巡查，留下了大量家族谱系资料。\n\n巡查既是行政登记，也是王室借纹章秩序伸张权威的手段。",
+    references: ["Woodcock, T. & Robinson, J.M. The Oxford Guide to Heraldry. Oxford University Press, 1988.", "Fox-Davies, A.C. A Complete Guide to Heraldry. T.C. & E.C. Jack, 1909."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "刑罚/死刑",
+    title: "绞刑",
+    content: "Hanging 是中世纪欧洲最常见的死刑方式，适用于盗窃、谋杀、叛国和重罪。绞刑通常在公共场合执行，以威慑民众；行刑后尸体有时会被悬挂示众。贵族和神职人员可能争取斩首或其他“体面”的死法，以避免绞刑的羞辱。\n\n绞刑的公开性使其同时成为司法仪式和权力展示。",
+    references: ["McCall, A. The Medieval Underworld. Hamish Hamilton, 1979.", "Baker, J.H. An Introduction to English Legal History. Oxford University Press, 2007."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "刑罚/死刑",
+    title: "斩首",
+    content: "Beheading 通常保留给贵族、骑士和上层罪犯，被视为比绞刑更体面的死法。执行者使用剑或斧，力求一击致命；失败时可能造成极大痛苦。叛国者有时先被绞至半死、再剖腹、斩首和分尸，以加重惩罚。\n\n斩首的“体面”本身反映了社会等级对死亡方式的塑造。",
+    references: ["McCall, A. The Medieval Underworld. Hamish Hamilton, 1979.", "Baker, J.H. An Introduction to English Legal History. Oxford University Press, 2007."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "刑罚/羞辱",
+    title: "示众刑",
+    content: "Stocks、pillory 和 cucking stool 等示众刑具用于公开羞辱轻罪犯人。犯人被固定在市场或广场，任由路人围观、嘲笑甚至投掷杂物。示众刑的目的不是肉体折磨，而是通过羞耻和名声损失来维持社区秩序。\n\n在熟人社会里，名誉惩罚往往比短期监禁更有威慑力。",
+    references: ["McCall, A. The Medieval Underworld. Hamish Hamilton, 1979.", "Baker, J.H. An Introduction to English Legal History. Oxford University Press, 2007."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "刑罚/放逐",
+    title: "流放",
+    content: "Exile 是把罪犯逐出城市、领地或王国的刑罚。被流放者失去财产、身份和社群保护，往往面临饥饿、暴力和再次被捕的风险。流放也用于政治斗争：失势的贵族、教士和王位竞争者常被驱逐。\n\n流放既是惩罚，也是一种“社会性死亡”。",
+    references: ["McCall, A. The Medieval Underworld. Hamish Hamilton, 1979.", "Baker, J.H. An Introduction to English Legal History. Oxford University Press, 2007."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "刑罚/监禁",
+    title: "监狱",
+    content: "中世纪的监狱通常不是现代意义上的长期监禁场所，而是等待审判、债务追讨或政治关押的地方。条件差别极大：普通囚犯可能被关在城堡地牢、城门塔楼或私人监狱，贵族则可能享有相对舒适的房间。监禁本身很少作为独立刑罚，更多是程序工具。\n\n监狱的私人化程度很高，看守和囚犯之间的经济关系影响待遇。",
+    references: ["McCall, A. The Medieval Underworld. Hamish Hamilton, 1979.", "Baker, J.H. An Introduction to English Legal History. Oxford University Press, 2007."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "法律/程序",
+    title: "保释",
+    content: "Bail（保释）在中世纪法律中通常指由担保人保证被告出庭，而不是直接交钱。担保人可以是亲属、邻居或行会成员，若被告逃逸，担保人需承担罚款或责任。保释制度依赖地方社会的关系网络，而非现代意义上的国家信用。\n\n谁能为被告担保，往往决定了他在司法中的实际处境。",
+    references: ["Baker, J.H. An Introduction to English Legal History. Oxford University Press, 2007.", "Brundage, J.A. Medieval Canon Law. Longman, 1995."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "法律/程序",
+    title: "陪审团",
+    content: "Jury 在中世纪英格兰逐渐发展起来，最初是由熟悉案情的邻居组成，向法庭提供事实信息，后来演变为听取证据并作出裁决的群体。陪审团制度与巡回法庭、王室司法扩张密切相关，也被视为地方社区参与司法的方式。\n\n陪审员可能因压力、贿赂或地方关系而影响裁决，并非天然公正。",
+    references: ["Baker, J.H. An Introduction to English Legal History. Oxford University Press, 2007."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "法律/资源",
+    title: "森林法",
+    content: "Forest law 是王室对特定森林地区的特别法，保护猎物、木材和植被，限制周边居民放牧、砍伐和狩猎。违反森林法者会面临高额罚金、没收财产甚至监禁。森林法常常与地方习惯冲突，成为农民和贵族不满的来源。\n\n森林不是无人区，而是王室、贵族和村民争夺资源的空间。",
+    references: ["Baker, J.H. An Introduction to English Legal History. Oxford University Press, 2007.", "Given-Wilson, C. The English Nobility in the Late Middle Ages. Routledge, 1987."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "法律/商业",
+    title: "市场法庭",
+    content: "Court of piepowder（市场法庭）是集市和市场中设立的快速法庭，处理买卖纠纷、债务、度量衡和契约问题。它的审判节奏很快，以适应商人在集市停留时间短的特点。市场法庭的兴起反映了商业活动对高效司法的需求。\n\n商人常希望脱离地方领主法庭，获得更可预期的商业规则。",
+    references: ["Baker, J.H. An Introduction to English Legal History. Oxford University Press, 2007.", "Spufford, P. Power and Profit: The Merchant in Medieval Europe. Thames & Hudson, 2002."]
+  },
+  {
+    category: "法律与刑罚",
+    subcategory: "法律/经济",
+    title: "债务与破产",
+    content: "中世纪商业依赖信用，债务纠纷非常普遍。债权人可以起诉债务人、扣押货物或要求担保人偿还；无力偿还者可能被监禁、没收财产或公开羞辱。意大利城邦发展出更复杂的破产程序，但多数地区仍以人身和名誉压力为主。\n\n信用既建立在契约上，也建立在商人和社区的名誉网络上。",
+    references: ["Hunt, E.S. & Murray, J.M. A History of Business in Medieval Europe, 1200-1550. Cambridge University Press, 1999.", "Spufford, P. Power and Profit: The Merchant in Medieval Europe. Thames & Hudson, 2002."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/组织",
+    title: "雇佣兵合同",
+    content: "中世纪后期，君主和城市越来越多地通过合同雇佣职业军队，而非单纯依赖封建骑士役。合同会规定兵种、人数、服役期限、军饷、装备和战利品分配。意大利的 condottieri、英格兰的合同军和瑞士雇佣兵都是著名例子。\n\n雇佣兵提高了军事灵活性，也带来了欠薪、劫掠和忠诚问题。",
+    references: ["Contamine, P. War in the Middle Ages. Blackwell, 1984.", "Prestwich, M. Armies and Warfare in the Middle Ages: The English Experience. Yale University Press, 1996."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/兵种",
+    title: "长枪兵",
+    content: "Pikeman 使用长枪组成密集方阵，主要任务是抵御骑兵冲锋并为其他兵种提供掩护。长枪方阵需要严格训练和纪律，单个士兵离开队列就容易失去作用。中世纪后期，佛兰德斯、瑞士和德意志的长枪兵在战场上越来越重要。\n\n长枪兵与弓手、火器的配合，逐渐改变了骑士冲锋的主导地位。",
+    references: ["Contamine, P. War in the Middle Ages. Blackwell, 1984.", "DeVries, K. & Smith, R.D. Medieval Military Technology. University of Toronto Press, 1992."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/兵种",
+    title: "弓手",
+    content: "Archer 是中世纪军队的远程力量，分为长弓手、十字弓手和普通弓手。长弓需要长期训练，射速快、射程远；十字弓上手快、穿透力强，但装填慢。弓手通常部署在阵线前方或两翼，依靠密集射击打乱敌军阵形。\n\n弓手的地位常被骑士叙事低估，但实际战斗中往往决定胜负。",
+    references: ["Prestwich, M. Armies and Warfare in the Middle Ages: The English Experience. Yale University Press, 1996.", "Rogers, C.J. War Cruel and Sharp: English Strategy under Edward III, 1327-1360. Boydell Press, 2000."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/财政",
+    title: "军饷",
+    content: "Medieval soldiers were paid in cash, kind, or shares of plunder. 封建骑士役原本有固定服役期限，超期服役需要付钱；雇佣兵则按日、周或月领饷。欠薪是兵变和劫掠的主要原因，因此军饷、战利品和赎金构成军事财政的核心。\n\n军队的忠诚往往取决于能否按时发钱，而非单纯的封建义务。",
+    references: ["Prestwich, M. Armies and Warfare in the Middle Ages: The English Experience. Yale University Press, 1996.", "Contamine, P. War in the Middle Ages. Blackwell, 1984."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/外交",
+    title: "围城谈判",
+    content: "围城并不总是打到城破。守方可以在粮尽、援军无望或城墙被攻破前与攻方谈判，条件是交出城池、支付赎金、宣誓不再反抗或允许驻军。攻方也可能因瘟疫、补给不足或援军逼近而撤围。谈判条件往往比强攻更划算。\n\n围城谈判是军事压力、时间与政治妥协的结合。",
+    references: ["Kaufmann, J.E. & Kaufmann, H.W. The Medieval Fortress. Da Capo Press, 2001.", "Rogers, C.J. War Cruel and Sharp: English Strategy under Edward III, 1327-1360. Boydell Press, 2000."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/象征",
+    title: "战旗",
+    content: "Banner、standard 和 pennon 等战旗用于标识部队、领主和指挥官。战旗不仅是视觉信号，也是荣誉和身份的象征；夺取敌方战旗是战场上的重大胜利，丢失战旗则意味着耻辱。战旗由专门人员携带，常在混乱中成为集结点。\n\n战旗的象征意义有时超过其实际军事功能。",
+    references: ["Keen, M. Chivalry. Yale University Press, 1984.", "Strickland, M. War and Chivalry: The Conduct and Perception of War in England and Normandy, 1066-1217. Cambridge University Press, 1996."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/装备",
+    title: "板甲",
+    content: "Plate armour 在14至15世纪逐渐取代锁子甲成为骑士的主要防护。板甲由多块钢片铰接而成，能分散冲击力，但对弓箭、火器和钝器仍有弱点。一套高质量板甲价格昂贵，需要量身定制，通常只有贵族和富裕骑士负担得起。\n\n板甲的出现与冶金、锻造和人体工程学的发展密切相关。",
+    references: ["DeVries, K. & Smith, R.D. Medieval Military Technology. University of Toronto Press, 1992.", "Ayton, A. Knights and Warhorses: Military Service and the English Aristocracy under Edward III. Boydell Press, 1994."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/装备",
+    title: "战马",
+    content: "Destrier（战马）是专门用于冲锋和近战的重型马，价格远高于普通骑乘马和驮马。战马需要长期训练，适应噪音、人群和武器；骑士往往拥有多匹马，由侍从照料。战马也是身份象征，丢失战马可能意味着巨大的经济损失。\n\n战马的饲养、运输和补充是军队后勤的重要负担。",
+    references: ["Ayton, A. Knights and Warhorses: Military Service and the English Aristocracy under Edward III. Boydell Press, 1994.", "Prestwich, M. Armies and Warfare in the Middle Ages: The English Experience. Yale University Press, 1996."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/后勤",
+    title: "辎重",
+    content: "Baggage train 包括粮草、帐篷、武器、工具、炊具、马料和战利品，通常由驮马、马车和随军人员组成。辎重队伍庞大而缓慢，容易成为袭击目标；军队必须决定携带多少、沿途征发多少。后勤能力往往比战术更能决定战役成败。\n\n“军队靠胃行军”在中世纪同样适用。",
+    references: ["Prestwich, M. Armies and Warfare in the Middle Ages: The English Experience. Yale University Press, 1996.", "Contamine, P. War in the Middle Ages. Blackwell, 1984."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/制度",
+    title: "军事契约",
+    content: "Indenture（军事契约）是英格兰中世纪后期国王与贵族之间签订的服役合同，规定提供的人数、兵种、服役地点、期限和报酬。契约军取代了部分传统封建征召，使王室能够更灵活地组织军队，也促进了职业化。\n\n契约制度也意味着战争越来越依赖金钱和信用。",
+    references: ["Prestwich, M. Armies and Warfare in the Middle Ages: The English Experience. Yale University Press, 1996.", "Ayton, A. Knights and Warhorses: Military Service and the English Aristocracy under Edward III. Boydell Press, 1994."]
+  },
+  {
+    category: "战争与军事",
+    subcategory: "军事/后勤",
+    title: "扎营",
+    content: "中世纪军队扎营时会选择水源、地势和风向有利的位置，用马车、木桩和壕沟围成防御圈。帐篷按部队和身份排列，指挥官通常位于中央或高处。营地卫生条件差，疾病、火灾和夜袭是常见威胁。\n\n营地是军队的临时城市，也是纪律和等级的缩影。",
+    references: ["Contamine, P. War in the Middle Ages. Blackwell, 1984.", "Prestwich, M. Armies and Warfare in the Middle Ages: The English Experience. Yale University Press, 1996."]
+  },
+  {
+    category: "航海与贸易",
+    subcategory: "船舶/运输",
+    title: "柯克船",
+    content: "Cog 是北海和波罗的海贸易中广泛使用的单桅帆船，船身宽大、吃水浅，适合载运大宗货物。它采用搭接船板和尾部舵，能在风浪中保持稳定。汉萨同盟的商船大量使用柯克船，它是中世纪北欧海上贸易的象征。\n\n柯克船的载货能力使其成为羊毛、鱼、盐和谷物的主要运输工具。",
+    references: ["Unger, R.W. The Ship in the Medieval Economy, 600-1600. McGill-Queen's University Press, 1980.", "Hutchinson, G. Medieval Ships and Shipping. Leicester University Press, 1994."]
+  },
+  {
+    category: "航海与贸易",
+    subcategory: "船舶/地中海",
+    title: "桨帆船",
+    content: "Galley 是地中海常见的桨帆并用战船，速度快、机动性强，适合近海作战和运输贵重货物。划桨需要大量人力，通常由自由桨手、囚犯或奴隶承担。威尼斯、热那亚和奥斯曼舰队都大量使用桨帆船。\n\n桨帆船的维持成本极高，但在地中海风中比纯帆船更可靠。",
+    references: ["Pryor, J.H. Geography, Technology, and War: Studies in the Maritime History of the Mediterranean, 649-1571. Cambridge University Press, 1988.", "Abulafia, D. The Great Sea: A Human History of the Mediterranean. Oxford University Press, 2011."]
+  },
+  {
+    category: "航海与贸易",
+    subcategory: "航海/技术",
+    title: "罗盘",
+    content: "Magnetic compass 在12世纪以后传入欧洲，逐渐成为远洋航行的关键工具。早期罗盘是一个磁针浮在水面或草秆上，后来与方位盘结合。罗盘不能直接指出船的位置，但能在阴天和远海保持方向，配合航位推算使用。\n\n罗盘的普及改变了航海者的空间感，但仍需经验判断洋流和风。",
+    references: ["Hutchinson, G. Medieval Ships and Shipping. Leicester University Press, 1994.", "Unger, R.W. The Ship in the Medieval Economy, 600-1600. McGill-Queen's University Press, 1980."]
+  },
+  {
+    category: "航海与贸易",
+    subcategory: "航海/图籍",
+    title: "海图",
+    content: "Portolan chart 是13世纪以后地中海航海者使用的一种海图，标有海岸线、港口、暗礁和罗盘方位线。它与宗教地图不同，更强调可操作性而非宇宙论。海图通常绘制在羊皮纸上，由专业制图师复制和更新。\n\n海图是航海经验、商业情报和制图技术的结合。",
+    references: ["Hutchinson, G. Medieval Ships and Shipping. Leicester University Press, 1994.", "Pryor, J.H. Geography, Technology, and War: Studies in the Maritime History of the Mediterranean, 649-1571. Cambridge University Press, 1988."]
+  },
+  {
+    category: "航海与贸易",
+    subcategory: "贸易/财政",
+    title: "港口税",
+    content: "Port tolls 是领主、城市或国王对进出港口的货物征收的税费，通常按货物种类、重量或价值计算。港口税是城市和领主的重要收入来源，也用于维护码头、灯塔和防御设施。不同港口的税则差异很大，商人会据此选择路线。\n\n税则的繁复和随意性常被商人抱怨，也是商业冲突的来源。",
+    references: ["Spufford, P. Power and Profit: The Merchant in Medieval Europe. Thames & Hudson, 2002.", "Unger, R.W. The Ship in the Medieval Economy, 600-1600. McGill-Queen's University Press, 1980."]
+  },
+  {
+    category: "航海与贸易",
+    subcategory: "贸易/联盟",
+    title: "汉萨同盟",
+    content: "Hanseatic League 是北欧德意志商人城市组成的商业联盟，14世纪达到鼎盛。它控制波罗的海和北海的贸易网络，拥有武装商船、商站和特权，能够对王国施加经济压力。吕贝克、汉堡和不来梅是核心城市。\n\n汉萨同盟不是国家，却拥有接近国家的谈判和军事能力。",
+    references: ["Unger, R.W. The Ship in the Medieval Economy, 600-1600. McGill-Queen's University Press, 1980.", "Spufford, P. Power and Profit: The Merchant in Medieval Europe. Thames & Hudson, 2002."]
+  },
+  {
+    category: "航海与贸易",
+    subcategory: "贸易/路线",
+    title: "地中海航线",
+    content: "中世纪地中海航线连接意大利城邦、拜占庭、北非和黎凡特。威尼斯、热那亚和比萨的商船定期组成船队，运载香料、丝绸、粮食、盐和奴隶。航线受季风、海盗和战争影响，商人依靠护航、保险和外交降低风险。\n\n地中海是东西方贸易的枢纽，也是不同法律和货币体系的交汇处。",
+    references: ["Abulafia, D. The Great Sea: A Human History of the Mediterranean. Oxford University Press, 2011.", "Pryor, J.H. Geography, Technology, and War: Studies in the Maritime History of the Mediterranean, 649-1571. Cambridge University Press, 1988."]
+  },
+  {
+    category: "航海与贸易",
+    subcategory: "贸易/金融",
+    title: "海上保险",
+    content: "Marine insurance 在14世纪意大利港口出现，商人通过支付保费把航行风险转移给保险商。保险合同会列明船舶、货物、航线和承保范围；欺诈和沉船纠纷催生了早期的保险法律。保险降低了远洋贸易的门槛，也促进了资本市场。\n\n保险的本质是把不确定的灾难转化为可计算的成本。",
+    references: ["Hunt, E.S. & Murray, J.M. A History of Business in Medieval Europe, 1200-1550. Cambridge University Press, 1999.", "Spufford, P. Power and Profit: The Merchant in Medieval Europe. Thames & Hudson, 2002."]
+  },
+  {
+    category: "航海与贸易",
+    subcategory: "航海/设施",
+    title: "灯塔",
+    content: "Lighthouse 在古代已有，中世纪由修道院、城市或领主维护，用火盆、蜡烛或油灯指引港口和危险海岸。灯塔的维持费用通常来自港口税或捐赠。著名的灯塔包括亚历山大灯塔的遗迹和中世纪地中海港口的塔楼。\n\n灯塔不仅是导航设施，也是权力和慈善的象征。",
+    references: ["Hutchinson, G. Medieval Ships and Shipping. Leicester University Press, 1994.", "Unger, R.W. The Ship in the Medieval Economy, 600-1600. McGill-Queen's University Press, 1980."]
+  },
+  {
+    category: "城市与行会",
+    subcategory: "城市/法律",
+    title: "特许状",
+    content: "Charter（特许状）是国王或领主授予城市的书面文件，确认城市的自治权、市场权、税收安排和居民身份。特许状通常规定市议会、法庭和行会的权限，是城市自由的法律基础。不同城市的特许状内容差异很大。\n\n特许状不是永久宪法，常需续期、修改或通过谈判确认。",
+    references: ["Reynolds, S. Kingdoms and Communities in Western Europe, 900-1300. Oxford University Press, 1984.", "Nicholas, D. The Growth of the Medieval City: From Late Antiquity to the Early Fourteenth Century. Longman, 1997."]
+  },
+  {
+    category: "城市与行会",
+    subcategory: "城市/治理",
+    title: "市议会",
+    content: "Town council 由城市中的富裕商人、行会师傅和地产所有者组成，负责税收、市场、治安、公共工程和对外谈判。市议会的规模与选举方式因城市而异，有的实行寡头统治，有的保留更广泛的市民参与。\n\n市议会是城市精英维护秩序和利益的工具，也常与王权博弈。",
+    references: ["Nicholas, D. The Growth of the Medieval City: From Late Antiquity to the Early Fourteenth Century. Longman, 1997.", "Reynolds, S. Kingdoms and Communities in Western Europe, 900-1300. Oxford University Press, 1984."]
+  },
+  {
+    category: "城市与行会",
+    subcategory: "城市/财政",
+    title: "城门税",
+    content: "Town gate toll 是对进入城市的货物和人员征收的税费，通常按车辆、牲畜或货物种类计算。城门税用于城墙维护、守门人薪水和城市开支。税吏在城门口检查货物，逃税者会被罚款或没收货物。\n\n城门是城市主权的边界，也是财政和治安的交汇点。",
+    references: ["Nicholas, D. The Growth of the Medieval City: From Late Antiquity to the Early Fourteenth Century. Longman, 1997.", "Mundy, J.H. & Riesenberg, P. The Medieval Town. Van Nostrand, 1958."]
+  },
+  {
+    category: "城市与行会",
+    subcategory: "行会/等级",
+    title: "行会师傅",
+    content: "Master craftsman 是行会中的最高等级，拥有自己的作坊、工具和学徒，并有权在市场上出售产品。成为师傅通常需要完成学徒期、提交“杰作”并通过行会考核。师傅资格限制严格，以控制竞争和维持质量。\n\n师傅身份意味着经济独立和社会地位，但也伴随行会规约的约束。",
+    references: ["Epstein, S.A. Wage Labor and Guilds in Medieval Europe. University of North Carolina Press, 1991.", "Nicholas, D. The Growth of the Medieval City: From Late Antiquity to the Early Fourteenth Century. Longman, 1997."]
+  },
+  {
+    category: "城市与行会",
+    subcategory: "城市/建筑",
+    title: "市政厅",
+    content: "Town hall 是城市议会的办公和集会场所，通常位于市场广场，建筑风格展示城市财富与自治。市政厅内有议事厅、档案室、 treasury 和法庭；钟楼用于报时和召集市民。市政厅的修建往往是城市自豪感的体现。\n\n市政厅是城市自治的象征，也是精英权力的空间化。",
+    references: ["Nicholas, D. The Growth of the Medieval City: From Late Antiquity to the Early Fourteenth Century. Longman, 1997.", "Mundy, J.H. & Riesenberg, P. The Medieval Town. Van Nostrand, 1958."]
+  },
+  {
+    category: "城市与行会",
+    subcategory: "城市/公共安全",
+    title: "消防",
+    content: "中世纪城市房屋多为木构、茅草屋顶，火灾极易蔓延。城市会规定屋顶材料、火源管理、夜间巡逻和灭火工具，行会也承担部分消防义务。火灾后常颁布新的建筑禁令，但执行力度有限。\n\n火灾是城市最常见的灾难之一，也是建筑规范发展的动力。",
+    references: ["Nicholas, D. The Growth of the Medieval City: From Late Antiquity to the Early Fourteenth Century. Longman, 1997.", "Mundy, J.H. & Riesenberg, P. The Medieval Town. Van Nostrand, 1958."]
+  },
+  {
+    category: "城市与行会",
+    subcategory: "城市/身份",
+    title: "城市自由民",
+    content: "Burgess（城市自由民）是拥有城市公民权的人，可以参与市场、行会和市政，享有一定的法律特权。获得自由民身份通常需要居住年限、财产、担保和缴费。自由民身份与封建农奴身份形成对比，城市因此被视为“自由的空气”。\n\n城市自由并非人人平等，贫穷居民和外来者常被排除在外。",
+    references: ["Reynolds, S. Kingdoms and Communities in Western Europe, 900-1300. Oxford University Press, 1984.", "Nicholas, D. The Growth of the Medieval City: From Late Antiquity to the Early Fourteenth Century. Longman, 1997."]
+  },
+  {
+    category: "城市与行会",
+    subcategory: "城市/慈善",
+    title: "济贫院",
+    content: "Almshouse 是由教会、行会或富裕市民资助的慈善机构，为穷人、老人、寡妇和病人提供食宿。济贫院通常有严格的入住规则和宗教义务，入住者需遵守祈祷和劳动安排。它们承担了部分现代社会福利的功能。\n\n济贫院既体现慈善，也体现对贫困者的管理与道德规训。",
+    references: ["Mundy, J.H. & Riesenberg, P. The Medieval Town. Van Nostrand, 1958.", "Swanson, R.N. Religion and Devotion in Europe, c.1215-c.1515. Cambridge University Press, 1995."]
+  },
+  {
+    category: "饮食与宴会",
+    subcategory: "宴会/礼仪",
+    title: "宴会座次",
+    content: "中世纪宴会的座次严格反映身份：主人和贵宾坐在高桌（high table），其他人按等级和关系依次排列。座次由主人或其管家安排，坐错位置可能被视为羞辱。宴会也是展示财富、联盟和权力的场合。\n\n座次安排是社交秩序的微缩模型。",
+    references: ["Henisch, B.A. Fast and Feast: Food in Medieval Society. Pennsylvania State University Press, 1976.", "Adamson, M.W. Food in Medieval Times. Greenwood Press, 2004."]
+  },
+  {
+    category: "饮食与宴会",
+    subcategory: "饮食/贸易",
+    title: "香料",
+    content: "胡椒、肉桂、丁香、肉豆蔻和藏红花等香料从中东和亚洲输入，价格昂贵。它们不仅用于调味，也用于保存食物、配药和展示身份。贵族宴席大量使用香料，形成“浓味”烹饪风格；香料贸易也是东西方贸易的重要动力。\n\n香料的昂贵使其成为社会等级的味觉标志。",
+    references: ["Adamson, M.W. Food in Medieval Times. Greenwood Press, 2004.", "Redon, O., Sabban, F. & Serventi, S. The Medieval Kitchen: Recipes from France and Italy. University of Chicago Press, 1998."]
+  },
+  {
+    category: "饮食与宴会",
+    subcategory: "饮食/贸易",
+    title: "糖",
+    content: "Sugar 在中世纪欧洲是昂贵的进口商品，最初多作为药材和香料使用。甘蔗种植依赖地中海和伊斯兰世界的技术，威尼斯等地控制糖贸易。贵族用糖制作雕像、糖果和甜酒，以展示财富；普通农民很少接触。\n\n糖的普及要等到大西洋种植园时代，中世纪仍是奢侈品。",
+    references: ["Adamson, M.W. Food in Medieval Times. Greenwood Press, 2004.", "Redon, O., Sabban, F. & Serventi, S. The Medieval Kitchen: Recipes from France and Italy. University of Chicago Press, 1998."]
+  },
+  {
+    category: "饮食与宴会",
+    subcategory: "饮食/烹饪",
+    title: "烤肉",
+    content: "Roasting 是中世纪宴会中最引人注目的烹饪方式：整只猪、羊、鹿或禽类在明火上翻转烤制，由厨童用长叉操作。烤肉需要大量燃料和人力，因此是富裕家庭的日常，也是宴会的核心。烤制后的肉常配香料酱汁。\n\n烤肉的火光、香气和场面本身就是一种表演。",
+    references: ["Adamson, M.W. Food in Medieval Times. Greenwood Press, 2004.", "Redon, O., Sabban, F. & Serventi, S. The Medieval Kitchen: Recipes from France and Italy. University of Chicago Press, 1998."]
+  },
+  {
+    category: "饮食与宴会",
+    subcategory: "饮食/礼仪",
+    title: "餐桌礼仪",
+    content: "中世纪餐桌礼仪强调共享、节制和等级。就餐者通常共用碗盘和酒杯，用手或刀取食；擤鼻涕、吐痰、抢食和大声咀嚼被视为失礼。富裕家庭有专门的切肉者和侍者，礼仪手册会规定不同场合的行为。\n\n礼仪既关乎卫生，也关乎身份和自控。",
+    references: ["Henisch, B.A. Fast and Feast: Food in Medieval Society. Pennsylvania State University Press, 1976.", "Adamson, M.W. Food in Medieval Times. Greenwood Press, 2004."]
+  },
+  {
+    category: "饮食与宴会",
+    subcategory: "饮食/烹饪",
+    title: "馅饼",
+    content: "Pie 在中世纪既是食物也是容器：厚实的面皮可以包裹肉类、禽类、鱼和水果，在烤制中保存汁液。大型馅饼里有时会放入活鸟或其他惊喜，用于宴会娱乐。馅饼的酥皮质量和馅料丰富程度反映家庭财力。\n\n馅饼是中世纪“可食用餐具”的典型例子。",
+    references: ["Adamson, M.W. Food in Medieval Times. Greenwood Press, 2004.", "Redon, O., Sabban, F. & Serventi, S. The Medieval Kitchen: Recipes from France and Italy. University of Chicago Press, 1998."]
+  },
+  {
+    category: "服饰与珠宝",
+    subcategory: "服饰/材料",
+    title: "亚麻",
+    content: "Linen 由亚麻纤维织成，透气、耐用，适合制作内衣、床单和夏季服装。亚麻种植和加工需要大量劳动，漂白和捶打是专门工序。富人使用细亚麻，农民则穿较粗的亚麻或与羊毛混纺。\n\n亚麻内衣的清洁程度被视为文明和身份的象征。",
+    references: ["Netherton, R. & Owen-Crocker, G.R. (eds.) Medieval Clothing and Textiles. Boydell Press, 2005.", "Piponnier, F. & Mane, P. Dress in the Middle Ages. Yale University Press, 1997."]
+  },
+  {
+    category: "服饰与珠宝",
+    subcategory: "服饰/材料",
+    title: "羊毛",
+    content: "Wool 是中世纪欧洲最重要的纺织原料，英格兰、佛兰德斯和意大利的羊毛贸易支撑了大量城市。羊毛质量按纤维细度分级，细羊毛用于高级呢绒，粗羊毛用于毯子和农民服装。呢绒的染色、缩绒和整理工序决定其价格。\n\n羊毛贸易是 medieval economy 的核心链条之一。",
+    references: ["Netherton, R. & Owen-Crocker, G.R. (eds.) Medieval Clothing and Textiles. Boydell Press, 2005.", "Spufford, P. Power and Profit: The Merchant in Medieval Europe. Thames & Hudson, 2002."]
+  },
+  {
+    category: "服饰与珠宝",
+    subcategory: "服饰/材料",
+    title: "丝绸",
+    content: "Silk 从拜占庭和伊斯兰世界传入，价格极高，主要用于教会法衣、贵族服饰和装饰。丝绸的轻薄、光泽和染色效果使其成为身份象征；威尼斯和卢卡是欧洲重要的丝绸生产中心。中世纪后期，丝绸逐渐进入富裕市民家庭。\n\n丝绸的进口和仿制反映了跨文化交流与技术传播。",
+    references: ["Netherton, R. & Owen-Crocker, G.R. (eds.) Medieval Clothing and Textiles. Boydell Press, 2005.", "Piponnier, F. & Mane, P. Dress in the Middle Ages. Yale University Press, 1997."]
+  },
+  {
+    category: "服饰与珠宝",
+    subcategory: "服饰/材料",
+    title: "皮草",
+    content: "Fur 用于保暖和装饰，贵族尤其偏爱貂皮、狐皮、松鼠皮和紫貂。皮草常镶在领口、袖口和斗篷边缘，既实用又显示财富。某些珍贵皮草受节俭法令限制，只有特定等级可以穿着。\n\n皮草的来源和贸易网络连接了北欧、俄罗斯和西欧市场。",
+    references: ["Netherton, R. & Owen-Crocker, G.R. (eds.) Medieval Clothing and Textiles. Boydell Press, 2005.", "Piponnier, F. & Mane, P. Dress in the Middle Ages. Yale University Press, 1997."]
+  },
+  {
+    category: "服饰与珠宝",
+    subcategory: "珠宝/身份",
+    title: "戒指",
+    content: "Ring 在中世纪不仅是装饰，也具有法律和宗教意义：印章戒指用于签署文件，订婚和结婚戒指象征誓约，主教戒指象征权威。戒指的材质、宝石和铭文可以传达身份、信仰和情感。\n\n戒指是可随身携带的权力与记忆。",
+    references: ["Netherton, R. & Owen-Crocker, G.R. (eds.) Medieval Clothing and Textiles. Boydell Press, 2005.", "Piponnier, F. & Mane, P. Dress in the Middle Ages. Yale University Press, 1997."]
+  },
+  {
+    category: "服饰与珠宝",
+    subcategory: "服饰/配件",
+    title: "腰带",
+    content: "Belt 是中世纪服装的重要组成部分，用于束紧外衣、悬挂钱包、匕首和钥匙。腰带材质从皮革到丝绸、金属链不等，装饰越华丽身份越高。腰带也承载象征意义，如骑士的剑带和教士的腰带。\n\n腰带是实用性与身份展示的结合。",
+    references: ["Netherton, R. & Owen-Crocker, G.R. (eds.) Medieval Clothing and Textiles. Boydell Press, 2005.", "Piponnier, F. & Mane, P. Dress in the Middle Ages. Yale University Press, 1997."]
+  },
+  {
+    category: "服饰与珠宝",
+    subcategory: "服饰/头饰",
+    title: "头巾",
+    content: "Head covering 在中世纪男女中都常见，形式包括兜帽、头巾、发网和帽子。已婚妇女通常用头巾或面纱遮盖头发，以示端庄；贵族妇女使用精细亚麻、丝绸和珠宝装饰的头饰。头饰的样式随地区和时代变化很大。\n\n头饰是性别、婚姻状况和身份的可见标记。",
+    references: ["Netherton, R. & Owen-Crocker, G.R. (eds.) Medieval Clothing and Textiles. Boydell Press, 2005.", "Piponnier, F. & Mane, P. Dress in the Middle Ages. Yale University Press, 1997."]
+  },
+  {
+    category: "宗教与异端",
+    subcategory: "教会/等级",
+    title: "主教",
+    content: "Bishop 是教区的主教，负责教导、主持圣事、管理教会财产和神职人员。主教通常来自贵族或富裕家庭，拥有世俗领地和政治影响力。主教由教宗或君主任命，叙任权之争正是围绕这一权力展开。\n\n主教既是宗教领袖，也是世俗领主。",
+    references: ["Southern, R.W. Western Society and the Church in the Middle Ages. Penguin, 1970.", "Swanson, R.N. Religion and Devotion in Europe, c.1215-c.1515. Cambridge University Press, 1995."]
+  },
+  {
+    category: "宗教与异端",
+    subcategory: "教会/堂区",
+    title: "神父",
+    content: "Priest 是堂区的基层神职人员，负责主持弥撒、洗礼、婚礼、葬礼和临终圣事。神父通常需要接受拉丁语和神学训练，但许多乡村神父的教育水平有限。神父与信徒的日常生活关系密切，是教会与地方社会的桥梁。\n\n堂区神父的经济来源主要依靠什一税和信徒捐赠。",
+    references: ["Duffy, E. The Stripping of the Altars: Traditional Religion in England, 1400-1580. Yale University Press, 1992.", "Swanson, R.N. Religion and Devotion in Europe, c.1215-c.1515. Cambridge University Press, 1995."]
+  },
+  {
+    category: "宗教与异端",
+    subcategory: "礼仪/圣事",
+    title: "弥撒",
+    content: "Mass 是基督徒最重要的礼仪，纪念基督的最后晚餐。中世纪弥撒使用拉丁语，由神父主持，信徒通常只能领圣体（面包），圣血一般只给神职人员。弥撒的音乐、祭服、蜡烛和香营造神圣氛围。\n\n弥撒的重复和庄严塑造了中世纪人的时间感。",
+    references: ["Duffy, E. The Stripping of the Altars: Traditional Religion in England, 1400-1580. Yale University Press, 1992.", "Swanson, R.N. Religion and Devotion in Europe, c.1215-c.1515. Cambridge University Press, 1995."]
+  },
+  {
+    category: "宗教与异端",
+    subcategory: "教会/惩罚",
+    title: "绝罚",
+    content: "Excommunication（绝罚）是把信徒逐出教会、剥夺圣事和教会葬礼的惩罚。绝罚分为“小绝罚”和“大绝罚”，后者可能涉及世俗后果，如失去官职或封建权利。国王和领主也可能被绝罚，从而引发政治危机。\n\n绝罚的力量来自中世纪社会对救赎和共同体归属的重视。",
+    references: ["Southern, R.W. Western Society and the Church in the Middle Ages. Penguin, 1970.", "Brundage, J.A. Medieval Canon Law. Longman, 1995."]
+  },
+  {
+    category: "宗教与异端",
+    subcategory: "神学/圣事",
+    title: "圣餐变体论",
+    content: "Transubstantiation 是中世纪经院神学对圣餐的解释：弥撒中面包和酒的本质变为基督的身体和血，而外观（形色味）保持不变。这一教义在1215年第四次拉特兰会议后被更明确地确立，成为信仰核心。\n\n变体论的确立也强化了神父的特殊地位和圣餐的敬畏感。",
+    references: ["Duffy, E. The Stripping of the Altars: Traditional Religion in England, 1400-1580. Yale University Press, 1992.", "Southern, R.W. Western Society and the Church in the Middle Ages. Penguin, 1970."]
+  },
+  {
+    category: "宗教与异端",
+    subcategory: "建筑/教会",
+    title: "主教座堂",
+    content: "Cathedral 是主教所在的教堂，通常是城市中最大、最华丽的建筑。哥特式主教座堂以尖拱、飞扶壁和彩色玻璃著称，建造往往耗时数十年甚至数百年。座堂不仅是宗教中心，也是城市自豪感、朝圣和经济活动的核心。\n\n座堂的建造组织体现了中世纪工程、财政和信仰的结合。",
+    references: ["Wilson, C. The Gothic Cathedral. Thames & Hudson, 1990.", "Coldstream, N. Medieval Architecture. Oxford University Press, 2002."]
+  },
+  {
+    category: "宗教与异端",
+    subcategory: "教会/组织",
+    title: "教区",
+    content: "Parish 是教会的基本行政单位，由一位神父负责，范围通常与村庄或城镇社区重合。教区记录洗礼、婚姻和葬礼，承担济贫和维持教堂的职责。教区边界和什一税权利常引发长期纠纷。\n\n教区是中世纪普通人接触教会最直接的层面。",
+    references: ["Duffy, E. The Stripping of the Altars: Traditional Religion in England, 1400-1580. Yale University Press, 1992.", "Swanson, R.N. Religion and Devotion in Europe, c.1215-c.1515. Cambridge University Press, 1995."]
+  },
+  {
+    category: "宗教与异端",
+    subcategory: "宗教/女性",
+    title: "修女院",
+    content: "Nunnery 是修女共同生活、祈祷和工作的场所。修女通常来自贵族或富裕家庭，入院需缴纳嫁妆；她们可以读书、抄写、管理财产，但行动自由受到严格限制。修女院也是女性教育和庇护的空间。\n\n修女院为部分女性提供了脱离婚姻和家庭权威的路径。",
+    references: ["Swanson, R.N. Religion and Devotion in Europe, c.1215-c.1515. Cambridge University Press, 1995.", "Bennett, J.M. Women in the Medieval English Countryside. Oxford University Press, 1987."]
+  },
+  {
+    category: "医学与瘟疫",
+    subcategory: "医学/治疗",
+    title: "放血",
+    content: "Bloodletting 是中世纪最常用的治疗手段之一，基于四体液学说，认为放出多余血液可以恢复平衡。放血由理发师外科医生或医生操作，部位和时间根据星象、病情和体质决定。过度放血可能导致虚弱甚至死亡。\n\n放血体现了中世纪医学将人体与自然秩序联系起来的思路。",
+    references: ["Siraisi, N.G. Medieval and Early Renaissance Medicine. University of Chicago Press, 1990.", "Rawcliffe, C. Medicine and Society in Later Medieval England. Sutton, 1995."]
+  },
+  {
+    category: "医学与瘟疫",
+    subcategory: "医学/药物",
+    title: "草药",
+    content: "Herbal medicine 使用植物根、叶、花、种子和树脂治疗疾病。修道院药草园种植鼠尾草、迷迭香、百里香、苦艾等；药剂师配制糖浆、膏药和药酒。草药知识通过古典文本、民间传统和阿拉伯医学传播。\n\n草药疗效与信仰、仪式和安慰剂效应常常交织在一起。",
+    references: ["Siraisi, N.G. Medieval and Early Renaissance Medicine. University of Chicago Press, 1990.", "Rawcliffe, C. Medicine and Society in Later Medieval England. Sutton, 1995."]
+  },
+  {
+    category: "医学与瘟疫",
+    subcategory: "医学/瘟疫",
+    title: "瘟疫医生",
+    content: "Plague doctor 是黑死病后出现的职业，负责诊治鼠疫患者、记录死亡和采取隔离措施。他们常穿涂蜡长袍、戴鸟嘴面具，面具里装香料和草药，认为可以过滤“瘴气”。这套装备更多是防护象征，实际效果有限。\n\n瘟疫医生的形象后来成为流行文化中的经典符号。",
+    references: ["Horrox, R. (ed.) The Black Death. Manchester University Press, 1994.", "Benedictow, O.J. The Black Death 1346-1353: The Complete History. Boydell Press, 2004."]
+  },
+  {
+    category: "医学与瘟疫",
+    subcategory: "医学/公共卫生",
+    title: "隔离",
+    content: "Quarantine（隔离）源自意大利语 quaranta giorni（四十天），14世纪威尼斯等港口要求来自疫区的船只和人员隔离四十天。隔离措施还包括封城、限制集会、隔离病人住所。它是最早的公共卫生政策之一，但执行常引发恐慌和反抗。\n\n隔离的有效性依赖信息、财政和社会配合。",
+    references: ["Horrox, R. (ed.) The Black Death. Manchester University Press, 1994.", "Benedictow, O.J. The Black Death 1346-1353: The Complete History. Boydell Press, 2004."]
+  },
+  {
+    category: "医学与瘟疫",
+    subcategory: "医学/手术",
+    title: "外科",
+    content: "Surgery 在中世纪由理发师外科医生、专业外科医生和民间治疗者共同承担。常见手术包括放血、拔罐、接骨、疝气、截肢、取出箭头和白内障。手术通常没有麻醉，靠酒精、鸦片或快速操作减轻痛苦；感染风险极高。\n\n外科医生地位低于内科医生，但实际需求很大。",
+    references: ["Siraisi, N.G. Medieval and Early Renaissance Medicine. University of Chicago Press, 1990.", "Rawcliffe, C. Medicine and Society in Later Medieval England. Sutton, 1995."]
+  },
+  {
+    category: "医学与瘟疫",
+    subcategory: "医学/女性",
+    title: "助产士",
+    content: "Midwife 负责接生、产后护理和新生儿照料。她们通常是社区中有经验的女性，通过口传和实践学习。教会对助产士有严格规定，要求她们在紧急情况下为婴儿施洗。助产士也是女性医疗知识的重要传承者。\n\n助产士在男性医生主导的医学文本中常被边缘化。",
+    references: ["Rawcliffe, C. Medicine and Society in Later Medieval England. Sutton, 1995.", "Bennett, J.M. Women in the Medieval English Countryside. Oxford University Press, 1987."]
+  },
+  {
+    category: "旅行与交通",
+    subcategory: "交通/道路",
+    title: "罗马道路",
+    content: "Roman roads 在中世纪仍是重要的交通干线，尽管许多路段失修。道路用于军队、商队、朝圣者和王室信使；路面、桥梁和渡口由领主或城市维护。道路质量差异很大，泥泞和盗匪是常见问题。\n\n中世纪交通并非完全依赖新建道路，而是继承和修补古代网络。",
+    references: ["Ohler, N. The Medieval Traveller. Boydell Press, 1989.", "Holmes, U.T. Daily Living in the Twelfth Century. University of Wisconsin Press, 1952."]
+  },
+  {
+    category: "旅行与交通",
+    subcategory: "旅行/住宿",
+    title: "客栈",
+    content: "Inn 为商人、朝圣者和官员提供食宿、马厩和仓储。客栈的质量和价格差异很大，有些兼营酒馆和妓院。城市和交通要道上的客栈更正规，乡村客栈则可能只是农舍兼营。\n\n客栈也是消息、谣言和商业情报的交换场所。",
+    references: ["Ohler, N. The Medieval Traveller. Boydell Press, 1989.", "Holmes, U.T. Daily Living in the Twelfth Century. University of Wisconsin Press, 1952."]
+  },
+  {
+    category: "旅行与交通",
+    subcategory: "交通/工程",
+    title: "桥梁",
+    content: "Bridge 是中世纪交通的关键节点，常由城市、修道院或领主修建和维护。石桥造价高昂，有时附带礼拜堂、城门和收费亭。桥梁也是军事要地和商业中心，桥头常形成聚落。\n\n修桥被视为重要的慈善事业，也是权力和财富的展示。",
+    references: ["Ohler, N. The Medieval Traveller. Boydell Press, 1989.", "Gies, F. & Gies, J. Cathedral, Forge, and Waterwheel. HarperCollins, 1994."]
+  },
+  {
+    category: "旅行与交通",
+    subcategory: "交通/水路",
+    title: "渡船",
+    content: "Ferry 在河流、湖泊和河口承担人员和货物运输。渡船由领主或城市特许经营，收取渡费；渡口常设有客栈和集市。渡船也是军事行动中的关键环节，控制渡口意味着控制交通。\n\n渡口是水路与陆路的连接点。",
+    references: ["Ohler, N. The Medieval Traveller. Boydell Press, 1989.", "Holmes, U.T. Daily Living in the Twelfth Century. University of Wisconsin Press, 1952."]
+  },
+  {
+    category: "旅行与交通",
+    subcategory: "交通/通信",
+    title: "驿马",
+    content: "Post horse 和王室信使系统为政府、军队和商人提供快速通信。信使可以在驿站换马，日夜兼程；普通旅行者也可以租马，但费用较高。中世纪的“邮政”更多是王室和城市的特权网络，而非全民服务。\n\n通信速度决定了政治和军事反应的速度。",
+    references: ["Ohler, N. The Medieval Traveller. Boydell Press, 1989.", "Holmes, U.T. Daily Living in the Twelfth Century. University of Wisconsin Press, 1952."]
+  },
+  {
+    category: "旅行与交通",
+    subcategory: "旅行/条件",
+    title: "旅行速度",
+    content: "中世纪旅行速度受道路、天气、季节和交通工具影响。步行者每天约20至30公里，骑马者可达40至60公里，信使换马可更快；商队和军队则慢得多。冬季、洪水和盗匪会大幅延误行程。\n\n距离在中世纪不是公里数，而是“几天路程”。",
+    references: ["Ohler, N. The Medieval Traveller. Boydell Press, 1989.", "Holmes, U.T. Daily Living in the Twelfth Century. University of Wisconsin Press, 1952."]
+  },
+  {
+    category: "旅行与交通",
+    subcategory: "旅行/装备",
+    title: "行囊",
+    content: "Travel bag 通常包括斗篷、毯子、干粮、水袋、火石、刀具、钱袋和文书。朝圣者还带手杖、葫芦和徽章；商人带样品、账本和秤。行囊的重量和内容反映旅行者的身份和目的。\n\n旅行装备的简朴程度常与身份成反比。",
+    references: ["Ohler, N. The Medieval Traveller. Boydell Press, 1989.", "Holmes, U.T. Daily Living in the Twelfth Century. University of Wisconsin Press, 1952."]
+  },
+  {
+    category: "语言与称谓",
+    subcategory: "语言/礼貌",
+    title: "你/您",
+    content: "中世纪欧洲语言有复杂的敬称系统。法语 tu/vous、德语 du/Sie、拉丁语 tu/vos 的选择取决于社会等级、亲疏和场合。对上级、陌生人或公众说话通常用敬称，对家人、仆人和上帝可能用亲称。\n\n敬称系统是日常权力关系的语言标记。",
+    references: ["Hogg, R.M. (ed.) The Cambridge History of the English Language, Vol. 1. Cambridge University Press, 1992.", "Bloch, M. Feudal Society. Routledge, 1961."]
+  },
+  {
+    category: "语言与称谓",
+    subcategory: "称谓/骑士",
+    title: "骑士称谓",
+    content: "Sir 源自 sire（领主、父亲），用于称呼骑士和上级；Dame 用于女骑士或贵妇。骑士的妻子称 Lady，子女称 Master/Mistress。称谓与封号、领地挂钩，不能随意使用。\n\n称谓的误用可能被视为冒犯甚至欺诈。",
+    references: ["Reaney, P.H. & Wilson, R.M. A Dictionary of English Surnames. Routledge, 1991.", "Keen, M. Chivalry. Yale University Press, 1984."]
+  },
+  {
+    category: "语言与称谓",
+    subcategory: "称谓/贵族",
+    title: "贵族称呼",
+    content: "Lord、Lady、Your Grace、Your Highness 等称呼有严格等级。对国王/王后称 Majesty 或 Highness，对公爵称 Grace，对伯爵以下称 Lord/Lady。称呼错误会暴露对宫廷礼仪的无知。\n\n称谓是宫廷政治中最细微也最危险的礼节之一。",
+    references: ["Woolgar, C.M. The Great Household in Late Medieval England. Yale University Press, 1999.", "Given-Wilson, C. The English Nobility in the Late Middle Ages. Routledge, 1987."]
+  },
+  {
+    category: "语言与称谓",
+    subcategory: "语言/教会",
+    title: "拉丁语",
+    content: "Latin 是中世纪教会、学术、法律和外交的通用语言。弥撒、圣经、大学课程、特许状和外交文书多用拉丁语。俗人日常使用地方语言，但受教育者需要掌握拉丁语。拉丁语的读写能力是进入教会和官僚体系的门槛。\n\n拉丁语是中世纪欧洲的“公共语言”。",
+    references: ["Hogg, R.M. (ed.) The Cambridge History of the English Language, Vol. 1. Cambridge University Press, 1992.", "Southern, R.W. Western Society and the Church in the Middle Ages. Penguin, 1970."]
+  },
+  {
+    category: "语言与称谓",
+    subcategory: "语言/地方",
+    title: "方言",
+    content: "Vernacular 指地方语言，如英语、法语、德语、意大利语和西班牙语。中世纪后期，方言文学、法律文书和圣经翻译逐渐增多，挑战拉丁语的垄断。方言的兴起与民族国家、印刷术和城市文化有关。\n\n方言的合法化是一个漫长的政治过程。",
+    references: ["Hogg, R.M. (ed.) The Cambridge History of the English Language, Vol. 1. Cambridge University Press, 1992.", "Bartlett, R. The Making of Europe: Conquest, Colonization and Cultural Change, 950-1350. Princeton University Press, 1993."]
+  },
+  {
+    category: "语言与称谓",
+    subcategory: "语言/姓名",
+    title: "姓名结构",
+    content: "中世纪欧洲人的名字通常由 given name 和 by-name（后来的 surname）组成。贵族常以领地、城堡或家族为姓；平民可能以职业、外貌、父名或居住地为姓。姓名在13世纪以后逐渐固定和继承。\n\n姓名结构的变化反映了人口增长、税收和身份管理的需要。",
+    references: ["Reaney, P.H. & Wilson, R.M. A Dictionary of English Surnames. Routledge, 1991.", "Hanks, P. & Hodges, F. A Dictionary of First Names. Oxford University Press, 1990."]
+  },
+  {
+    category: "语言与称谓",
+    subcategory: "语言/姓名",
+    title: "绰号",
+    content: "By-name 或 nickname 常描述外貌、性格、职业、籍贯或事件，如“红发”“铁匠”“来自山谷”。绰号可以成为姓氏的来源，也可能带有侮辱或赞美意味。国王和贵族的绰号（如“征服者”“虔诚者”）常由后世史家固定。\n\n绰号是民间记忆和历史叙事的重要载体。",
+    references: ["Reaney, P.H. & Wilson, R.M. A Dictionary of English Surnames. Routledge, 1991.", "Hanks, P. & Hodges, F. A Dictionary of First Names. Oxford University Press, 1990."]
+  },
+  {
+    category: "魔法与民间信仰",
+    subcategory: "魔法/器物",
+    title: "护身符",
+    content: "Amulet 是随身携带的护身物，材质包括石头、金属、植物、动物部位和写有符文的羊皮纸。人们相信护身符可以驱邪、治病、保胎、带来好运或抵御武器。教会对护身符态度复杂：区分“迷信”和“神圣”的边界并不总是清晰。\n\n护身符的使用跨越宗教、医学和日常焦虑。",
+    references: ["Kieckhefer, R. Magic in the Middle Ages. Cambridge University Press, 1989.", "Flint, V. The Rise of Magic in Early Medieval Europe. Princeton University Press, 1991."]
+  },
+  {
+    category: "魔法与民间信仰",
+    subcategory: "魔法/星象",
+    title: "占星",
+    content: "Astrology 认为天体的位置和运动影响人的性格、健康和历史。中世纪医生用星象决定放血和用药时间，君主请占星师选择婚期和出征日期。占星与天文学尚未分离，是大学教育的一部分。\n\n占星把宇宙秩序与个人命运连接起来。",
+    references: ["Kieckhefer, R. Magic in the Middle Ages. Cambridge University Press, 1989.", "Thomas, K. Religion and the Decline of Magic. Scribner, 1971."]
+  },
+  {
+    category: "魔法与民间信仰",
+    subcategory: "魔法/预言",
+    title: "预言",
+    content: "Prophecy 在中世纪既是宗教传统，也是政治工具。圣经预言、先知异象、占星预言和民间预言常被用来解释灾难、战争和王位更替。预言文本往往含糊多义，便于事后附会。\n\n预言的危险在于它可能被用来挑战教会或王权。",
+    references: ["Kieckhefer, R. Magic in the Middle Ages. Cambridge University Press, 1989.", "Thomas, K. Religion and the Decline of Magic. Scribner, 1971."]
+  },
+  {
+    category: "魔法与民间信仰",
+    subcategory: "魔法/文本",
+    title: "魔法书",
+    content: "Grimoire 是收集咒语、仪式、星象和召唤术的手抄本。中世纪晚期的魔法书常冒充古代作者，混合阿拉伯、犹太和基督教元素。教会将部分魔法书视为异端，但抄本仍在学者和民间流传。\n\n魔法书的传播依赖抄写、翻译和秘密网络。",
+    references: ["Kieckhefer, R. Magic in the Middle Ages. Cambridge University Press, 1989.", "Flint, V. The Rise of Magic in Early Medieval Europe. Princeton University Press, 1991."]
+  },
+  {
+    category: "魔法与民间信仰",
+    subcategory: "魔法/仪式",
+    title: "民间符咒",
+    content: "Folk charm 是口头流传的短咒、祷词和仪式，用于治病、止血、护畜、求爱和防窃。符咒常混合基督教圣徒名、拉丁语片段和民间押韵，教会很难完全禁止。\n\n民间符咒展示了精英信仰与地方实践的互动。",
+    references: ["Thomas, K. Religion and the Decline of Magic. Scribner, 1971.", "Flint, V. The Rise of Magic in Early Medieval Europe. Princeton University Press, 1991."]
+  },
+  {
+    category: "怪物与异兽",
+    subcategory: "怪物/变形",
+    title: "狼人",
+    content: "Werewolf 在欧洲民间传说中被视为能由人变为狼的存在。中世纪文献常把狼人解释为魔鬼附身、诅咒或精神疾病；也有人将“狼人”视为被误判的流浪者或罪犯。狼人传说与森林、夜间和社区恐惧密切相关。\n\n狼人的形象在不同地区差异很大，不能简单等同于现代恐怖片。",
+    references: ["White, T.H. (trans.) The Book of Beasts. Jonathan Cape, 1954.", "Kempf, D. & Gilbert, M.L. Medieval Monsters. British Library, 2015."]
+  },
+  {
+    category: "怪物与异兽",
+    subcategory: "怪物/凯尔特",
+    title: "报丧女妖",
+    content: "Banshee（bean sídhe）是爱尔兰和苏格兰传说中与家族死亡相关的女性精灵。她的哭号被视为某位家族成员即将去世的预兆。报丧女妖不是凶手，而是死亡的信使；不同家族有各自的守护女妖。\n\n报丧女妖体现了凯尔特传统中死亡与家族血缘的联系。",
+    references: ["White, T.H. (trans.) The Book of Beasts. Jonathan Cape, 1954.", "Kempf, D. & Gilbert, M.L. Medieval Monsters. British Library, 2015."]
+  },
+  {
+    category: "怪物与异兽",
+    subcategory: "怪物/不死",
+    title: "吸血鬼",
+    content: "Vampire 在中世纪东欧民间传说中指死后仍能活动、吸食生者血液的尸体。教会和民间用木桩、焚尸、迁坟等方式处理“吸血鬼”；现代吸血鬼形象主要来自18至19世纪的文学。中世纪文献中的吸血鬼与后来的贵族形象差别很大。\n\n吸血鬼传说是对瘟疫、死亡和社区边界的解释。",
+    references: ["Kempf, D. & Gilbert, M.L. Medieval Monsters. British Library, 2015.", "Thomas, K. Religion and the Decline of Magic. Scribner, 1971."]
+  },
+  {
+    category: "怪物与异兽",
+    subcategory: "怪物/北欧",
+    title: "巨魔",
+    content: "Troll 是北欧民间传说中的超自然存在，常与山、洞穴、森林和夜晚相关。巨魔体型巨大、力量强，有时被描绘为愚蠢或易怒；在基督教化后的传说中，巨魔常与异教、荒野和危险联系在一起。\n\n巨魔是北欧自然环境和信仰想象的产物。",
+    references: ["White, T.H. (trans.) The Book of Beasts. Jonathan Cape, 1954.", "Kempf, D. & Gilbert, M.L. Medieval Monsters. British Library, 2015."]
+  },
+  {
+    category: "怪物与异兽",
+    subcategory: "怪物/建筑",
+    title: "石像鬼",
+    content: "Gargoyle 是教堂建筑上的石雕怪兽，兼作排水口和装饰。石像鬼的形象包括恶魔、动物和混合怪物，被认为可以驱邪或警示信徒。它们在中世纪哥特式建筑中大量出现，但民间关于“石像鬼复活”的故事多为后世创作。\n\n石像鬼是建筑功能、宗教象征和怪物想象的结合。",
+    references: ["Kempf, D. & Gilbert, M.L. Medieval Monsters. British Library, 2015.", "Wilson, C. The Gothic Cathedral. Thames & Hudson, 1990."]
+  },
+  {
+    category: "自然与地理",
+    subcategory: "气候/历史",
+    title: "中世纪暖期",
+    content: "Medieval Warm Period（约10至14世纪）是北大西洋地区相对温暖的时期，部分地区气温高于现代。温暖气候延长了生长季，使北欧和高地农业扩展，格陵兰的 Norse 定居点得以维持。但“暖期”并非全球同步，地区差异很大。\n\n气候波动对农业、人口和迁徙有深远影响。",
+    references: ["Fagan, B. The Little Ice Age: How Climate Made History, 1300-1850. Basic Books, 2000.", "Campbell, B.M.S. The Great Transition: Climate, Disease and Society in the Late-Medieval World. Cambridge University Press, 2016."]
+  },
+  {
+    category: "自然与地理",
+    subcategory: "气候/历史",
+    title: "小冰期",
+    content: "Little Ice Age（约14至19世纪）是一段相对寒冷的时期，冰川推进、冬季更冷、生长季缩短。14世纪初的饥荒、黑死病和农业减产与小冰期开始重叠，但因果关系复杂，不能简单归因于气候。\n\n气候变化往往通过粮食价格、疾病和社会冲突间接影响历史。",
+    references: ["Fagan, B. The Little Ice Age: How Climate Made History, 1300-1850. Basic Books, 2000.", "Campbell, B.M.S. The Great Transition: Climate, Disease and Society in the Late-Medieval World. Cambridge University Press, 2016."]
+  },
+  {
+    category: "自然与地理",
+    subcategory: "地理/交通",
+    title: "河流",
+    content: "Rivers 是中世纪交通、灌溉、动力和食物的来源。河流可通航河段是货物运输的大动脉，磨坊、渔梁和桥梁沿河而建。河流也是政治边界和城市选址的关键，控制河口和渡口意味着控制贸易。\n\n河流既连接也分割中世纪世界。",
+    references: ["Pounds, N.J.G. An Historical Geography of Europe. Cambridge University Press, 1990.", "Ohler, N. The Medieval Traveller. Boydell Press, 1989."]
+  },
+  {
+    category: "自然与地理",
+    subcategory: "地理/环境",
+    title: "沼泽",
+    content: "Marsh 在中世纪被视为危险、荒凉但又资源丰富的空间。沼泽提供泥炭、芦苇、鱼、水禽和放牧地，也便于防御和隐居。修道院常排干沼泽开垦农田，但工程艰巨；沼泽也是盗匪、逃犯和民间传说的藏身地。\n\n沼泽的开发反映了中世纪对自然的改造与想象。",
+    references: ["Pounds, N.J.G. An Historical Geography of Europe. Cambridge University Press, 1990.", "Gies, F. & Gies, J. Life in a Medieval Village. Harper & Row, 1990."]
+  },
+  {
+    category: "自然与地理",
+    subcategory: "地理/环境",
+    title: "山脉",
+    content: "Mountains 在中世纪既是障碍也是资源。山口控制贸易和军事通道，山区的牧场、木材、金属矿和水力资源支撑地方经济。山脉也是边界、避难所和传说发生地；阿尔卑斯、比利牛斯和喀尔巴阡山口对欧洲交通至关重要。\n\n山区往往形成与平原不同的社会结构和文化。",
+    references: ["Pounds, N.J.G. An Historical Geography of Europe. Cambridge University Press, 1990.", "Bartlett, R. The Making of Europe: Conquest, Colonization and Cultural Change, 950-1350. Princeton University Press, 1993."]
+  }
 ];
